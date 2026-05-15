@@ -147,14 +147,23 @@ textarea:focus{outline:none;border-color:var(--accent);}
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════
+//  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
+//  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
+const HARDCODED_API_URL = '';
+// ═══════════════════════════════════════════════════
+
 const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
 
 function init() {
-  const d = stored();
-  apiUrl = d.apiUrl || '';
-  if (!apiUrl) { showErr('尚未設定，請至 <a href="00-setup.html" style="color:var(--accent)">設定頁</a> 完成設定。'); return; }
+  // 優先使用寫死的網址，其次才讀 localStorage（本機設定頁儲存的）
+  apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
+  if (!apiUrl) {
+    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在 <a href="00-setup.html" style="color:var(--accent)">設定頁</a> 儲存網址後用同一裝置開啟。');
+    return;
+  }
   loadAll();
 }
 
