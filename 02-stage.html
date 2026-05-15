@@ -150,7 +150,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxDCimCeMgtCpvikiWxS_SITNKWhRMyI-5LEh2rfhxQiN16l4wz4Fi_-fc3uC6b49lvEg/exec?action=all';
+const HARDCODED_API_URL = '';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -269,7 +269,7 @@ async function sendNote() {
   const now = new Date();
   const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   try {
-    await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'note', text, from:'舞台區', time }) });
+    await fetch(apiUrl + '?action=note&text=' + encodeURIComponent(text) + '&from=' + encodeURIComponent('舞台區') + '&time=' + encodeURIComponent(time));
     document.getElementById('stage-note').value = '';
   } catch(e) {}
 }
