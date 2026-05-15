@@ -131,6 +131,61 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
+  <!-- FORM INTEGRATION -->
+  <div class="card" style="border-color:rgba(26,115,232,.3);">
+    <div class="card-header" style="background:var(--accent-dim);">
+      <span class="card-icon">📝</span>
+      <span class="card-title">Google 表單整合（選用）</span>
+      <span style="margin-left:auto;font-size:11px;font-weight:600;background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px;">推薦</span>
+    </div>
+    <div class="card-body">
+      <div class="notice">
+        用 <strong>Google 表單</strong>收集貴賓報名資料，填表後自動更新貴賓名單，無需在此頁手動輸入。可與第三步並用。
+      </div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">建立 Google 表單</div>
+          <div class="step-desc">前往 <a href="https://forms.google.com" target="_blank">forms.google.com</a>，建立表單，題目名稱須與下方一致：<br>
+            <div style="margin-top:8px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;">
+              <span style="color:var(--red);font-weight:600;">必填</span><span><code style="background:var(--surface2);padding:1px 6px;border-radius:4px;">姓名</code></span>
+              <span style="color:var(--red);font-weight:600;">必填</span><span><code style="background:var(--surface2);padding:1px 6px;border-radius:4px;">職稱／單位</code>（全形「／」）</span>
+              <span style="color:var(--muted);">選填</span><span><code style="background:var(--surface2);padding:1px 6px;border-radius:4px;">貴賓等級</code>（選項含「主要」→ vip；其餘 → normal）</span>
+              <span style="color:var(--muted);">選填</span><span><code style="background:var(--surface2);padding:1px 6px;border-radius:4px;">備註</code></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">連結至試算表</div>
+          <div class="step-desc">表單編輯頁 → 右上角「回應」→「連結至試算表」→ 選擇「貴賓報到系統」，會產生「表單回應 1」工作表。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">安裝觸發器（填表自動同步）</div>
+          <div class="step-desc">Apps Script 編輯器中，函式選 <code style="background:var(--surface2);padding:1px 6px;border-radius:4px;">setupFormTrigger</code> → 點「執行▶」，完成後每次填表即時新增貴賓。也可從試算表上方選單「🎫 貴賓系統 → 安裝表單觸發器」操作。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">手動批次同步現有回應</div>
+          <div class="step-desc">已填好的表單回應可點下方按鈕一次全部匯入，重複姓名自動略過。</div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="flex">
+        <button class="btn btn-primary" id="sync-btn" onclick="syncFromForm()">🔄 從表單批次同步名單</button>
+        <span class="flash" id="sync-saved"></span>
+        <span class="error-msg" id="sync-err"></span>
+      </div>
+    </div>
+  </div>
+
   <!-- STEP 2: Event info -->
   <div class="card">
     <div class="card-header"><span class="card-icon">📅</span><span class="card-title">第二步：活動基本資訊</span></div>
@@ -303,6 +358,35 @@ async function publishToSheets() {
 }
 
 function getStored() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+
+async function syncFromForm() {
+  const d = getStored();
+  if (!d.apiUrl) { showErr2('sync-err', '請先儲存 Apps Script 網址'); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true; btn.textContent = '同步中...';
+  try {
+    const res = await fetch(d.apiUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'sync' }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || '未知錯誤');
+    const el = document.getElementById('sync-saved');
+    el.textContent = '✓ ' + (json.message || '同步完成');
+    el.style.display = 'inline';
+    setTimeout(() => el.style.display = 'none', 4000);
+  } catch(e) {
+    showErr2('sync-err', '同步失敗：' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '🔄 從表單批次同步名單';
+}
+
+function showErr2(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg; el.style.display = 'inline';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
 function patch(obj) { localStorage.setItem(KEY, JSON.stringify({ ...getStored(), ...obj })); }
 function flash(id) { const el=document.getElementById(id); el.style.display='inline'; setTimeout(()=>el.style.display='none',3000); }
 function showErr(id,msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='inline'; setTimeout(()=>el.style.display='none',5000); }
