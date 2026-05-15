@@ -142,9 +142,6 @@ let pollTimer = null;
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
   if (!apiUrl) { showErr('請將 Apps Script 網址填入 01-checkin.html 第一行 HARDCODED_API_URL，或在 <a href="00-setup.html">設定頁</a> 儲存網址後用同一裝置開啟。'); return; }
-  document.getElementById('ev-name').textContent = d.evName || '活動';
-  const parts = [d.evDate, d.evVenue, d.evTime].filter(Boolean);
-  document.getElementById('ev-meta').textContent = parts.join(' · ');
   loadAll();
 }
 
@@ -153,6 +150,17 @@ async function loadAll() {
     const res = await fetch(apiUrl + '?action=all&t=' + Date.now());
     const data = await res.json();
     if (data.error) throw new Error(data.error);
+    // 活動資訊從 API 回傳填入（不依賴 localStorage）
+    if (data.eventInfo) {
+      document.getElementById('ev-name').textContent = data.eventInfo['活動名稱'] || '活動';
+      const parts = [data.eventInfo['日期'], data.eventInfo['地點'], data.eventInfo['時間']].filter(Boolean);
+      // 日期若是 ISO 格式轉成 YYYY/MM/DD
+      const formatted = parts.map(p => {
+        if (typeof p === 'string' && p.includes('T')) return p.split('T')[0].replace(/-/g,'/');
+        return p;
+      });
+      document.getElementById('ev-meta').textContent = formatted.join(' · ');
+    }
     data.vips.forEach((v, i) => { vips[v.id] = v; colorMap[v.id] = COLORS[i % COLORS.length]; });
     renderCards();
     updateStats();
