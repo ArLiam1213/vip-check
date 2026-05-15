@@ -149,7 +149,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <script>
 const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
-let vips = {}, colorMap = {}, apiUrl = '', prevChecked = new Set();
+let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
 
 function init() {
   const d = stored();
@@ -164,6 +164,7 @@ async function loadAll() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     updateHeader(data.eventInfo);
+    vipOrder = data.vips.map(v => v.id);
     data.vips.forEach((v, i) => { vips[v.id] = v; colorMap[v.id] = COLORS[i % COLORS.length]; });
     prevChecked = new Set(data.vips.filter(v=>v.checked).map(v=>String(v.id)));
     renderFeed();
@@ -203,8 +204,8 @@ async function poll() {
 }
 
 function renderFeed(justArrived = []) {
-  const arrived = Object.values(vips).filter(v => v.checked)
-    .sort((a,b) => (b.time||'').localeCompare(a.time||''));
+  // 依名單原始順序顯示已報到的貴賓
+  const arrived = vipOrder.map(id => vips[id]).filter(v => v && v.checked);
   const el = document.getElementById('feed');
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   el.innerHTML = arrived.slice(0,20).map(v => {
