@@ -129,15 +129,19 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════
+//  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
+const HARDCODED_API_URL = '';
+// ═══════════════════════════════════════════════════
+
 const KEY = 'vip_gs_config';
 const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
 let vips = {}, colorMap = {}, apiUrl = '';
 let pollTimer = null;
 
 function init() {
-  const d = stored();
-  apiUrl = d.apiUrl || '';
-  if (!apiUrl) { showErr('尚未設定 Apps Script 網址，請至 <a href="00-setup.html">設定頁</a> 完成設定。'); return; }
+  apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
+  if (!apiUrl) { showErr('請將 Apps Script 網址填入 01-checkin.html 第一行 HARDCODED_API_URL，或在 <a href="00-setup.html">設定頁</a> 儲存網址後用同一裝置開啟。'); return; }
   document.getElementById('ev-name').textContent = d.evName || '活動';
   const parts = [d.evDate, d.evVenue, d.evTime].filter(Boolean);
   document.getElementById('ev-meta').textContent = parts.join(' · ');
