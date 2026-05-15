@@ -8,129 +8,151 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#f7f8fc;--surface:#fff;--surface2:#f1f3f9;
-  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);
-  --text:#1a1d2e;--muted:#6b7194;
-  --blue:#2563eb;--blue-dim:#eff4ff;--blue-dk:#1d4ed8;
-  --green:#16a34a;--green-dim:#f0fdf4;
-  --amber:#d97706;--amber-dim:#fffbeb;
-  --red:#dc2626;--red-dim:#fef2f2;
-  --radius:10px;--radius-sm:6px;
+  --bg:#f7f8fc;--surface:#ffffff;--surface2:#f1f3f9;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1a1d2e;--muted:#6b7280;
+  --accent:#1a73e8;--accent-dim:rgba(26,115,232,0.08);
+  --green:#16a34a;--green-dim:rgba(22,163,74,0.08);
+  --amber:#d97706;--amber-dim:rgba(217,119,6,0.08);
+  --red:#dc2626;--radius:10px;--radius-sm:6px;
 }
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.logo{font-size:15px;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:8px;}
-.nav{display:flex;gap:4px;}
-.nl{padding:5px 13px;border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-decoration:none;}
-.nl:hover{background:var(--surface2);color:var(--text);}
-.nl.active{background:var(--blue-dim);color:var(--blue);font-weight:500;}
-.container{max-width:780px;margin:0 auto;padding:32px 16px;}
-h1{font-size:20px;font-weight:700;margin-bottom:4px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:6px 13px;border-radius:var(--radius-sm);font-size:13px;color:var(--muted);text-decoration:none;transition:all .15s;}
+.nav-link:hover{background:var(--surface2);color:var(--text);}
+.nav-link.active{background:var(--accent-dim);color:var(--accent);font-weight:500;}
+.container{max-width:820px;margin:0 auto;padding:36px 20px;}
+h1{font-size:21px;font-weight:700;margin-bottom:4px;}
 .subtitle{font-size:13px;color:var(--muted);margin-bottom:28px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
-.card-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.card-title{font-size:13px;font-weight:700;color:var(--text);}
-.card-body{padding:18px;}
-label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
-input,textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:8px 11px;font-size:13px;font-family:inherit;transition:border-color .15s;}
-input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);}
-textarea{resize:vertical;min-height:72px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface);}
+.card-icon{font-size:18px;}
+.card-title{font-size:14px;font-weight:600;}
+.card-body{padding:18px 20px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.03em;}
+input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:9px 12px;font-size:14px;font-family:inherit;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+textarea{resize:vertical;min-height:70px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 .full{grid-column:1/-1;}
-.mt{margin-top:12px;}
-.flex{display:flex;align-items:center;gap:8px;}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{background:var(--blue);color:#fff;}
-.btn-primary:hover{background:var(--blue-dk);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#1557b0;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
 .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border2);}
-.btn-secondary:hover{border-color:var(--blue);color:var(--blue);}
-.btn-danger{background:var(--red-dim);color:var(--red);}
-.btn-danger:hover{background:#fecaca;}
-.btn-sm{padding:5px 10px;font-size:12px;}
-.notice{background:var(--blue-dim);border:1px solid #bfdbfe;border-radius:var(--radius);padding:12px 15px;font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px;}
-.notice strong{color:var(--blue);}
-.steps{counter-reset:step;}
-.step{display:flex;gap:12px;margin-bottom:14px;}
-.step-n{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-.step-body .step-title{font-size:13px;font-weight:600;margin-bottom:3px;}
-.step-body .step-desc{font-size:12px;color:var(--muted);line-height:1.6;}
-code{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:12px;font-family:monospace;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:rgba(220,38,38,.08);color:var(--red);}
+.btn-danger:hover{background:rgba(220,38,38,.14);}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.mt{margin-top:12px;}
+.flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.notice{background:var(--accent-dim);border:1px solid rgba(26,115,232,.2);border-radius:var(--radius);padding:13px 16px;font-size:13px;line-height:1.7;margin-bottom:16px;}
+.notice strong{color:var(--accent);}
+.step{display:flex;gap:12px;margin-bottom:13px;}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.step-desc a{color:var(--accent);}
+.code{font-family:'Courier New',monospace;background:#1e1e2e;color:#7ecfff;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-all;margin-top:8px;}
 .sep{height:1px;background:var(--border);margin:14px 0;}
-.vip-table{width:100%;border-collapse:collapse;font-size:13px;}
-.vip-table th{font-size:11px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;}
-.vip-table td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.vip-table{width:100%;border-collapse:collapse;}
+.vip-table th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.vip-table td{padding:10px 10px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
 .vip-table tr:last-child td{border-bottom:none;}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;}
 .badge-vip{background:var(--amber-dim);color:var(--amber);}
-.badge-normal{background:var(--surface2);color:var(--muted);}
-.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
-.flash{display:none;font-size:12px;}
-.flash-ok{color:var(--green);}
-.flash-err{color:var(--red);}
+.badge-normal{background:var(--accent-dim);color:var(--accent);}
+.avatar{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.flash{color:var(--green);font-size:13px;display:none;}
+.error-msg{color:var(--red);font-size:13px;display:none;}
 .quick-links{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.ql-card{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--text);transition:border-color .15s;display:block;}
-.ql-card:hover{border-color:var(--blue);}
-.ql-icon{font-size:22px;margin-bottom:6px;}
-.ql-name{font-size:13px;font-weight:600;margin-bottom:3px;}
-.ql-desc{font-size:12px;color:var(--muted);}
+.quick-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--text);transition:border-color .15s;display:block;}
+.quick-card:hover{border-color:var(--accent);}
+.quick-card .icon{font-size:22px;margin-bottom:7px;}
+.quick-card .qc-title{font-size:14px;font-weight:600;}
+.quick-card .qc-desc{font-size:12px;color:var(--muted);margin-top:3px;}
 </style>
 </head>
 <body>
+
 <div class="topbar">
-  <div class="logo">📋 VIP 報到系統</div>
-  <div class="nav">
-    <a href="00-setup.html" class="nl active">⚙ 設定</a>
-    <a href="01-checkin.html" class="nl">📋 報到區</a>
-    <a href="02-stage.html" class="nl">🎤 舞台看板</a>
+  <div class="logo"><div class="logo-icon">✦</div>貴賓報到系統</div>
+  <div class="nav-links">
+    <a href="00-setup.html" class="nav-link active">⚙ 設定</a>
+    <a href="01-checkin.html" class="nav-link">📋 報到區</a>
+    <a href="02-stage.html" class="nav-link">🎤 舞台看板</a>
   </div>
 </div>
 
 <div class="container">
   <h1>活動設定</h1>
-  <p class="subtitle">請依序完成以下設定，再開啟報到區與舞台看板。</p>
+  <p class="subtitle">Google Sheets 版本 — 無需 Firebase，以 Google 帳號即可部署</p>
 
-  <!-- Step 1: Apps Script -->
+  <!-- STEP 1: Apps Script -->
   <div class="card">
-    <div class="card-header"><span>🔧</span><span class="card-title">第一步：部署 Google Apps Script</span></div>
+    <div class="card-header"><span class="card-icon">📋</span><span class="card-title">第一步：建立 Google Apps Script</span></div>
     <div class="card-body">
-      <div class="step"><div class="step-n">1</div><div class="step-body"><div class="step-title">建立 Google 試算表</div><div class="step-desc">前往 <strong>sheets.google.com</strong>，新增空白試算表，命名如「VIP報到系統」。</div></div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-body"><div class="step-title">開啟 Apps Script</div><div class="step-desc">試算表上方選單：<strong>擴充功能 → Apps Script</strong>，進入編輯器。</div></div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-body"><div class="step-title">貼入後端程式碼</div><div class="step-desc">將下載包中的 <code>Code.gs</code> 內容完整複製，貼上取代編輯器中的預設程式碼，按 <strong>Ctrl+S</strong> 儲存。</div></div></div>
-      <div class="step"><div class="step-n">4</div><div class="step-body"><div class="step-title">部署為網路應用程式</div><div class="step-desc">右上角「<strong>部署 → 新增部署作業</strong>」→ 類型選「<strong>網路應用程式</strong>」→ 執行身份「<strong>我自己</strong>」→ 誰可以存取「<strong>所有人</strong>」→ 點「<strong>部署</strong>」→ 複製顯示的 URL。</div></div></div>
+      <div class="notice">
+        <strong>只需做一次。</strong>建立完成後把網址貼入下方，之後都從此頁操作即可。
+      </div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">開啟試算表</div>
+          <div class="step-desc">前往 <a href="https://sheets.google.com" target="_blank">sheets.google.com</a>，建立一個新的空白試算表，名稱可取為「貴賓報到系統」。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">開啟 Apps Script</div>
+          <div class="step-desc">在試算表上方選單點「擴充功能 → Apps Script」，刪除預設的 myFunction 程式碼，貼上 <strong>Code.gs</strong> 的全部內容。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">部署為網路應用程式</div>
+          <div class="step-desc">點右上角「部署 → 新增部署作業」→ 類型選「網路應用程式」→ 執行身分選「我」→ 存取權選「所有人」→ 點「部署」→ 複製網址。</div>
+        </div>
+      </div>
       <div class="sep"></div>
-      <label>網路應用程式 URL（貼入後儲存）</label>
-      <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/AKfy.../exec">
+      <label>Apps Script 部署網址（貼入後儲存）</label>
+      <input type="text" id="api-url" placeholder="https://script.google.com/macros/s/AKfyc.../exec">
       <div class="flex mt">
-        <button class="btn btn-primary" onclick="saveGasUrl()">💾 儲存 URL</button>
-        <span class="flash flash-ok" id="url-ok">✓ 已儲存</span>
-        <span class="flash flash-err" id="url-err">✗ 請輸入有效 URL</span>
+        <button class="btn btn-primary" onclick="saveApiUrl()">💾 儲存網址</button>
+        <span class="flash" id="api-saved">✓ 已儲存</span>
+        <span class="error-msg" id="api-err"></span>
       </div>
     </div>
   </div>
 
-  <!-- Step 2: Event -->
+  <!-- STEP 2: Event info -->
   <div class="card">
-    <div class="card-header"><span>📅</span><span class="card-title">第二步：活動基本資訊</span></div>
+    <div class="card-header"><span class="card-icon">📅</span><span class="card-title">第二步：活動基本資訊</span></div>
     <div class="card-body">
-      <div class="grid2">
+      <div class="form-grid">
         <div><label>活動名稱</label><input id="ev-name" placeholder="北車多元展區開幕典禮"></div>
         <div><label>活動日期</label><input type="date" id="ev-date"></div>
-        <div><label>活動地點</label><input id="ev-venue" placeholder="台北車站多元展區 B1"></div>
-        <div><label>活動時間</label><input id="ev-time" placeholder="10:00 — 12:00"></div>
+        <div><label>地點</label><input id="ev-venue" placeholder="台北車站多元展區 B1"></div>
+        <div><label>時間</label><input id="ev-time" placeholder="10:00 — 12:00"></div>
       </div>
       <div class="flex mt">
-        <button class="btn btn-secondary" onclick="saveEventLocal()">暫存</button>
-        <span class="flash flash-ok" id="ev-ok">✓ 已暫存</span>
+        <button class="btn btn-secondary" onclick="saveEventInfo()">💾 儲存</button>
+        <span class="flash" id="ev-saved">✓ 已儲存</span>
       </div>
     </div>
   </div>
 
-  <!-- Step 3: VIP list -->
+  <!-- STEP 3: VIP list -->
   <div class="card">
-    <div class="card-header"><span>👥</span><span class="card-title">第三步：建立貴賓名單</span></div>
+    <div class="card-header"><span class="card-icon">👥</span><span class="card-title">第三步：建立貴賓名單</span></div>
     <div class="card-body">
-      <div class="grid3" style="margin-bottom:12px;">
+      <div class="form-grid-3" style="margin-bottom:12px;">
         <div><label>姓名</label><input id="add-name" placeholder="林○○"></div>
         <div><label>職稱 / 單位</label><input id="add-title" placeholder="行政院長"></div>
         <div><label>等級</label>
@@ -139,34 +161,34 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:4px
             <option value="normal">一般貴賓</option>
           </select>
         </div>
-        <div class="full"><label>備註</label><input id="add-note" placeholder="需停車位 / 輪椅 / 提前通報…"></div>
+        <div class="full"><label>備註</label><input id="add-note" placeholder="需停車位 / 輪椅 / 座位安排"></div>
       </div>
-      <button class="btn btn-secondary" onclick="addVip()">＋ 新增</button>
+      <button class="btn btn-secondary" onclick="addVip()">＋ 新增貴賓</button>
       <div class="sep"></div>
-      <div id="vip-container"><div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center;">尚未新增貴賓</div></div>
-      <div id="vip-actions" style="display:none;" class="flex mt">
-        <button class="btn btn-primary" onclick="pushToSheets()">🚀 發布至 Google Sheets</button>
+      <div id="vip-container"><div style="color:var(--muted);font-size:13px;padding:12px 0 4px;">尚未新增貴賓</div></div>
+      <div id="publish-row" class="flex mt" style="display:none!important;">
+        <button class="btn btn-primary" id="publish-btn" onclick="publishToSheets()">🚀 發布至 Google Sheets</button>
         <button class="btn btn-danger btn-sm" onclick="clearVips()">清除全部</button>
-        <span class="flash flash-ok" id="push-ok">✓ 已發布！可開啟報到區</span>
-        <span class="flash flash-err" id="push-err"></span>
+        <span class="flash" id="pub-saved">✓ 發布成功！可開啟報到區與舞台看板</span>
+        <span class="error-msg" id="pub-err"></span>
       </div>
     </div>
   </div>
 
   <!-- Quick links -->
   <div class="card">
-    <div class="card-header"><span>🚀</span><span class="card-title">開啟各端介面</span></div>
+    <div class="card-header"><span class="card-icon">🚀</span><span class="card-title">開啟各端介面</span></div>
     <div class="card-body">
       <div class="quick-links">
-        <a href="01-checkin.html" class="ql-card">
-          <div class="ql-icon">📋</div>
-          <div class="ql-name">報到區</div>
-          <div class="ql-desc">工作人員點選確認到場</div>
+        <a href="01-checkin.html" class="quick-card">
+          <div class="icon">📋</div>
+          <div class="qc-title">報到區介面</div>
+          <div class="qc-desc">工作人員端，點選確認到場</div>
         </a>
-        <a href="02-stage.html" class="ql-card">
-          <div class="ql-icon">🎤</div>
-          <div class="ql-name">舞台看板</div>
-          <div class="ql-desc">即時顯示到場狀況</div>
+        <a href="02-stage.html" class="quick-card">
+          <div class="icon">🎤</div>
+          <div class="qc-title">舞台看板</div>
+          <div class="qc-desc">即時顯示到場貴賓動態</div>
         </a>
       </div>
     </div>
@@ -174,96 +196,118 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:4px
 </div>
 
 <script>
-const KEY = 'vip_sheets_cfg';
+const KEY = 'vip_gs_config';
 let vips = [];
-const COLORS = ['#2563eb','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
+const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
 
 function load() {
   const d = getStored();
-  if (d.gasUrl) document.getElementById('gas-url').value = d.gasUrl;
-  if (d.evName)  document.getElementById('ev-name').value  = d.evName;
-  if (d.evDate)  document.getElementById('ev-date').value  = d.evDate;
-  if (d.evVenue) document.getElementById('ev-venue').value = d.evVenue;
-  if (d.evTime)  document.getElementById('ev-time').value  = d.evTime;
-  if (d.vips)    { vips = d.vips; renderTable(); }
+  if (d.apiUrl)   document.getElementById('api-url').value = d.apiUrl;
+  if (d.evName)   document.getElementById('ev-name').value = d.evName;
+  if (d.evDate)   document.getElementById('ev-date').value = d.evDate;
+  if (d.evVenue)  document.getElementById('ev-venue').value = d.evVenue;
+  if (d.evTime)   document.getElementById('ev-time').value = d.evTime;
+  if (d.vips)     { vips = d.vips; renderTable(); }
+  document.getElementById('ev-date').value = document.getElementById('ev-date').value || new Date().toISOString().split('T')[0];
 }
 
-function saveGasUrl() {
-  const v = document.getElementById('gas-url').value.trim();
-  if (!v.startsWith('https://script.google.com')) { flash('url-err'); return; }
-  const d = getStored(); d.gasUrl = v; save(d); flash('url-ok');
+function saveApiUrl() {
+  const url = document.getElementById('api-url').value.trim();
+  if (!url.includes('script.google.com')) { showErr('api-err','請貼入正確的 Apps Script 網址'); return; }
+  patch({ apiUrl: url }); flash('api-saved');
 }
-function saveEventLocal() {
-  const d = getStored();
-  d.evName  = document.getElementById('ev-name').value;
-  d.evDate  = document.getElementById('ev-date').value;
-  d.evVenue = document.getElementById('ev-venue').value;
-  d.evTime  = document.getElementById('ev-time').value;
-  save(d); flash('ev-ok');
+
+function saveEventInfo() {
+  patch({
+    evName:  document.getElementById('ev-name').value,
+    evDate:  document.getElementById('ev-date').value,
+    evVenue: document.getElementById('ev-venue').value,
+    evTime:  document.getElementById('ev-time').value,
+  });
+  flash('ev-saved');
 }
 
 function addVip() {
-  const name = document.getElementById('add-name').value.trim();
+  const name  = document.getElementById('add-name').value.trim();
   const title = document.getElementById('add-title').value.trim();
   if (!name || !title) { alert('請填寫姓名與職稱'); return; }
-  vips.push({ id: Date.now(), name, title,
+  vips.push({
+    id:       Date.now(),
+    name, title,
     priority: document.getElementById('add-priority').value,
-    note: document.getElementById('add-note').value.trim() });
+    note:     document.getElementById('add-note').value.trim(),
+  });
   ['add-name','add-title','add-note'].forEach(id => document.getElementById(id).value = '');
-  const d = getStored(); d.vips = vips; save(d);
   renderTable();
+  patch({ vips });
 }
-function removeVip(id) { vips = vips.filter(v=>v.id!==id); const d=getStored();d.vips=vips;save(d);renderTable(); }
-function clearVips() { if(!confirm('確定清除？'))return; vips=[]; const d=getStored();d.vips=[];save(d);renderTable(); }
+
+function removeVip(id) {
+  vips = vips.filter(v => v.id !== id);
+  renderTable();
+  patch({ vips });
+}
+
+function clearVips() {
+  if (!confirm('確定清除全部貴賓？')) return;
+  vips = []; renderTable(); patch({ vips });
+}
 
 function renderTable() {
   const c = document.getElementById('vip-container');
-  const a = document.getElementById('vip-actions');
+  const row = document.getElementById('publish-row');
   if (!vips.length) {
-    c.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center;">尚未新增貴賓</div>';
-    a.style.display='none'; return;
+    c.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0 4px;">尚未新增貴賓</div>';
+    row.style.display = 'none';
+    return;
   }
-  a.style.display='flex';
-  c.innerHTML=`<table class="vip-table"><thead><tr><th>#</th><th>姓名</th><th>職稱</th><th>等級</th><th>備註</th><th></th></tr></thead><tbody>
-  ${vips.map((v,i)=>{
-    const c2=COLORS[i%COLORS.length];
-    return `<tr><td><div class="av" style="background:${c2}18;color:${c2}">${v.name.charAt(0)}</div></td>
-    <td style="font-weight:500">${v.name}</td><td style="color:var(--muted)">${v.title}</td>
-    <td><span class="badge ${v.priority==='vip'?'badge-vip':'badge-normal'}">${v.priority==='vip'?'★ 主要':'一般'}</span></td>
-    <td style="color:var(--muted);font-size:12px">${v.note||'—'}</td>
-    <td><button class="btn btn-danger btn-sm" onclick="removeVip(${v.id})">✕</button></td></tr>`;
-  }).join('')}</tbody></table>`;
+  row.style.removeProperty('display');
+  c.innerHTML = `<table class="vip-table">
+    <thead><tr><th>#</th><th>姓名</th><th>職稱/單位</th><th>等級</th><th>備註</th><th></th></tr></thead>
+    <tbody>${vips.map((v,i)=>{
+      const c2 = COLORS[i%COLORS.length];
+      return `<tr>
+        <td><div class="avatar" style="background:${c2}18;color:${c2}">${v.name.charAt(0)}</div></td>
+        <td style="font-weight:500">${v.name}</td>
+        <td style="color:var(--muted)">${v.title}</td>
+        <td><span class="badge ${v.priority==='vip'?'badge-vip':'badge-normal'}">${v.priority==='vip'?'★ 主要':'一般'}</span></td>
+        <td style="color:var(--muted);font-size:12px">${v.note||'—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeVip(${v.id})">✕</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
 }
 
-async function pushToSheets() {
+async function publishToSheets() {
   const d = getStored();
-  if (!d.gasUrl) { alert('請先儲存 Apps Script URL'); return; }
-  if (!vips.length) { alert('請先新增貴賓'); return; }
-  const btn = event.target; btn.disabled=true; btn.textContent='發布中…';
+  if (!d.apiUrl) { showErr('pub-err','請先儲存 Apps Script 網址'); return; }
+  if (!vips.length) { showErr('pub-err','請先新增貴賓'); return; }
+  const btn = document.getElementById('publish-btn');
+  btn.disabled = true; btn.textContent = '發布中...';
   try {
-    // Apps Script 在 file:// 環境下只允許 GET，改用 GET + payload 參數
-    const payload = JSON.stringify({
-      action: 'init',
-      event: { eventName:d.evName, eventDate:d.evDate, eventVenue:d.evVenue, eventTime:d.evTime },
-      vips
+    const res = await fetch(d.apiUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'init',
+        eventInfo: { name: d.evName, date: d.evDate, venue: d.evVenue, time: d.evTime },
+        vips,
+      }),
     });
-    const url = d.gasUrl + '?payload=' + encodeURIComponent(payload);
-    const res = await fetch(url, { redirect: 'follow' });
     const json = await res.json();
-    if (json.ok) flash('push-ok');
-    else { document.getElementById('push-err').textContent='✗ '+json.error; flash('push-err'); }
+    if (!json.ok) throw new Error(json.error || '未知錯誤');
+    flash('pub-saved');
   } catch(e) {
-    document.getElementById('push-err').textContent='✗ 連線失敗：'+e.message; flash('push-err');
+    showErr('pub-err','發布失敗：' + e.message);
   }
-  btn.disabled=false; btn.textContent='🚀 發布至 Google Sheets';
+  btn.disabled = false; btn.textContent = '🚀 發布至 Google Sheets';
 }
 
-function getStored() { try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(_){return{};} }
-function save(d) { localStorage.setItem(KEY,JSON.stringify(d)); }
+function getStored() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+function patch(obj) { localStorage.setItem(KEY, JSON.stringify({ ...getStored(), ...obj })); }
 function flash(id) { const el=document.getElementById(id); el.style.display='inline'; setTimeout(()=>el.style.display='none',3000); }
+function showErr(id,msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='inline'; setTimeout(()=>el.style.display='none',5000); }
 
 load();
-document.getElementById('ev-date').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
