@@ -131,7 +131,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <script>
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxDCimCeMgtCpvikiWxS_SITNKWhRMyI-5LEh2rfhxQiN16l4wz4Fi_-fc3uC6b49lvEg/exec?action=all';
+const HARDCODED_API_URL = '';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -150,7 +150,7 @@ function init() {
 
 async function loadAll() {
   try {
-    const res = await fetch(apiUrl + '?action=all');
+    const res = await fetch(apiUrl + '?action=all&t=' + Date.now());
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     data.vips.forEach((v, i) => { vips[v.id] = v; colorMap[v.id] = COLORS[i % COLORS.length]; });
@@ -189,7 +189,7 @@ async function doCheckin(id) {
   const now = new Date();
   const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   try {
-    const res = await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'checkin', id, time }) });
+    const res = await fetch(apiUrl + '?action=checkin&id=' + encodeURIComponent(id) + '&time=' + encodeURIComponent(time));
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     vips[id].checked = true; vips[id].time = time;
@@ -201,7 +201,7 @@ async function doCheckin(id) {
 async function undoCheckin(id) {
   if (!confirm('確定撤銷 ' + vips[id].name + ' 的報到？')) return;
   try {
-    const res = await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'undo', id }) });
+    const res = await fetch(apiUrl + '?action=undo&id=' + encodeURIComponent(id));
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     vips[id].checked = false; vips[id].time = '';
@@ -216,7 +216,7 @@ async function sendNote() {
   const now = new Date();
   const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   try {
-    await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'note', text, from:'報到區', time }) });
+    await fetch(apiUrl + '?action=note&text=' + encodeURIComponent(text) + '&from=' + encodeURIComponent('報到區') + '&time=' + encodeURIComponent(time));
     document.getElementById('my-note').value = '';
     toast('備註已傳送');
   } catch(e) {}
