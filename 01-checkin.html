@@ -2,246 +2,287 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>報到區 — 工作人員</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg:#f7f8fc;--surface:#fff;--surface2:#f1f3f9;
-  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);
-  --text:#1a1d2e;--muted:#6b7194;
-  --blue:#2563eb;--blue-dim:#eff4ff;
-  --green:#16a34a;--green-dim:#f0fdf4;--green-border:#bbf7d0;
-  --amber:#d97706;--amber-dim:#fffbeb;
-  --red:#dc2626;--red-dim:#fef2f2;
-  --radius:10px;--radius-sm:6px;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1a1d2e;--muted:#6b7280;
+  --accent:#1a73e8;--accent-dim:rgba(26,115,232,0.08);
+  --green:#16a34a;--green-dim:rgba(22,163,74,0.08);
+  --amber:#d97706;--red:#dc2626;--radius:10px;--radius-sm:6px;
 }
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.logo{font-size:14px;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:7px;}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-.nav{display:flex;gap:3px;}
-.nl{padding:5px 11px;border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-decoration:none;}
-.nl:hover{background:var(--surface2);}
-.nl.active{background:var(--green-dim);color:var(--green);font-weight:600;}
-.container{max-width:640px;margin:0 auto;padding:20px 14px 70px;}
-.ev-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 18px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.logo{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.65)}}
+.nav-links{display:flex;gap:3px;}
+.nav-link{padding:5px 11px;border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-decoration:none;}
+.nav-link:hover{background:var(--surface2);}
+.nav-link.active{background:var(--green-dim);color:var(--green);font-weight:500;}
+.wrap{max-width:640px;margin:0 auto;padding:20px 14px 80px;}
+.ev-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .ev-name{font-size:15px;font-weight:700;}
 .ev-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-.clock{font-size:13px;font-weight:500;color:var(--blue);font-variant-numeric:tabular-nums;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;text-align:center;}
-.stat-num{font-size:24px;font-weight:700;}
-.stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
-.search-wrap{position:relative;margin-bottom:14px;}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
-.search-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:9px 12px 9px 32px;font-size:14px;font-family:inherit;}
-.search-input:focus{outline:none;border-color:var(--blue);}
-.sec-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:9px;}
-.vip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;transition:border-color .2s;}
-.vip-card.checked{border-color:var(--green-border);background:var(--green-dim);}
-.vip-card.is-vip{border-left:3px solid var(--amber);padding-left:11px;}
-.vip-card.is-vip.checked{border-left:3px solid var(--green);}
-.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.stat-num{font-size:26px;font-weight:700;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.search-wrap{position:relative;margin-bottom:13px;}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 12px 10px 34px;font-size:14px;font-family:inherit;}
+.search-input:focus{outline:none;border-color:var(--accent);}
+.sec-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+.vcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:border-color .2s;}
+.vcard.checked{border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.02);}
+.vcard.priority{border-left:3px solid var(--amber);}
+.vcard.priority.checked{border-left:3px solid var(--green);}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
 .vi{flex:1;min-width:0;}
-.vname{font-size:14px;font-weight:600;}
+.vname{font-size:15px;font-weight:600;}
 .vtitle{font-size:12px;color:var(--muted);margin-top:1px;}
 .vnote{font-size:11px;color:var(--amber);margin-top:2px;}
-.vtime{font-size:12px;color:var(--green);font-weight:600;margin-top:3px;}
-.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;margin-right:3px;}
-.badge-vip{background:var(--amber-dim);color:var(--amber);}
-.btn-ci{padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:none;white-space:nowrap;}
-.btn-ci.pending{background:var(--blue);color:#fff;}
-.btn-ci.pending:hover{background:#1d4ed8;}
-.btn-ci.done{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);cursor:default;}
-.btn-undo{display:block;margin-top:5px;padding:4px 9px;font-size:11px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;width:100%;}
+.vtime{font-size:12px;color:var(--green);font-weight:500;margin-top:3px;}
+.badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.badge-vip{background:rgba(217,119,6,.1);color:var(--amber);}
+.btn-checkin{padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:none;white-space:nowrap;transition:all .15s;}
+.btn-checkin.pending{background:var(--accent);color:#fff;}
+.btn-checkin.pending:hover{background:#1557b0;}
+.btn-checkin.done{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.25);cursor:default;}
+.btn-undo{display:block;margin-top:4px;padding:4px 9px;font-size:11px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;}
 .btn-undo:hover{color:var(--red);border-color:var(--red);}
-.notes-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-top:18px;}
-.notes-title{font-size:13px;font-weight:700;margin-bottom:10px;}
-.note-item{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:7px;font-size:13px;border-left:3px solid var(--blue);}
-.note-meta{font-size:10px;color:var(--muted);margin-top:2px;}
-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:8px 10px;font-size:12px;font-family:inherit;resize:none;}
-textarea:focus{outline:none;border-color:var(--blue);}
-.btn-send{margin-top:7px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--blue-dim);border:1px solid #bfdbfe;color:var(--blue);cursor:pointer;font-family:inherit;}
-.btn-send:hover{background:#dbeafe;}
-.statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:9px 16px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
+.notes-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.notes-title{font-size:13px;font-weight:600;margin-bottom:10px;}
+.note-item{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 11px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
+.note-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:8px 11px;font-size:13px;font-family:inherit;resize:none;}
+textarea:focus{outline:none;border-color:var(--accent);}
+.btn-sm{padding:7px 13px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text);}
+.btn-sm:hover{background:var(--surface2);}
+.statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
-.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#14532d;border:1px solid #16a34a;color:#86efac;padding:9px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;display:none;z-index:99;white-space:nowrap;}
-.toast.show{display:block;animation:drop .25s ease;}
-@keyframes drop{from{transform:translateX(-50%) translateY(-6px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
-.err-banner{background:var(--red-dim);border:1px solid #fecaca;border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
-#no-results{display:none;text-align:center;color:var(--muted);padding:32px 0;font-size:14px;}
+.toast{position:fixed;top:62px;left:50%;transform:translateX(-50%);background:#14532d;border:1px solid rgba(22,163,74,.4);color:#86efac;padding:9px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;display:none;z-index:100;white-space:nowrap;}
+.toast.show{display:block;animation:sd .25s ease;}
+@keyframes sd{from{transform:translateX(-50%) translateY(-6px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+.error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+#no-results{display:none;text-align:center;color:var(--muted);font-size:14px;padding:36px 0;}
 </style>
 </head>
 <body>
+
 <div class="topbar">
-  <div class="logo"><div class="live-dot"></div>報到區</div>
-  <div class="nav">
-    <a href="00-setup.html" class="nl">⚙ 設定</a>
-    <a href="01-checkin.html" class="nl active">📋 報到區</a>
-    <a href="02-stage.html" class="nl">🎤 舞台看板</a>
+  <div class="logo"><div class="pulse"></div>報到區</div>
+  <div class="nav-links">
+    <a href="00-setup.html" class="nav-link">⚙ 設定</a>
+    <a href="01-checkin.html" class="nav-link active">📋 報到區</a>
+    <a href="02-stage.html" class="nav-link">🎤 舞台看板</a>
   </div>
 </div>
 
-<div class="container">
-  <div id="err-banner" class="err-banner"></div>
+<div class="wrap">
+  <div id="err-banner" class="error-banner"></div>
+
   <div class="ev-banner">
-    <div><div class="ev-name" id="ev-name">載入中...</div><div class="ev-meta" id="ev-meta"></div></div>
-    <div class="clock" id="clock"></div>
+    <div>
+      <div class="ev-name" id="ev-name">載入中...</div>
+      <div class="ev-meta" id="ev-meta"></div>
+    </div>
+    <div id="clock" style="font-size:13px;color:var(--muted);text-align:right;"></div>
   </div>
+
   <div class="stats">
-    <div class="stat"><div class="stat-num" id="s-total" style="color:var(--blue)">—</div><div class="stat-label">受邀</div></div>
-    <div class="stat"><div class="stat-num" id="s-checked" style="color:var(--green)">0</div><div class="stat-label">已報到</div></div>
-    <div class="stat"><div class="stat-num" id="s-pending" style="color:var(--amber)">—</div><div class="stat-label">待報到</div></div>
+    <div class="stat"><div class="stat-num" id="s-total" style="color:var(--accent)">—</div><div class="stat-lbl">受邀</div></div>
+    <div class="stat"><div class="stat-num" id="s-done" style="color:var(--green)">0</div><div class="stat-lbl">已報到</div></div>
+    <div class="stat"><div class="stat-num" id="s-pend" style="color:var(--amber)">—</div><div class="stat-lbl">待到</div></div>
   </div>
+
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input class="search-input" id="search" placeholder="搜尋姓名或職稱…" oninput="render()">
+    <input type="text" class="search-input" id="search" placeholder="搜尋姓名或職稱…" oninput="renderCards()">
   </div>
-  <div class="sec-label" id="lbl-vip">主要貴賓</div>
-  <div id="list-vip"></div>
-  <div class="sec-label" style="margin-top:14px;" id="lbl-normal">一般貴賓</div>
-  <div id="list-normal"></div>
-  <div id="no-results">查無符合貴賓</div>
 
-  <div class="notes-card">
-    <div class="notes-title">📨 備註訊息</div>
+  <div class="sec-label">主要貴賓</div>
+  <div id="list-vip"></div>
+  <div class="sec-label" style="margin-top:14px;">一般貴賓</div>
+  <div id="list-normal"></div>
+  <div id="no-results">查無結果</div>
+
+  <div class="notes-box">
+    <div class="notes-title">📨 舞台端備註</div>
     <div id="notes-list"><div style="color:var(--muted);font-size:13px;">尚無備註</div></div>
     <div style="margin-top:10px;">
       <textarea id="my-note" rows="2" placeholder="傳送備註給舞台端…"></textarea>
-      <button class="btn-send" onclick="sendNote()">📤 傳送</button>
+      <div style="margin-top:7px;"><button class="btn-sm" onclick="sendNote()">📤 傳送備註</button></div>
     </div>
   </div>
 </div>
 
 <div class="statusbar">
-  <span id="conn" class="conn-ok">● 同步中</span>
+  <span id="conn" class="conn-ok">● 連線中</span>
   <span id="last-upd"></span>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY = 'vip_sheets_cfg';
-const COLORS = ['#2563eb','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
-let vips = [], gasUrl = '', colorMap = {}, polling = null;
+const KEY = 'vip_gs_config';
+const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
+let vips = {}, colorMap = {}, apiUrl = '';
+let pollTimer = null;
 
 function init() {
-  const d = JSON.parse(localStorage.getItem(KEY)||'{}');
-  gasUrl = d.gasUrl || '';
+  const d = stored();
+  apiUrl = d.apiUrl || '';
+  if (!apiUrl) { showErr('尚未設定 Apps Script 網址，請至 <a href="00-setup.html">設定頁</a> 完成設定。'); return; }
   document.getElementById('ev-name').textContent = d.evName || '活動';
-  const parts = [d.evDate,d.evVenue,d.evTime].filter(Boolean);
+  const parts = [d.evDate, d.evVenue, d.evTime].filter(Boolean);
   document.getElementById('ev-meta').textContent = parts.join(' · ');
-  if (!gasUrl) { showErr('尚未設定 Apps Script URL，請至 <a href="00-setup.html" style="color:var(--blue)">設定頁</a> 完成設定。'); return; }
-  fetchData();
-  polling = setInterval(fetchData, 5000);
+  loadAll();
 }
 
-async function fetchData() {
+async function loadAll() {
   try {
-    const res = await fetch(gasUrl + '?action=all', { redirect:'follow' });
+    const res = await fetch(apiUrl + '?action=all');
     const data = await res.json();
-    if (data.vips) { vips = data.vips; buildColorMap(); render(); updateStats(); }
-    if (data.notes) renderNotes(data.notes);
+    if (data.error) throw new Error(data.error);
+    data.vips.forEach((v, i) => { vips[v.id] = v; colorMap[v.id] = COLORS[i % COLORS.length]; });
+    renderCards();
+    updateStats();
+    renderNotes(data.notes);
     setConn(true);
+  } catch(e) {
+    showErr('載入失敗：' + e.message);
+    setConn(false);
+  }
+  pollTimer = setInterval(poll, 5000);
+}
+
+async function poll() {
+  try {
+    const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
+    const data = await res.json();
+    if (data.error) return;
+    let changed = false;
+    Object.entries(data.checkins).forEach(([id, info]) => {
+      if (vips[id] && (vips[id].checked !== info.checked || vips[id].time !== info.time)) {
+        vips[id].checked = info.checked;
+        vips[id].time = info.time;
+        changed = true;
+      }
+    });
+    if (changed) { renderCards(); updateStats(); }
+    renderNotes(data.notes);
+    setConn(true);
+    setUpd();
   } catch(e) { setConn(false); }
 }
 
-function buildColorMap() {
-  vips.forEach((v,i) => { if (!colorMap[v.id]) colorMap[v.id] = COLORS[i%COLORS.length]; });
+async function doCheckin(id) {
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  try {
+    const res = await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'checkin', id, time }) });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+    vips[id].checked = true; vips[id].time = time;
+    renderCards(); updateStats();
+    toast('✓ ' + vips[id].name + ' 報到 ' + time);
+  } catch(e) { alert('報到失敗：' + e.message); }
 }
 
-function render() {
+async function undoCheckin(id) {
+  if (!confirm('確定撤銷 ' + vips[id].name + ' 的報到？')) return;
+  try {
+    const res = await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'undo', id }) });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+    vips[id].checked = false; vips[id].time = '';
+    renderCards(); updateStats();
+    toast('已撤銷報到');
+  } catch(e) { alert('撤銷失敗：' + e.message); }
+}
+
+async function sendNote() {
+  const text = document.getElementById('my-note').value.trim();
+  if (!text) return;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  try {
+    await fetch(apiUrl, { method:'POST', body: JSON.stringify({ action:'note', text, from:'報到區', time }) });
+    document.getElementById('my-note').value = '';
+    toast('備註已傳送');
+  } catch(e) {}
+}
+
+function renderCards() {
   const q = document.getElementById('search').value.toLowerCase();
-  const pri = vips.filter(v => v.priority==='vip' && match(v,q));
-  const nor = vips.filter(v => v.priority!=='vip' && match(v,q));
-  document.getElementById('list-vip').innerHTML    = pri.map(card).join('');
-  document.getElementById('list-normal').innerHTML = nor.map(card).join('');
-  document.getElementById('no-results').style.display = (pri.length+nor.length===0&&q) ? 'block':'none';
+  const pList = [], nList = [];
+  Object.values(vips).forEach(v => {
+    if (q && !v.name.toLowerCase().includes(q) && !v.title.toLowerCase().includes(q)) return;
+    (v.priority === 'vip' ? pList : nList).push(v);
+  });
+  document.getElementById('list-vip').innerHTML = pList.map(card).join('');
+  document.getElementById('list-normal').innerHTML = nList.map(card).join('');
+  document.getElementById('no-results').style.display = (pList.length + nList.length === 0) ? 'block' : 'none';
 }
-
-function match(v,q) { return !q || v.name.toLowerCase().includes(q) || v.title.toLowerCase().includes(q); }
 
 function card(v) {
-  const c = colorMap[v.id]||'#2563eb';
-  const ci = v.checkedIn==='是';
-  return `<div class="vip-card ${ci?'checked':''} ${v.priority==='vip'?'is-vip':''}">
-    <div class="av" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>
+  const c = colorMap[v.id] || '#1a73e8';
+  return `<div class="vcard ${v.checked?'checked':''} ${v.priority==='vip'?'priority':''}">
+    <div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>
     <div class="vi">
-      <div class="vname">${v.name}${v.priority==='vip'?' <span class="badge badge-vip">★ 主要</span>':''}</div>
+      <div class="vname">${v.name} ${v.priority==='vip'?'<span class="badge badge-vip">★ 主要</span>':''}</div>
       <div class="vtitle">${v.title}</div>
       ${v.note?`<div class="vnote">📌 ${v.note}</div>`:''}
-      ${ci?`<div class="vtime">✓ ${v.checkinTime} 報到</div>`:''}
+      ${v.checked?`<div class="vtime">✓ ${v.time} 報到</div>`:''}
     </div>
-    <div style="flex-shrink:0;text-align:center;">
-      ${ci
-        ? `<div class="btn-ci done">✓ 已報到</div><button class="btn-undo" onclick="doCheckin('${v.id}',true)">撤銷</button>`
-        : `<button class="btn-ci pending" onclick="doCheckin('${v.id}',false)">報到</button>`
-      }
+    <div style="text-align:center;flex-shrink:0;">
+      ${v.checked
+        ? `<div class="btn-checkin done">✓ 已報到</div><button class="btn-undo" onclick="undoCheckin('${v.id}')">撤銷</button>`
+        : `<button class="btn-checkin pending" onclick="doCheckin('${v.id}')">報到</button>`}
     </div>
   </div>`;
 }
 
-async function doCheckin(id, undo) {
-  if (!gasUrl) return;
-  const v = vips.find(x=>String(x.id)===String(id));
-  try {
-    const payload = encodeURIComponent(JSON.stringify({ action:'checkin', vipId:id, undo }));
-    const res = await fetch(gasUrl + '?payload=' + payload, { redirect:'follow' });
-    const d = await res.json();
-    if (d.ok) {
-      showToast(undo ? '已撤銷報到' : `✓ ${v?.name||''} 已報到`);
-      await fetchData();
-    }
-  } catch(e) { showToast('操作失敗，請重試'); }
+function renderNotes(notes) {
+  const el = document.getElementById('notes-list');
+  if (!notes || !notes.length) { el.innerHTML = '<div style="color:var(--muted);font-size:13px;">尚無備註</div>'; return; }
+  el.innerHTML = notes.map(n => `<div class="note-item">${n.text}<div class="note-meta">${n.from} · ${n.time}</div></div>`).join('');
 }
 
 function updateStats() {
-  const done = vips.filter(v=>v.checkedIn==='是').length;
-  document.getElementById('s-total').textContent = vips.length;
-  document.getElementById('s-checked').textContent = done;
-  document.getElementById('s-pending').textContent = vips.length - done;
-}
-
-function renderNotes(notes) {
-  const el = document.getElementById('notes-list');
-  if (!notes.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px;">尚無備註</div>'; return; }
-  el.innerHTML = notes.slice(0,8).map(n=>`<div class="note-item">${n.text}<div class="note-meta">${n.from} · ${n.time}</div></div>`).join('');
-}
-
-async function sendNote() {
-  if (!gasUrl) return;
-  const text = document.getElementById('my-note').value.trim();
-  if (!text) return;
-  try {
-    const payload = encodeURIComponent(JSON.stringify({ action:'note', text, from:'報到區' }));
-    await fetch(gasUrl + '?payload=' + payload, { redirect:'follow' });
-    document.getElementById('my-note').value = '';
-    showToast('備註已傳送');
-    await fetchData();
-  } catch(e) {}
+  const all = Object.values(vips);
+  const done = all.filter(v => v.checked).length;
+  document.getElementById('s-total').textContent = all.length;
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-pend').textContent = all.length - done;
 }
 
 function setConn(ok) {
   const el = document.getElementById('conn');
-  el.textContent = ok ? '● 同步中' : '● 連線中斷';
+  el.textContent = ok ? '● 連線中' : '● 連線中斷';
   el.className = ok ? 'conn-ok' : 'conn-err';
-  if (ok) {
-    const now = new Date();
-    document.getElementById('last-upd').textContent =
-      `最後更新 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  }
 }
 
-function showErr(msg) { const el=document.getElementById('err-banner'); el.innerHTML='⚠ '+msg; el.style.display='block'; }
-function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'; setTimeout(()=>t.className='toast',3000); }
-
-setInterval(()=>{
+function setUpd() {
   const now = new Date();
+  document.getElementById('last-upd').textContent =
+    `上次同步 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+}
+
+function showErr(msg) { const el = document.getElementById('err-banner'); el.innerHTML = '⚠ ' + msg; el.style.display = 'block'; }
+function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'; setTimeout(()=>t.className='toast',3000); }
+function stored() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+
+// Clock
+setInterval(() => {
+  const n = new Date();
   document.getElementById('clock').textContent =
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
 }, 1000);
 
 init();
