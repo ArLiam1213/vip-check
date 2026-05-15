@@ -8,18 +8,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#070910;--surface:#111420;--surface2:#181c2f;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
-  --text:#eef0f8;--muted:#6b7494;
-  --accent:#4f8fff;--accent-dim:rgba(79,143,255,0.1);
-  --green:#2ecc8a;--green-dim:rgba(46,204,138,0.1);
-  --amber:#ffb830;--amber-dim:rgba(255,184,48,0.08);
-  --red:#ff5a6e;--radius:12px;--radius-sm:7px;
+  --bg:#f7f8fc;--surface:#ffffff;--surface2:#f1f3f9;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1a1d2e;--muted:#6b7280;
+  --accent:#1a73e8;--accent-dim:rgba(26,115,232,0.08);
+  --green:#16a34a;--green-dim:rgba(22,163,74,0.08);
+  --amber:#d97706;--amber-dim:rgba(217,119,6,0.08);
+  --red:#dc2626;--radius:12px;--radius-sm:7px;
 }
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.topbar{background:rgba(17,20,32,.96);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .logo{font-size:14px;font-weight:700;}
-.live{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(46,204,138,.25);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.04em;}
+.live{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(22,163,74,.3);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.04em;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:p 1.2s ease-in-out infinite;}
 @keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
 .nav-links{display:flex;gap:3px;}
@@ -34,18 +34,18 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .clock-time{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--accent);}
 .clock-date{font-size:12px;color:var(--muted);margin-top:2px;}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px;}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .stat-num{font-size:30px;font-weight:900;line-height:1;}
 .stat-bar{height:3px;background:var(--border2);border-radius:99px;margin-top:7px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.04em;}
 .grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start;}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .feed{padding:10px;}
 .acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;transition:border-color .3s;}
-.acard.fresh{border-color:rgba(46,204,138,.4);animation:si .35s ease;}
+.acard.fresh{border-color:rgba(22,163,74,.4);animation:si .35s ease;}
 @keyframes si{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
 .acard.vip{border-left:3px solid var(--amber);}
 .aa{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;}
@@ -54,11 +54,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .atitle{font-size:12px;color:var(--muted);margin-top:1px;}
 .anote{font-size:11px;color:var(--amber);margin-top:2px;}
 .am{text-align:right;flex-shrink:0;}
-.atime{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;}
+.atime{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;font-family:inherit;}
 .albl{font-size:10px;color:var(--muted);margin-top:2px;}
 .badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
-.bvip{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,184,48,.2);}
-.bnew{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,138,.2);}
+.bvip{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
+.bnew{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.2);}
 .empty{text-align:center;padding:44px 18px;color:var(--muted);font-size:14px;}
 .side{display:flex;flex-direction:column;gap:13px;}
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
@@ -70,16 +70,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .dotw{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
 .dotd{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
 .notes-body{padding:10px 13px;}
-.note{background:var(--bg);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
+.note{background:var(--surface2);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
 .note-meta{font-size:10px;color:var(--muted);margin-top:2px;}
 textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:12px;font-family:inherit;resize:none;}
 textarea:focus{outline:none;border-color:var(--accent);}
-.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(79,143,255,.3);color:var(--accent);cursor:pointer;font-family:inherit;}
-.btnsend:hover{background:rgba(79,143,255,.18);}
-.statusbar{position:fixed;bottom:0;left:0;right:0;background:rgba(7,9,16,.95);border-top:1px solid var(--border);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);}
+.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;font-family:inherit;}
+.btnsend:hover{background:rgba(26,115,232,.12);}
+.statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -1px 3px rgba(0,0,0,.05);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
-.error-banner{background:rgba(255,90,110,.08);border:1px solid rgba(255,90,110,.25);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+.error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
 </style>
 </head>
 <body>
@@ -150,7 +150,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbwq3dJjKDSmG4aam-LlNqOl_91rzP_pfEnMShComJFgEv78BA93GrySuzNAIovFv1ApYA/exec';
+const HARDCODED_API_URL = '';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
