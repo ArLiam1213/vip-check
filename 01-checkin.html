@@ -53,6 +53,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .btn-checkin.pending{background:var(--accent);color:#fff;}
 .btn-checkin.pending:hover{background:#1557b0;}
 .btn-checkin.done{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.25);cursor:default;}
+.avatar-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2);}
 .btn-undo{display:block;margin-top:4px;padding:4px 9px;font-size:11px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;}
 .btn-undo:hover{color:var(--red);border-color:var(--red);}
 .notes-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
@@ -131,7 +132,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <script>
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyvpVusP0puf0afC7t-ylKg6qkCJ_nDzR_C_QlB-elRK3V4NTocTWwzO1DdUDwXzl7CUg/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxo0gA8C-VRzG9GXL73KweCg6jR7yCKjXxu3CBFtL2xxqYg7_52a4OF0ateCSe-5XjC5A/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -185,12 +186,19 @@ async function poll() {
     let changed = false;
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (!vips[id]) return;
-      // 備註有變動也觸發重新渲染
-      const noteChanged = vips[id].note !== info.note;
-      if (vips[id].checked !== info.checked || vips[id].time !== info.time || noteChanged) {
+      // 偵測任何欄位變動（報到、時間、備註、姓名、職稱、照片）
+      if (vips[id].checked !== info.checked ||
+          vips[id].time    !== info.time    ||
+          vips[id].note    !== info.note    ||
+          vips[id].name    !== info.name    ||
+          vips[id].title   !== info.title   ||
+          vips[id].photo   !== info.photo) {
         vips[id].checked = info.checked;
         vips[id].time    = info.time;
         vips[id].note    = info.note;
+        vips[id].name    = info.name  || vips[id].name;
+        vips[id].title   = info.title || vips[id].title;
+        vips[id].photo   = info.photo !== undefined ? info.photo : vips[id].photo;
         changed = true;
       }
     });
@@ -252,8 +260,11 @@ function renderCards() {
 
 function card(v) {
   const c = colorMap[v.id] || '#1a73e8';
+  const avatarHtml = v.photo
+    ? `<img src="${v.photo}" class="avatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
+    : `<div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>`;
   return `<div class="vcard ${v.checked?'checked':''} ${v.priority==='vip'?'priority':''}">
-    <div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>
+    ${avatarHtml}
     <div class="vi">
       <div class="vname">${v.name} ${v.priority==='vip'?'<span class="badge badge-vip">★ 主要</span>':''}</div>
       <div class="vtitle">${v.title}</div>
