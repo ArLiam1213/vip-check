@@ -152,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxo0gA8C-VRzG9GXL73KweCg6jR7yCKjXxu3CBFtL2xxqYg7_52a4OF0ateCSe-5XjC5A/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxV0k4sBozfKwi9Kd2Pn0slyejfro_CTwMhG7t0ZF8pO3LBhY1gvGhQzBafc4kiWxNo/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -195,6 +195,11 @@ async function poll() {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
     const data = await res.json();
     if (data.error) return;
+    // 筆數有變動（新增或刪除）→ 重新載入完整名單
+    if (data.total !== Object.keys(vips).length) {
+      await loadAll();
+      return;
+    }
     const newChecked = new Set();
     let changed = false;
     Object.entries(data.checkins).forEach(([id, info]) => {
