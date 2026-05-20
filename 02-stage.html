@@ -60,6 +60,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .bvip{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
 .bnew{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.2);}
 .empty{text-align:center;padding:44px 18px;color:var(--muted);font-size:14px;}
+.vip-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2);}
+.pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
 .side{display:flex;flex-direction:column;gap:13px;}
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
 .pitem:last-child{border-bottom:none;}
@@ -88,8 +90,8 @@ textarea:focus{outline:none;border-color:var(--accent);}
   <div class="logo">🎤 舞台看板</div>
   <div class="live"><div class="dot"></div>LIVE</div>
   <div class="nav-links">
-  <!-- <a href="00-setup.html" class="nav-link">⚙ 設定</a>-->
-   <!--  <a href="01-checkin.html" class="nav-link">📋 報到區</a>-->
+    <a href="00-setup.html" class="nav-link">⚙ 設定</a>
+    <a href="01-checkin.html" class="nav-link">📋 報到區</a>
     <a href="02-stage.html" class="nav-link active">🎤 舞台看板</a>
   </div>
 </div>
@@ -150,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbwq3dJjKDSmG4aam-LlNqOl_91rzP_pfEnMShComJFgEv78BA93GrySuzNAIovFv1ApYA/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbztm-2mUkdyXdqsms4MfKpOC2kMhW6yGGs7fPWI22w_JEgSOXV0Vw8AIxIhhadubOWRCg/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -220,8 +222,11 @@ function renderFeed(justArrived = []) {
   el.innerHTML = arrived.slice(0,20).map(v => {
     const c = colorMap[v.id] || '#4f8fff';
     const isNew = justArrived.includes(String(v.id));
+    const photoHtml = v.photo
+      ? `<img src="${v.photo}" class="vip-photo" alt="${v.name}" onerror="this.style.display='none'">`
+      : `<div class="aa" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
     return `<div class="acard ${isNew?'fresh':''} ${v.priority==='vip'?'vip':''}">
-      <div class="aa" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>
+      ${photoHtml}
       <div class="ai">
         <div class="aname">${v.name} ${v.priority==='vip'?'<span class="badge bvip">★ 主要</span>':''} ${isNew?'<span class="badge bnew">剛到</span>':''}</div>
         <div class="atitle">${v.title}</div>
@@ -237,9 +242,12 @@ function renderPending() {
   const el = document.getElementById('pending');
   if (!pend.length) { el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; return; }
   el.innerHTML = pend.map(v => {
-    const c = colorMap[v.id] || '#4f8fff';
+    const c = colorMap[v.id] || '#1a73e8';
+    const thumbHtml = v.photo
+      ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\'>${v.name.charAt(0)}</div>'">`
+      : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
     return `<div class="pitem">
-      <div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>
+      ${thumbHtml}
       <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
       <div class="dotw"></div>
     </div>`;
@@ -260,7 +268,11 @@ function updateStats() {
 function renderNotes(notes) {
   const el = document.getElementById('notes-list');
   if (!notes || !notes.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;">尚無備註</div>'; return; }
-  el.innerHTML = notes.map(n => `<div class="note">${n.text}<div class="note-meta">${n.from} · ${n.time}</div></div>`).join('');
+  el.innerHTML = notes.map(n => {
+    const fromColor = n.from === '貴賓備註' ? '#d97706' : n.from === '舞台區' ? '#7c3aed' : '#1a73e8';
+    const timeStr = n.time ? ' · ' + n.time : '';
+    return `<div class="note"><span style="font-size:11px;font-weight:600;color:${fromColor};margin-right:6px;">[${n.from}]</span>${n.text}<div class="note-meta">${timeStr}</div></div>`;
+  }).join('');
 }
 
 async function sendNote() {
@@ -277,7 +289,13 @@ async function sendNote() {
 function updateHeader(info) {
   if (!info) return;
   document.getElementById('ev-name').textContent = info['活動名稱'] || '活動';
-  const parts = [info['日期'], info['地點'], info['時間']].filter(Boolean);
+  const rawParts = [info['日期'], info['地點'], info['時間']].filter(Boolean);
+  const parts = rawParts.map(p => {
+    const s = String(p);
+    // ISO datetime 直接取日期部分，不經 Date 物件，避免 UTC 時區偏移
+    const dateOnly = s.includes('T') ? s.split('T')[0] : s;
+    return dateOnly.replace(/-/g, '/');
+  });
   document.getElementById('ev-meta').textContent = parts.join(' · ');
 }
 
