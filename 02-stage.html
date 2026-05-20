@@ -208,11 +208,21 @@ async function poll() {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
     const data = await res.json();
     if (data.error) return;
-    // 筆數有變動（新增或刪除）→ 重新載入完整名單
-    if (data.total !== Object.keys(vips).length) {
-      await loadAll();
-      return;
-    }
+    // 有新增的 ID → 重新載入完整名單（需要取得完整欄位）
+    const incomingIds = new Set(Object.keys(data.checkins));
+    const localIds    = new Set(Object.keys(vips));
+    const hasNew      = [...incomingIds].some(id => !localIds.has(id));
+    if (hasNew) { await loadAll(); return; }
+    // 有被刪除的 ID → 立即從前端移除，不重新載入
+    let deleted = false;
+    [...localIds].forEach(id => {
+      if (!incomingIds.has(id)) {
+        delete vips[id];
+        vipOrder = vipOrder.filter(x => x !== id);
+        deleted = true;
+      }
+    });
+    if (deleted) changed = true;
     const newChecked = new Set();
     let changed = false;
     const priorityDowngrades = [];
