@@ -152,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxV0k4sBozfKwi9Kd2Pn0slyejfro_CTwMhG7t0ZF8pO3LBhY1gvGhQzBafc4kiWxNo/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbzTPCNRo1gCAgXViOmSOZOv42jc-RWfa4JDz84LDHHlwCjwgP5zQ2Y066jxOarFBjba/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -175,8 +175,17 @@ async function loadAll() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     updateHeader(data.eventInfo);
-    vipOrder = data.vips.map(v => v.id);
-    data.vips.forEach((v, i) => { vips[v.id] = v; colorMap[v.id] = COLORS[i % COLORS.length]; });
+    vipOrder = data.vips.map(v => String(v.id));
+    data.vips.forEach((v, i) => {
+      // 強制所有文字欄位為字串，防止 Sheets 回傳非字串型別
+      v.id    = String(v.id    ?? '');
+      v.name  = String(v.name  ?? '');
+      v.title = String(v.title ?? '');
+      v.note  = String(v.note  ?? '');
+      v.photo = String(v.photo ?? '');
+      vips[v.id] = v;
+      colorMap[v.id] = COLORS[i % COLORS.length];
+    });
     prevChecked = new Set(data.vips.filter(v=>v.checked).map(v=>String(v.id)));
     renderFeed();
     renderPending();
