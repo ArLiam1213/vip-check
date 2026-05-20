@@ -214,8 +214,8 @@ async function poll() {
         vips[id].checked = info.checked;
         vips[id].time    = info.time;
         vips[id].note    = info.note;
-        vips[id].name    = info.name  || vips[id].name;
-        vips[id].title   = info.title || vips[id].title;
+        vips[id].name    = String(info.name  || vips[id].name  || '');
+        vips[id].title   = String(info.title || vips[id].title || '');
         vips[id].photo   = info.photo !== undefined ? info.photo : vips[id].photo;
         changed = true;
       }
@@ -235,6 +235,8 @@ function renderFeed(justArrived = []) {
   const el = document.getElementById('feed');
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   el.innerHTML = arrived.slice(0,20).map(v => {
+    v.name  = String(v.name  || '');
+    v.title = String(v.title || '');
     const c = colorMap[v.id] || '#4f8fff';
     const isNew = justArrived.includes(String(v.id));
     const photoHtml = v.photo
@@ -257,6 +259,8 @@ function renderPending() {
   const el = document.getElementById('pending');
   if (!pend.length) { el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; return; }
   el.innerHTML = pend.map(v => {
+    v.name  = String(v.name  || '');
+    v.title = String(v.title || '');
     const c = colorMap[v.id] || '#1a73e8';
     const thumbHtml = v.photo
       ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\'>${v.name.charAt(0)}</div>'">`
