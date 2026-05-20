@@ -53,6 +53,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .btn-checkin.pending{background:var(--accent);color:#fff;}
 .btn-checkin.pending:hover{background:#1557b0;}
 .btn-checkin.done{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.25);cursor:default;}
+.priority-leaving{opacity:.6;transition:opacity 5s ease;border-left-color:var(--muted)!important;}
+.priority-leaving .vname::after{content:' → 移至一般';font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;}
 .avatar-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2);}
 .btn-undo{display:block;margin-top:4px;padding:4px 9px;font-size:11px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;}
 .btn-undo:hover{color:var(--red);border-color:var(--red);}
@@ -199,26 +201,54 @@ async function poll() {
       return;
     }
     let changed = false;
+    const priorityDowngrades = [];
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (!vips[id]) return;
+      const oldPriority = vips[id].priority;
+      const newPriority = String(info.priority || 'normal');
       if (vips[id].checked  !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
-          vips[id].priority !== info.priority  ||
+          oldPriority       !== newPriority    ||
           vips[id].photo    !== info.photo) {
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
         vips[id].note     = info.note;
-        vips[id].name     = String(info.name     || vips[id].name     || '');
-        vips[id].title    = String(info.title    || vips[id].title    || '');
-        vips[id].priority = String(info.priority || vips[id].priority || 'normal');
+        vips[id].name     = String(info.name  || vips[id].name  || '');
+        vips[id].title    = String(info.title || vips[id].title || '');
+        vips[id].priority = newPriority;
         vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
+        // 升級 VIP：立即移動（VIP 優先原則）
+        // 降級一般：記錄，稍後延遲 5 秒移動
+        if (oldPriority !== newPriority && newPriority === 'normal') {
+          priorityDowngrades.push(id);
+        }
         changed = true;
       }
     });
-    if (changed) { renderCards(); updateStats(); }
+    if (changed) {
+      // VIP 優先原則：先處理升級為 VIP 的貴賓，再處理降級的貴賓（延遲 5 秒）
+      if (priorityDowngrades.length > 0) {
+        // 降級的貴賓：先原地標記，5 秒後才移動
+        priorityDowngrades.forEach(id => {
+          vips[id]._pendingNormal = true;
+        });
+        renderCards();
+        updateStats();
+        setTimeout(() => {
+          priorityDowngrades.forEach(id => {
+            if (vips[id]) delete vips[id]._pendingNormal;
+          });
+          renderCards();
+          updateStats();
+        }, 5000);
+      } else {
+        renderCards();
+        updateStats();
+      }
+    }
     renderNotes(data.notes);
     setConn(true);
     setUpd();
@@ -267,7 +297,9 @@ function renderCards() {
   const pList = [], nList = [];
   Object.values(vips).forEach(v => {
     if (q && !v.name.toLowerCase().includes(q) && !v.title.toLowerCase().includes(q)) return;
-    (v.priority === 'vip' ? pList : nList).push(v);
+    // _pendingNormal：降級中，暫留 VIP 區 5 秒
+    const effectivePriority = v._pendingNormal ? 'vip' : v.priority;
+    (effectivePriority === 'vip' ? pList : nList).push(v);
   });
   document.getElementById('list-vip').innerHTML = pList.map(card).join('');
   document.getElementById('list-normal').innerHTML = nList.map(card).join('');
@@ -282,7 +314,9 @@ function card(v) {
   const avatarHtml = v.photo
     ? `<img src="${v.photo}" class="avatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
     : `<div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>`;
-  return `<div class="vcard ${v.checked?'checked':''} ${v.priority==='vip'?'priority':''}">
+  const pendingClass = v._pendingNormal ? ' priority-leaving' : '';
+  const effectiveClass = (v._pendingNormal || v.priority === 'vip') ? 'priority' : '';
+  return `<div class="vcard ${v.checked?'checked':''} ${effectiveClass}${pendingClass}">
     ${avatarHtml}
     <div class="vi">
       <div class="vname">${v.name} ${v.priority==='vip'?'<span class="badge badge-vip">★ 主要</span>':''}</div>
