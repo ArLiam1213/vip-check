@@ -61,6 +61,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .bnew{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.2);}
 .empty{text-align:center;padding:44px 18px;color:var(--muted);font-size:14px;}
 .vip-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2);}
+.priority-leaving{opacity:.55;transition:opacity 5s ease;border-left-color:var(--muted)!important;}
+.priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
 .pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
 .side{display:flex;flex-direction:column;gap:13px;}
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
@@ -213,29 +215,47 @@ async function poll() {
     }
     const newChecked = new Set();
     let changed = false;
+    const priorityDowngrades = [];
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
       if (!vips[id]) return;
+      const oldPriority = vips[id].priority;
+      const newPriority = String(info.priority || 'normal');
       if (vips[id].checked  !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
-          vips[id].priority !== info.priority  ||
+          oldPriority       !== newPriority    ||
           vips[id].photo    !== info.photo) {
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
         vips[id].note     = info.note;
-        vips[id].name     = String(info.name     || vips[id].name     || '');
-        vips[id].title    = String(info.title    || vips[id].title    || '');
-        vips[id].priority = String(info.priority || vips[id].priority || 'normal');
+        vips[id].name     = String(info.name  || vips[id].name  || '');
+        vips[id].title    = String(info.title || vips[id].title || '');
+        vips[id].priority = newPriority;
         vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
+        if (oldPriority !== newPriority && newPriority === 'normal') {
+          priorityDowngrades.push(id);
+        }
         changed = true;
       }
     });
     const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-    if (changed) { renderFeed(justArrived); renderPending(); updateStats(); }
+    if (changed) {
+      if (priorityDowngrades.length > 0) {
+        // 降級貴賓：先加旗標原地停留，5 秒後移動
+        priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
+        renderFeed(justArrived); renderPending(); updateStats();
+        setTimeout(() => {
+          priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
+          renderFeed([]); renderPending(); updateStats();
+        }, 5000);
+      } else {
+        renderFeed(justArrived); renderPending(); updateStats();
+      }
+    }
     renderNotes(data.notes);
     setConn(true);
     setUpd();
@@ -252,10 +272,12 @@ function renderFeed(justArrived = []) {
     v.title = String(v.title || '');
     const c = colorMap[v.id] || '#4f8fff';
     const isNew = justArrived.includes(String(v.id));
+    const isLeaving = !!v._pendingNormal;
     const photoHtml = v.photo
       ? `<img src="${v.photo}" class="vip-photo" alt="${v.name}" onerror="this.style.display='none'">`
       : `<div class="aa" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
-    return `<div class="acard ${isNew?'fresh':''} ${v.priority==='vip'?'vip':''}">
+    const effectiveVip = isLeaving || v.priority === 'vip';
+    return `<div class="acard ${isNew?'fresh':''} ${effectiveVip?'vip':''} ${isLeaving?'priority-leaving':''}">
       ${photoHtml}
       <div class="ai">
         <div class="aname">${v.name} ${v.priority==='vip'?'<span class="badge bvip">★ 主要</span>':''} ${isNew?'<span class="badge bnew">剛到</span>':''}</div>
@@ -274,6 +296,7 @@ function renderPending() {
   el.innerHTML = pend.map(v => {
     v.name  = String(v.name  || '');
     v.title = String(v.title || '');
+    const isLeaving = !!v._pendingNormal;
     const c = colorMap[v.id] || '#1a73e8';
     const thumbHtml = v.photo
       ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\'>${v.name.charAt(0)}</div>'">`
