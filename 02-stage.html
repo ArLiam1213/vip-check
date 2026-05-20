@@ -152,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbztm-2mUkdyXdqsms4MfKpOC2kMhW6yGGs7fPWI22w_JEgSOXV0Vw8AIxIhhadubOWRCg/exec';
+const HARDCODED_API_URL = '';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -199,9 +199,13 @@ async function poll() {
     let changed = false;
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
-      if (vips[id] && (vips[id].checked !== info.checked || vips[id].time !== info.time)) {
+      if (!vips[id]) return;
+      // 備註有變動也觸發重新渲染
+      const noteChanged = vips[id].note !== info.note;
+      if (vips[id].checked !== info.checked || vips[id].time !== info.time || noteChanged) {
         vips[id].checked = info.checked;
-        vips[id].time = info.time;
+        vips[id].time    = info.time;
+        vips[id].note    = info.note;
         changed = true;
       }
     });
