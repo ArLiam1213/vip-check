@@ -152,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
 //  取得方式：Apps Script → 部署 → 管理部署作業 → 複製網址
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyvpVusP0puf0afC7t-ylKg6qkCJ_nDzR_C_QlB-elRK3V4NTocTWwzO1DdUDwXzl7CUg/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxo0gA8C-VRzG9GXL73KweCg6jR7yCKjXxu3CBFtL2xxqYg7_52a4OF0ateCSe-5XjC5A/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -200,12 +200,18 @@ async function poll() {
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
       if (!vips[id]) return;
-      // 備註有變動也觸發重新渲染
-      const noteChanged = vips[id].note !== info.note;
-      if (vips[id].checked !== info.checked || vips[id].time !== info.time || noteChanged) {
+      if (vips[id].checked !== info.checked ||
+          vips[id].time    !== info.time    ||
+          vips[id].note    !== info.note    ||
+          vips[id].name    !== info.name    ||
+          vips[id].title   !== info.title   ||
+          vips[id].photo   !== info.photo) {
         vips[id].checked = info.checked;
         vips[id].time    = info.time;
         vips[id].note    = info.note;
+        vips[id].name    = info.name  || vips[id].name;
+        vips[id].title   = info.title || vips[id].title;
+        vips[id].photo   = info.photo !== undefined ? info.photo : vips[id].photo;
         changed = true;
       }
     });
