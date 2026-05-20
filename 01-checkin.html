@@ -200,8 +200,8 @@ async function poll() {
         vips[id].checked = info.checked;
         vips[id].time    = info.time;
         vips[id].note    = info.note;
-        vips[id].name    = info.name  || vips[id].name;
-        vips[id].title   = info.title || vips[id].title;
+        vips[id].name    = String(info.name  || vips[id].name  || '');
+        vips[id].title   = String(info.title || vips[id].title || '');
         vips[id].photo   = info.photo !== undefined ? info.photo : vips[id].photo;
         changed = true;
       }
@@ -263,6 +263,9 @@ function renderCards() {
 }
 
 function card(v) {
+  // 防止 name/title 非字串時報錯
+  v.name  = String(v.name  || '');
+  v.title = String(v.title || '');
   const c = colorMap[v.id] || '#1a73e8';
   const avatarHtml = v.photo
     ? `<img src="${v.photo}" class="avatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
