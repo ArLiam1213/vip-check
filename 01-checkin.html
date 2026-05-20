@@ -147,6 +147,8 @@ function init() {
 }
 
 async function loadAll() {
+  // 重置，確保刪除的資料不殘留
+  vips = {};
   try {
     const res = await fetch(apiUrl + '?action=all&t=' + Date.now());
     const data = await res.json();
@@ -199,18 +201,20 @@ async function poll() {
     let changed = false;
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (!vips[id]) return;
-      if (vips[id].checked !== info.checked ||
-          vips[id].time    !== info.time    ||
-          vips[id].note    !== info.note    ||
-          vips[id].name    !== info.name    ||
-          vips[id].title   !== info.title   ||
-          vips[id].photo   !== info.photo) {
-        vips[id].checked = info.checked;
-        vips[id].time    = info.time;
-        vips[id].note    = info.note;
-        vips[id].name    = String(info.name  || vips[id].name  || '');
-        vips[id].title   = String(info.title || vips[id].title || '');
-        vips[id].photo   = info.photo !== undefined ? info.photo : vips[id].photo;
+      if (vips[id].checked  !== info.checked  ||
+          vips[id].time     !== info.time      ||
+          vips[id].note     !== info.note      ||
+          vips[id].name     !== info.name      ||
+          vips[id].title    !== info.title     ||
+          vips[id].priority !== info.priority  ||
+          vips[id].photo    !== info.photo) {
+        vips[id].checked  = info.checked;
+        vips[id].time     = info.time;
+        vips[id].note     = info.note;
+        vips[id].name     = String(info.name     || vips[id].name     || '');
+        vips[id].title    = String(info.title    || vips[id].title    || '');
+        vips[id].priority = String(info.priority || vips[id].priority || 'normal');
+        vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
         changed = true;
       }
     });
