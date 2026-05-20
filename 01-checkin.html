@@ -131,7 +131,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <script>
 // ═══════════════════════════════════════════════════
 //  ★ 在此填入 Apps Script 部署網址，所有裝置共用 ★
-const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbztm-2mUkdyXdqsms4MfKpOC2kMhW6yGGs7fPWI22w_JEgSOXV0Vw8AIxIhhadubOWRCg/exec';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyvpVusP0puf0afC7t-ylKg6qkCJ_nDzR_C_QlB-elRK3V4NTocTWwzO1DdUDwXzl7CUg/exec';
 // ═══════════════════════════════════════════════════
 
 const KEY = 'vip_gs_config';
@@ -184,9 +184,13 @@ async function poll() {
     if (data.error) return;
     let changed = false;
     Object.entries(data.checkins).forEach(([id, info]) => {
-      if (vips[id] && (vips[id].checked !== info.checked || vips[id].time !== info.time)) {
+      if (!vips[id]) return;
+      // 備註有變動也觸發重新渲染
+      const noteChanged = vips[id].note !== info.note;
+      if (vips[id].checked !== info.checked || vips[id].time !== info.time || noteChanged) {
         vips[id].checked = info.checked;
-        vips[id].time = info.time;
+        vips[id].time    = info.time;
+        vips[id].note    = info.note;
         changed = true;
       }
     });
