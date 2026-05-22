@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>土城區公所停車場計費</title>
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --bg-color: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-color: #1C1C1E;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #8E8E93;
+        }
+        input[type="datetime-local"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #C7C7CC;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #FAFAFA;
+            -webkit-appearance: none;
+        }
+        .switch-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+        button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,122,255,0.3);
+        }
+        button:active {
+            opacity: 0.8;
+        }
+        .result-box {
+            background: #E5F1FF;
+            border-left: 5px solid var(--primary-color);
+            display: none;
+        }
+        .result-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        .amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FF3B30;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚗 土城區公所廣場停車場</h2>
+    
+    <!-- 輸入卡片 -->
+    <div class="card">
+        <div class="form-group">
+            <label for="entryTime">⏱️ 進場時間</label>
+            <input type="datetime-local" id="entryTime">
+        </div>
+        <div class="form-group">
+            <label for="exitTime">⏱️ 離場時間</label>
+            <input type="datetime-local" id="exitTime">
+        </div>
+        <div class="form-group switch-group">
+            <label style="margin:0;">👤 身心障礙優惠</label>
+            <select id="isHandicap" style="width: auto; padding: 6px 12px;">
+                <option value="no">否</option>
+                <option value="yes">是</option>
+            </select>
+        </div>
+    </div>
+
+    <button onclick="calculateParking()">開始計算費用</button>
+
+    <!-- 結果卡片 -->
+    <div class="card result-box" id="resultCard">
+        <div class="result-title">━━ 系統自動計算結果 ━━</div>
+        <div id="timeResult" style="margin-bottom: 4px;"></div>
+        <div id="statusResult" style="margin-bottom: 8px;"></div>
+        <div style="font-size: 14px; color: #555;">應繳總金額：</div>
+        <div class="amount" id="amountResult">0 元</div>
+    </div>
+</div>
+
+<script>
+    // 預設填入目前時間，方便 iPhone 測試
+    window.onload = function() {
+        const now = new Date();
+        const tzoffset = now.getTimezoneOffset() * 60000; 
+        const localISOTime = (new Date(now - tzoffset)).toISOString().slice(0, 16);
+        document.getElementById('exitTime').value = localISOTime;
+        
+        // 進場時間預設為 4.5 小時前 (270分鐘) 作為範例
+        const entry = new Date(now.getTime() - (4.5 * 60 * 60 * 1000));
+        const localEntryTime = (new Date(entry - tzoffset)).toISOString().slice(0, 16);
+        document.getElementById('entryTime').value = localEntryTime;
+    }
+
+    function calculateParking() {
+        const entryInput = document.getElementById('entryTime').value;
+        const exitInput = document.getElementById('exitTime').value;
+        const isHandicap = document.getElementById('isHandicap').value === 'yes';
+
+        if (!entryInput || !exitInput) {
+            alert('請完整選擇進場與離場時間！');
+            return;
+        }
+
+        const entryDate = new Date(entryInput);
+        const exitDate = new Date(exitInput);
+
+        // 秒數自動捨去（精確到分鐘差）
+        entryDate.setSeconds(0, 0);
+        exitDate.setSeconds(0, 0);
+
+        const diffMs = exitDate - entryDate;
+        if (diffMs < 0) {
+            alert('離場時間不能早於進場時間！');
+            return;
+        }
+
+        const totalMinutes = Math.floor(diffMs / 60000);
+        let totalAmount = 0;
+
+        if (!isHandicap) {
+            // ---- 一般收費邏輯 ----
+            if (totalMinutes <= 29) {
+                totalAmount = 0;
+            } else if (totalMinutes <= 60) {
+                totalAmount = 30;
+            } else {
+                // 超過 60 分鐘，前 60 分鐘 30 元，之後每 30 分鐘加收 15 元（不滿 30 分鐘以 30 分鐘計）
+                const extraMinutes = totalMinutes - 60;
+                const extraPeriods = Math.ceil(extraMinutes / 30);
+                totalAmount = 30 + (extraPeriods * 15);
+            }
+        } else {
+            // ---- 身障專屬遞增邏輯 (前 4 小時/240分鐘免費) ----
+            if (totalMinutes <= 240) {
+                totalAmount = 0;
+            } else {
+                const extraMinutes = totalMinutes - 240; // 超過 4 小時的分鐘數
+                
+                if (extraMinutes <= 29) {
+                    totalAmount = 0; // 前 29 分鐘內免費
+                } else if (extraMinutes <= 60) {
+                    totalAmount = 15; // 第 1 段
+                } else if (extraMinutes <= 90) {
+                    totalAmount = 23; // 第 2 段
+                } else if (extraMinutes <= 120) {
+                    totalAmount = 31; // 第 3 段
+                } else if (extraMinutes <= 150) {
+                    totalAmount = 39; // 第 4 段
+                } else {
+                    // 超過第四段後，以第四段 39 元為基礎，每 30 分鐘續增 8 元
+                    const overFourthMinutes = extraMinutes - 150;
+                    const extraPeriods = Math.ceil(overFourthMinutes / 30);
+                    totalAmount = 39 + (extraPeriods * 8);
+                }
+            }
+        }
+
+        // 渲染結果到 iPhone 卡片上
+        document.getElementById('timeResult').innerHTML = `⏱️ 總停車時間：<b>${totalMinutes} 分鐘</b>`;
+        document.getElementById('statusResult').innerHTML = `👤 身障優惠：<b>${isHandicap ? '✅ 是 (4H免費+遞增)' : '❌ 否'}</b>`;
+        document.getElementById('amountResult').innerText = `${totalAmount} 元`;
+        document.getElementById('resultCard').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
