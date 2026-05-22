@@ -39,7 +39,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .stat-bar{height:3px;background:var(--border2);border-radius:99px;margin-top:7px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.04em;}
-.grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start;}
+.grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start;overflow:hidden;}
+.feed-panel{min-width:0;overflow:hidden;}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
@@ -64,7 +65,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .priority-leaving{opacity:.55;transition:opacity 5s ease;border-left-color:var(--muted)!important;}
 .priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
 .pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
-.side{display:flex;flex-direction:column;gap:13px;}
+.side{display:flex;flex-direction:column;gap:13px;min-width:0;}
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
 .pitem:last-child{border-bottom:none;}
 .pavatar{width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
@@ -111,9 +112,11 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
   /* 主要內容：雙欄改單欄，sidebar 移到下方 */
   .grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    display: block !important;
+    grid-template-columns: unset !important;
   }
+  .feed-panel { width: 100%; margin-bottom: 12px; }
+  .side { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 
   /* 到場動態卡 */
   .acard { padding: 10px 11px; gap: 10px; }
