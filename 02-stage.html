@@ -84,6 +84,76 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+
+/* ════════════════════════════════
+   手機直式 RWD（≤ 600px）
+════════════════════════════════ */
+@media (max-width: 600px) {
+  .topbar { padding: 0 12px; height: 48px; }
+  .logo { font-size: 13px; }
+  .live { padding: 2px 8px; font-size: 10px; }
+  .nav-link { padding: 4px 8px; font-size: 11px; }
+
+  .main { padding: 14px 12px 64px; }
+
+  /* 活動標題區 */
+  .ev-header { flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .ev-name { font-size: 17px; }
+  .ev-meta { font-size: 11px; }
+  .clock-time { font-size: 20px; }
+  .clock-date { font-size: 10px; }
+
+  /* 統計卡 */
+  .stats { grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 14px; }
+  .stat { padding: 9px 6px; }
+  .stat-num { font-size: 22px; }
+  .stat-lbl { font-size: 9px; letter-spacing: 0; }
+
+  /* 主要內容：雙欄改單欄，sidebar 移到下方 */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* 到場動態卡 */
+  .acard { padding: 10px 11px; gap: 10px; }
+  .aa { width: 36px; height: 36px; font-size: 13px; }
+  .vip-photo { width: 36px; height: 36px; }
+  .aname { font-size: 13px; }
+  .atitle { font-size: 11px; }
+  .anote { font-size: 10px; }
+  .atime { font-size: 17px; }
+  .albl { font-size: 9px; }
+  .badge { font-size: 9px; padding: 1px 5px; }
+
+  /* 待到場側欄 */
+  .pitem { padding: 7px 12px; gap: 8px; }
+  .pavatar { width: 26px; height: 26px; font-size: 10px; }
+  .pavatar-photo { width: 26px; height: 26px; }
+  .pname { font-size: 12px; }
+  .ptitle { font-size: 10px; }
+
+  /* 備註區 */
+  .notes-body { padding: 8px 10px; }
+  .note { font-size: 12px; padding: 6px 8px; }
+  .note-meta { font-size: 10px; }
+  textarea { font-size: 12px; }
+  .btnsend { font-size: 11px; padding: 6px; }
+
+  /* Panel header */
+  .ph { padding: 9px 12px; }
+  .ph-title { font-size: 10px; }
+
+  .statusbar { padding: 8px 12px; font-size: 10px; }
+  .error-banner { font-size: 12px; padding: 9px 11px; }
+}
+
+/* 極小螢幕（≤ 360px）*/
+@media (max-width: 360px) {
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .ev-name { font-size: 15px; }
+  .atime { font-size: 15px; }
+}
 </style>
 </head>
 <body>
