@@ -1,235 +1,610 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>0618 北車大市集 </title>
-  <!-- 引入 Tailwind CSS（免安裝，快速打造現代化排版） -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome 圖示 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* 客製化漸層與字體 */
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: #f8fafc;
-    }
-    .hero-bg {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
-    }
-  </style>
-</head>
-<body class="text-slate-800">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0618 北車大市集活動</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --red:#c8102e;
+  --red2:#e8193a;
+  --gold:#f5a623;
+  --gold2:#ffc84a;
+  --dark:#0d0d0d;
+  --dark2:#161616;
+  --dark3:#1f1f1f;
+  --text:#f0ede6;
+  --muted:#9a9080;
+  --border:rgba(245,166,35,0.18);
+  --radius:10px;
+}
 
-  <!-- 1. 主視覺頂部看板 (Hero Section) -->
-  <header class="hero-bg text-white py-12 px-4 text-center shadow-lg relative overflow-hidden">
-    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-    <div class="relative z-10 max-w-4xl mx-auto">
-      <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Summer Festival</span>
-      <h1 class="text-3xl md:text-5xl font-bold mt-3 mb-2 tracking-wide">0618 北車大市集</h1>
-      <p class="text-lg md:text-xl text-white/90 font-light">端午採購、文創手作、在地美食，一日限定封街盛會！</p>
-      
-      <!-- 活動資訊卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 max-w-2xl mx-auto text-slate-800">
-        <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-3">
-          <div class="text-orange-500 text-2xl w-10"><i class="fa-regular fa-calendar-days"></i></div>
-          <div class="text-left">
-            <p class="text-xs text-slate-400">活動日期</p>
-            <p class="font-bold text-sm">2026年6月18日 (四)</p>
+/* ── Base ── */
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Grain overlay ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.5;
+}
+
+/* ── Hero ── */
+.hero{
+  position:relative;
+  min-height:100svh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 24px 80px;
+  overflow:hidden;
+  z-index:1;
+}
+
+/* Diagonal red stripe */
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-10%;left:-5%;
+  width:55%;height:130%;
+  background:linear-gradient(135deg,var(--red) 0%,var(--red2) 100%);
+  clip-path:polygon(0 0,85% 0,65% 100%,0 100%);
+  z-index:0;
+  opacity:.92;
+}
+
+/* Gold accent line */
+.hero::after{
+  content:'';
+  position:absolute;
+  top:0;left:calc(55% - 140px);
+  width:4px;height:100%;
+  background:linear-gradient(180deg,transparent,var(--gold),transparent);
+  z-index:1;
+  opacity:.6;
+}
+
+.hero-inner{
+  position:relative;z-index:2;
+  max-width:900px;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+}
+
+/* ── Logo / title side ── */
+.hero-left{}
+.event-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.35);
+  border-radius:99px;padding:5px 14px;
+  font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:20px;
+}
+.event-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.event-title{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(42px,7vw,80px);
+  font-weight:700;
+  line-height:.95;
+  letter-spacing:-.01em;
+  color:#fff;
+  margin-bottom:8px;
+}
+.event-title span{
+  display:block;
+  color:var(--gold);
+  font-size:clamp(28px,4.5vw,52px);
+}
+
+.event-subtitle{
+  font-size:15px;color:rgba(240,237,230,.55);
+  margin:18px 0 28px;line-height:1.7;
+  max-width:340px;
+}
+
+.info-chips{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;}
+.chip{
+  display:flex;align-items:center;gap:12px;
+  font-size:14px;color:rgba(240,237,230,.85);
+}
+.chip-icon{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.chip-text strong{display:block;font-weight:700;color:#fff;font-size:15px;}
+
+/* ── Right side: countdown + CTA ── */
+.hero-right{display:flex;flex-direction:column;gap:24px;}
+
+.countdown-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 24px;
+  backdrop-filter:blur(10px);
+}
+.countdown-label{
+  font-size:11px;font-weight:700;color:var(--gold);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;
+}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.countdown-unit{text-align:center;}
+.countdown-num{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(28px,4vw,48px);
+  font-weight:700;color:#fff;
+  line-height:1;
+  display:block;
+}
+.countdown-name{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.06em;}
+.countdown-sep{
+  font-family:'Oswald',sans-serif;
+  font-size:36px;color:var(--red);
+  display:flex;align-items:center;padding-top:2px;
+}
+
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cta-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  padding:18px 12px;
+  border-radius:var(--radius);
+  text-decoration:none;
+  font-family:'Noto Sans TC',sans-serif;
+  font-weight:700;font-size:13px;
+  transition:all .2s;
+  cursor:pointer;border:none;
+}
+.cta-btn .btn-icon{font-size:24px;}
+.cta-btn.primary{
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff;
+  box-shadow:0 4px 20px rgba(200,16,46,.35);
+}
+.cta-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,16,46,.5);}
+.cta-btn.secondary{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
+}
+.cta-btn.secondary:hover{background:rgba(255,255,255,.1);border-color:var(--gold);color:var(--gold);}
+.cta-btn.gold{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--dark);
+  box-shadow:0 4px 20px rgba(245,166,35,.3);
+}
+.cta-btn.gold:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,166,35,.5);}
+.cta-btn.dark{
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.cta-btn.dark:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── Section shared ── */
+section{position:relative;z-index:1;padding:80px 24px;}
+.section-inner{max-width:900px;margin:0 auto;}
+.section-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;color:var(--gold);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:16px;
+}
+.section-tag::before{content:'';width:24px;height:2px;background:var(--gold);}
+.section-title{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(28px,4vw,42px);
+  font-weight:700;color:#fff;
+  line-height:1.1;margin-bottom:40px;
+}
+
+/* ── Divider ── */
+.divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:0 24px;
+  position:relative;z-index:1;
+}
+
+/* ── Schedule ── */
+.schedule{background:var(--dark2);}
+.schedule-list{display:flex;flex-direction:column;gap:0;}
+.schedule-item{
+  display:grid;grid-template-columns:120px 1fr;gap:0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:20px 0;
+  align-items:start;
+  transition:background .15s;
+}
+.schedule-item:last-child{border-bottom:none;}
+.schedule-item:hover{background:rgba(255,255,255,.02);border-radius:8px;padding:20px 12px;margin:0 -12px;}
+.sch-time{
+  font-family:'Oswald',sans-serif;
+  font-size:18px;font-weight:600;
+  color:var(--gold);
+  padding-top:2px;
+}
+.sch-content{}
+.sch-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.sch-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.sch-badge{
+  display:inline-block;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;
+  margin-bottom:6px;letter-spacing:.04em;
+}
+.sch-badge.opening{background:rgba(200,16,46,.2);color:#ff6b7a;}
+.sch-badge.main{background:rgba(245,166,35,.15);color:var(--gold);}
+.sch-badge.activity{background:rgba(46,180,100,.15);color:#5ce89a;}
+.sch-badge.close{background:rgba(120,120,120,.15);color:#aaa;}
+
+/* ── Venue ── */
+.venue-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
+.venue-card{
+  background:var(--dark3);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius);
+  padding:24px;
+  transition:border-color .2s;
+}
+.venue-card:hover{border-color:var(--border);}
+.venue-card-icon{font-size:28px;margin-bottom:12px;}
+.venue-card-title{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.venue-card-text{font-size:14px;color:rgba(240,237,230,.7);line-height:1.7;}
+.venue-card-text strong{color:#fff;display:block;font-size:16px;margin-bottom:4px;}
+.map-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;padding:7px 14px;
+  background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);
+  border-radius:99px;font-size:12px;font-weight:600;color:var(--gold);
+  text-decoration:none;transition:all .15s;
+}
+.map-btn:hover{background:rgba(245,166,35,.2);}
+
+/* ── Staff portal ── */
+.portal{background:var(--dark2);}
+.portal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.portal-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:32px 20px;
+  background:var(--dark3);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;
+  text-decoration:none;
+  transition:all .2s;
+  text-align:center;
+}
+.portal-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.portal-card:hover .portal-icon{transform:scale(1.1);}
+.portal-icon{font-size:36px;transition:transform .2s;}
+.portal-title{font-size:15px;font-weight:700;color:#fff;}
+.portal-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.portal-card.red{border-color:rgba(200,16,46,.25);}
+.portal-card.red:hover{border-color:var(--red);box-shadow:0 12px 32px rgba(200,16,46,.2);}
+.portal-card.gold-c{border-color:rgba(245,166,35,.2);}
+.portal-card.gold-c:hover{border-color:var(--gold);box-shadow:0 12px 32px rgba(245,166,35,.15);}
+
+/* ── Footer ── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:32px 24px;
+  text-align:center;
+  font-size:12px;color:var(--muted);
+  background:var(--dark);
+}
+footer strong{color:rgba(240,237,230,.5);}
+
+/* ── Scroll animations ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  .hero-inner{grid-template-columns:1fr;gap:32px;}
+  .hero::before{width:100%;clip-path:polygon(0 0,100% 0,100% 40%,0 55%);}
+  .hero::after{display:none;}
+  .cta-grid{grid-template-columns:1fr 1fr;}
+  .venue-grid{grid-template-columns:1fr;}
+  .portal-grid{grid-template-columns:1fr 1fr;}
+  .schedule-item{grid-template-columns:90px 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ HERO ══════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="event-tag">2026 · 台北車站</div>
+      <h1 class="event-title">
+        北車<br>大市集
+        <span>活動</span>
+      </h1>
+      <p class="event-subtitle">
+        聚集在地職人、產業代表與社會夥伴，<br>
+        共同打造一場充滿活力的交流盛會。
+      </p>
+      <div class="info-chips">
+        <div class="chip">
+          <div class="chip-icon">📅</div>
+          <div class="chip-text">
+            <strong>2026 年 6 月 18 日（四）</strong>
+            上午 10:00 — 下午 16:00
           </div>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-3">
-          <div class="text-orange-500 text-2xl w-10"><i class="fa-regular fa-clock"></i></div>
-          <div class="text-left">
-            <p class="text-xs text-slate-400">活動時間</p>
-            <p class="font-bold text-sm">10:00 ~ 16:00</p>
+        <div class="chip">
+          <div class="chip-icon">📍</div>
+          <div class="chip-text">
+            <strong>台北車站 多元展區</strong>
+            台北市中正區北平西路3號 B1
           </div>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-3">
-          <div class="text-orange-500 text-2xl w-10"><i class="fa-solid fa-location-dot"></i></div>
-          <div class="text-left">
-            <p class="text-xs text-slate-400">活動地點</p>
-            <p class="font-bold text-sm">台北車站 一樓中央大廳</p>
+        <div class="chip">
+          <div class="chip-icon">🏛</div>
+          <div class="chip-text">
+            <strong>主辦單位</strong>
+            勞動部勞動力發展署北基宜花金馬分署
           </div>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- 主內容區 -->
-  <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- 左側與中間：市集導覽、攤位圖 (佔 2 欄) -->
-    <section class="lg:col-span-2 space-y-8">
-      
-      <!-- 市集公告欄 -->
-      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start space-x-3 shadow-sm">
-        <span class="text-amber-500 text-xl mt-0.5"><i class="fa-solid fa-bullhorn"></i></span>
-        <div>
-          <h3 class="font-bold text-amber-900 mb-1">大會重要公告</h3>
-          <p class="text-sm text-amber-800 leading-relaxed">歡迎各位蒞臨！服務台設有大會專屬打卡禮，數量有限送完為止！如有需醫護協助請洽 A01 服務台。</p>
+    <div class="hero-right">
+      <!-- Countdown -->
+      <div class="countdown-card">
+        <div class="countdown-label">距離活動開始</div>
+        <div class="countdown-grid" id="countdown">
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-days">--</span>
+            <div class="countdown-name">天</div>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-hours">--</span>
+            <div class="countdown-name">時</div>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-mins">--</span>
+            <div class="countdown-name">分</div>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-secs">--</span>
+            <div class="countdown-name">秒</div>
+          </div>
+        </div>
+        <div id="cd-ended" style="display:none;text-align:center;padding:8px 0;font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);letter-spacing:.06em;">
+          🎉 活動進行中
         </div>
       </div>
 
-      <!-- 攤位平面地圖 -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <span class="text-orange-500"><i class="fa-solid fa-map-location-dot"></i></span> 市集攤位地圖
-          </h2>
-          <span class="text-xs text-slate-400"><i class="fa-solid fa-magnifying-glass"></i> 點擊可放大</span>
-        </div>
-        <!-- 區塊預留：可替換成實際的 JPG 地圖或 SVG -->
-        <div class="bg-slate-100 w-full h-64 md:h-96 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
-          <i class="fa-regular fa-image text-4xl mb-2"></i>
-          <p class="text-sm font-medium">【請在此處放入市集地圖圖片】</p>
-          <p class="text-xs text-slate-400 mt-1">建議尺寸: 1200 x 800 px (如: 區塊A文創、區塊B美食)</p>
+      <!-- CTA buttons -->
+      <div class="cta-grid">
+        <a href="01-checkin.html" class="cta-btn primary">
+          <span class="btn-icon">📋</span>報到區
+        </a>
+        <a href="02-stage.html" class="cta-btn gold">
+          <span class="btn-icon">🎤</span>舞台看板
+        </a>
+        <a href="#schedule" class="cta-btn secondary">
+          <span class="btn-icon">📅</span>活動議程
+        </a>
+        <a href="00-setup.html" class="cta-btn dark">
+          <span class="btn-icon">⚙️</span>系統設定
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════ SCHEDULE ══════════════════════════ -->
+<section class="schedule" id="schedule">
+  <div class="section-inner">
+    <div class="section-tag reveal">活動議程</div>
+    <h2 class="section-title reveal">當天流程</h2>
+    <div class="schedule-list">
+      <div class="schedule-item reveal">
+        <div class="sch-time">9:00</div>
+        <div class="sch-content">
+          <span class="sch-badge opening">擺攤攤位進場</span>
+          <div class="sch-title">工作人員進場 ·10點開賣</div>
+          <!--<div class="sch-desc">報到系統啟動、貴賓名單確認、現場設備測試</div>-->
         </div>
       </div>
-
-      <!-- 推薦亮點/活動流程 -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <span class="text-orange-500"><i class="fa-solid fa-star"></i></span> 今日舞台精采活動
-        </h2>
-        <div class="space-y-4">
-          <div class="flex items-center p-3 hover:bg-slate-50 rounded-lg transition">
-            <span class="bg-orange-100 text-orange-600 font-bold px-3 py-1 rounded text-sm w-28 text-center">13:00 - 13:30</span>
-            <span class="ml-4 font-medium">大會開幕儀式 & 貴賓致詞</span>
-          </div>
-          <div class="flex items-center p-3 hover:bg-slate-50 rounded-lg transition">
-            <span class="bg-orange-100 text-orange-600 font-bold px-3 py-1 rounded text-sm w-28 text-center">14:30 - 15:30</span>
-            <span class="ml-4 font-medium"></span>
-          </div>
-          <div class="flex items-center p-3 hover:bg-slate-50 rounded-lg transition">
-            <span class="bg-orange-100 text-orange-600 font-bold px-3 py-1 rounded text-sm w-28 text-center">16:30 - 17:30</span>
-            <span class="ml-4 font-medium"></span>
-          </div>
+      <div class="schedule-item reveal">
+        <div class="sch-time">10:30-11:10</div>
+        <div class="sch-content">
+          <span class="sch-badge opening">開幕</span>
+          <div class="sch-title">貴賓報到</div>
+          <div class="sch-desc">貴賓陸續抵達、引導入席</div>
         </div>
       </div>
-    </section>
-
-    <!-- 右側：即時動態/大會跑馬燈 (佔 1 欄) -->
-    <section class="space-y-6">
-      
-      <!-- 串接 Apps Script 的即時動態牆 -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[500px]">
-        <div class="flex justify-between items-center mb-4 border-b pb-3 border-slate-100">
-          <h2 class="text-lg font-bold flex items-center gap-2">
-            <span class="text-red-500 animate-pulse"><i class="fa-solid fa-circle"></i></span> 
-          </h2>
-          <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded" id="sync-time"></span>
-        </div>
-        
-        <!-- 動態訊息列表容器 -->
-        <div id="notes-container" class="space-y-3 overflow-y-auto flex-1 pr-1 text-sm">
-          <!-- 預設靜態範例（串接 API 後會被覆蓋） -->
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div class="flex justify-between text-xs text-slate-400 mb-1">
-              <span class="font-bold text-orange-500">【系統公告】</span>
-              <span>11:05</span>
-            </div>
-            <p class="text-slate-600">0618 北車大市集活動正式開始！歡迎民眾入場。</p>
-          </div>
-          
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div class="flex justify-between text-xs text-slate-400 mb-1">
-              <span class="font-bold text-blue-500"></span>
-              <span>11:15</span>
-            </div>
-            <p class="text-slate-600"></p>
-          </div>
-          
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center py-8 text-slate-400">
-            
-          </div>
+      <div class="schedule-item reveal">
+        <div class="sch-time">11:10-11:20</div>
+        <div class="sch-content">
+          <span class="sch-badge main">開場</span>
+          <div class="sch-title">開幕典禮 · 開場表演</div>
+          <div class="sch-desc">主持人開場、開場演出</div>
         </div>
       </div>
-      
-      <!-- 快捷功能按鈕區 -->
-      <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-md text-center space-y-4">
-        <h3 class="font-bold"></h3>
-        <p class="text-xs text-slate-400"></p>
-        <div class="grid grid-cols-2 gap-2">
-          <a href="#" class="bg-white/10 hover:bg-white/20 transition text-xs py-2.5 px-3 rounded-lg font-medium inline-block">
-            <i class="fa-solid fa-qrcode mr-1"></i> 
-          </a>
-          <a href="#" class="bg-white/10 hover:bg-white/20 transition text-xs py-2.5 px-3 rounded-lg font-medium inline-block">
-            <i class="fa-solid fa-pen-to-square mr-1"></i> 
-          </a>
+      <div class="schedule-item reveal">
+        <div class="sch-time">11:20-11:45</div>
+        <div class="sch-content">
+          <span class="sch-badge activity">長官致詞</span>
+          <div class="sch-title">啟動儀式及大合影</div>
+          <!--<div class="sch-desc">職業訓練成果展、在地產業特色攤位、互動體驗區</div>-->
         </div>
       </div>
-    </section>
+      <div class="schedule-item reveal">
+        <div class="sch-time">12:00</div>
+        <div class="sch-content">
+          <span class="sch-badge activity">交流</span>
+          <div class="sch-title">午間交流 · 輕食茶敘</div>
+          <div class="sch-desc">貴賓與參展單位交流、媒體採訪時段</div>
+        </div>
+      </div>
+      <div class="schedule-item reveal">
+        <div class="sch-time">13:30</div>
+        <div class="sch-content">
+          <span class="sch-badge main">主題</span>
+          <div class="sch-title">主題論壇 · 產業對話</div>
+          <div class="sch-desc">勞動力發展趨勢分享、跨域合作案例交流</div>
+        </div>
+      </div>
+      <div class="schedule-item reveal">
+        <div class="sch-time">15:00</div>
+        <div class="sch-content">
+          <span class="sch-badge activity">活動</span>
+          <div class="sch-title">互動體驗 · 抽獎活動</div>
+          <div class="sch-desc">現場互動遊戲、幸運抽獎、特色商品兌換</div>
+        </div>
+      </div>
+      <div class="schedule-item reveal">
+        <div class="sch-time">16:00</div>
+        <div class="sch-content">
+          <span class="sch-badge close">閉幕</span>
+          <div class="sch-title">活動圓滿結束</div>
+          <div class="sch-desc">感謝致詞、場地復原</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  </main>
+<div class="divider"></div>
 
-  <!-- 頁尾 -->
-  <footer class="bg-slate-900 text-slate-400 text-center py-6 mt-12 text-xs border-t border-slate-800">
-    <p>© 2026 0618 北車大市集. All Rights Reserved.</p>
-    <p class="mt-1 text-slate-600">Powered by Google Apps Script & Tailwind CSS</p>
-  </footer>
+<!-- ══════════════════════════════ VENUE ═════════════════════════════ -->
+<section style="padding:80px 24px;position:relative;z-index:1;" id="venue">
+  <div class="section-inner">
+    <div class="section-tag reveal">地點資訊</div>
+    <h2 class="section-title reveal">活動場地</h2>
+    <div class="venue-grid reveal">
+      <div class="venue-card">
+        <div class="venue-card-icon">📍</div>
+        <div class="venue-card-title">主要場地</div>
+        <div class="venue-card-text">
+          <strong>台北車站 多元展區</strong>
+          台北市中正區北平西路3號<br>
+          地下一樓（B1）多元展區<br>
+          捷運台北車站 Z2 出口步行1分鐘
+        </div>
+        <a href="https://maps.google.com/?q=台北車站多元展區" target="_blank" class="map-btn">
+          📐 開啟地圖導航
+        </a>
+      </div>
+      <div class="venue-card">
+        <div class="venue-card-icon">🚇</div>
+        <div class="venue-card-title">交通資訊</div>
+        <div class="venue-card-text">
+          <strong>大眾運輸</strong>
+          捷運板南線 / 淡水信義線<br>
+          台北車站下車，Z2 出口<br><br>
+          <strong>停車資訊</strong>
+          建議搭乘大眾運輸，<br>
+          周邊停車場：台北車站北一門地下停車場
+        </div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-card-icon">🏛</div>
+        <div class="venue-card-title">主辦單位</div>
+        <div class="venue-card-text">
+          <strong>勞動部勞動力發展署北分署</strong>
+          承辦人員聯絡電話<br>
+          02-XXXX-XXXX<br><br>
+          活動當日緊急聯絡：<br>
+          工作人員手機：09XX-XXX-XXX
+        </div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-card-icon">📋</div>
+        <div class="venue-card-title">注意事項</div>
+        <div class="venue-card-text">
+          · 請攜帶邀請函或名片至報到區<br>
+          · 活動全程禁止攜帶寵物<br>
+          · 場地禁止吸菸<br>
+          · 主辦單位保留活動調整權利<br>
+          · 如有特殊需求請提前告知承辦人員
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- JavaScript 串接邏輯 -->
-  <script>
-    // 請將下方的 URL 替換成你 Google Apps Script 部署為「網頁應用程式 (Web App)」後的 巨集 URL
-    const GAS_WEB_APP_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+<div class="divider"></div>
 
-    // 模擬或執行輪詢撈取資料
-    async function fetchLiveUpdates() {
-      if (GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
-        console.log('請記得填入實際部署的 GAS Web App URL 以利串接動態牆！');
-        return;
-      }
+<!-- ══════════════════════════════ STAFF PORTAL ══════════════════════ -->
+<section class="portal" id="portal">
+  <div class="section-inner">
+    <div class="section-tag reveal">工作人員專區</div>
+    <h2 class="section-title reveal">系統操作入口</h2>
+    <div class="portal-grid reveal">
+      <a href="01-checkin.html" class="portal-card red">
+        <div class="portal-icon">📋</div>
+        <div class="portal-title">報到區</div>
+        <div class="portal-desc">貴賓抵達確認<br>即時報到操作</div>
+      </a>
+      <a href="02-stage.html" class="portal-card gold-c">
+        <div class="portal-icon">🎤</div>
+        <div class="portal-title">舞台看板</div>
+        <div class="portal-desc">即時到場動態<br>主持人參考看板</div>
+      </a>
+      <a href="00-setup.html" class="portal-card">
+        <div class="portal-icon">⚙️</div>
+        <div class="portal-title">系統設定</div>
+        <div class="portal-desc">貴賓名單管理<br>活動資訊設定</div>
+      </a>
+    </div>
+  </div>
+</section>
 
-      try {
-        // 呼叫後端部署的 doGet (回傳 getPollData() 的內容)
-        const response = await fetch(GAS_WEB_APP_URL);
-        const data = await response.json();
-        
-        if (data.ok && data.notes) {
-          renderNotes(data.notes);
-          
-          // 更新同步時間提示
-          const now = new Date();
-          document.getElementById('sync-time').innerText = `更新於 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        }
-      } catch (error) {
-        console.error('撈取資料失敗:', error);
-      }
-    }
+<!-- ══════════════════════════════ FOOTER ════════════════════════════ -->
+<footer>
+  <strong>0618 北車大市集活動</strong> · 勞動部勞動力發展署北分署主辦<br>
+  <span style="margin-top:6px;display:block;">2026 年 6 月 18 日 · 台北車站多元展區</span>
+</footer>
 
-    // 將資料渲染至右側即時動態牆
-    function renderNotes(notes) {
-      const container = document.getElementById('notes-container');
-      if (notes.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400">目前尚無最新動態</div>`;
-        return;
-      }
+<script>
+// ── Countdown ──────────────────────────────────────────────
+const TARGET = new Date('2026-06-18T10:00:00+08:00');
 
-      container.innerHTML = notes.map(note => {
-        // 判斷來源給予不同顏色標籤
-        const isVip = note.from === '貴賓備註';
-        const tagColor = isVip ? 'text-blue-600 font-bold' : 'text-orange-500 font-bold';
-        const bgColor = isVip ? 'bg-blue-50/50' : 'bg-slate-50';
+function updateCountdown() {
+  const now  = new Date();
+  const diff = TARGET - now;
+  if (diff <= 0) {
+    document.getElementById('countdown').style.display = 'none';
+    document.getElementById('cd-ended').style.display  = 'block';
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
 
-        return `
-          <div class="p-3 ${bgColor} rounded-xl border border-slate-100 hover:shadow-sm transition">
-            <div class="flex justify-between text-xs text-slate-400 mb-1">
-              <span class="${tagColor}">【${note.from}】</span>
-              <span>${note.time || ''}</span>
-            </div>
-            <p class="text-slate-700 font-medium">${note.text}</p>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // 每 10 秒自動輪詢（Polling）一次最新資料
-    setInterval(fetchLiveUpdates, 10000);
-    
-    // 網頁載入時立刻執行一次
-    window.addEventListener('DOMContentLoaded', fetchLiveUpdates);
-  </script>
+// ── Scroll reveal ──────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
