@@ -74,6 +74,52 @@ textarea:focus{outline:none;border-color:var(--accent);}
 @keyframes sd{from{transform:translateX(-50%) translateY(-6px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
 #no-results{display:none;text-align:center;color:var(--muted);font-size:14px;padding:36px 0;}
+
+/* ════════════════════════════════
+   手機直式 RWD（≤ 480px）
+════════════════════════════════ */
+@media (max-width: 480px) {
+  .topbar { padding: 0 12px; height: 48px; }
+  .logo { font-size: 13px; }
+  .nav-link { padding: 4px 8px; font-size: 11px; }
+
+  .wrap { padding: 14px 10px 72px; }
+
+  .ev-banner { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 13px; }
+  .ev-name { font-size: 14px; }
+  .ev-meta { font-size: 11px; }
+  #clock { font-size: 12px; align-self: flex-end; }
+
+  .stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .stat { padding: 9px 6px; }
+  .stat-num { font-size: 22px; }
+  .stat-lbl { font-size: 10px; }
+
+  .search-input { font-size: 14px; padding: 10px 12px 10px 32px; }
+  .search-icon { font-size: 13px; left: 9px; }
+
+  .sec-label { font-size: 10px; margin-bottom: 6px; }
+
+  .vcard { padding: 11px 10px; gap: 9px; }
+  .avatar { width: 36px; height: 36px; font-size: 13px; }
+  .avatar-photo { width: 36px; height: 36px; }
+  .vname { font-size: 13px; }
+  .vtitle { font-size: 11px; }
+  .vnote { font-size: 10px; }
+  .vtime { font-size: 11px; }
+
+  .btn-checkin { padding: 8px 14px; font-size: 12px; }
+  .btn-undo { font-size: 10px; padding: 3px 7px; }
+
+  .notes-box { padding: 12px 12px; }
+  .notes-title { font-size: 12px; }
+  .note-item { font-size: 12px; padding: 7px 9px; }
+  .note-meta { font-size: 10px; }
+  textarea { font-size: 12px; padding: 7px 9px; }
+  .btn-sm { font-size: 11px; padding: 6px 11px; }
+
+  .statusbar { padding: 8px 12px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
