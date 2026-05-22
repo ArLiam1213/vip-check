@@ -50,13 +50,13 @@ body::before{
   z-index:1;
 }
 
-/* Diagonal red stripe */
+/* Diagonal blue stripe */
 .hero::before{
   content:'';
   position:absolute;
   top:-10%;left:-5%;
   width:55%;height:130%;
-  background:linear-gradient(135deg,var(--red) 0%,var(--red2) 100%);
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);
   clip-path:polygon(0 0,85% 0,65% 100%,0 100%);
   z-index:0;
   opacity:.92;
@@ -150,7 +150,7 @@ body::before{
 .countdown-name{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.06em;}
 .countdown-sep{
   font-family:'Oswald',sans-serif;
-  font-size:36px;color:var(--red);
+  font-size:36px;color:var(--blue);
   display:flex;align-items:center;padding-top:2px;
 }
 
@@ -167,7 +167,7 @@ body::before{
 }
 .cta-btn .btn-icon{font-size:24px;}
 .cta-btn.primary{
-  background:linear-gradient(135deg,var(--red),var(--red2));
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
   color:#fff;
   box-shadow:0 4px 20px rgba(200,16,46,.35);
 }
@@ -290,8 +290,8 @@ section{position:relative;z-index:1;padding:80px 24px;}
 .portal-icon{font-size:36px;transition:transform .2s;}
 .portal-title{font-size:15px;font-weight:700;color:#fff;}
 .portal-desc{font-size:12px;color:var(--muted);line-height:1.5;}
-.portal-card.red{border-color:rgba(200,16,46,.25);}
-.portal-card.red:hover{border-color:var(--red);box-shadow:0 12px 32px rgba(200,16,46,.2);}
+.portal-card.blue{border-color:rgba(200,16,46,.25);}
+.portal-card.blue:hover{border-color:var(--blue);box-shadow:0 12px 32px rgba(200,16,46,.2);}
 .portal-card.gold-c{border-color:rgba(245,166,35,.2);}
 .portal-card.gold-c:hover{border-color:var(--gold);box-shadow:0 12px 32px rgba(245,166,35,.15);}
 
@@ -551,7 +551,7 @@ footer strong{color:rgba(240,237,230,.5);}
     <div class="section-tag reveal">工作人員專區</div>
     <h2 class="section-title reveal">系統操作入口</h2>
     <div class="portal-grid reveal">
-      <a href="01-checkin.html" class="portal-card red">
+      <a href="01-checkin.html" class="portal-card blue">
         <div class="portal-icon">📋</div>
         <div class="portal-title">報到區</div>
         <div class="portal-desc">貴賓抵達確認<br>即時報到操作</div>
