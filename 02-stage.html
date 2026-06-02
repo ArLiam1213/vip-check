@@ -66,9 +66,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
 .pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
 .side{display:flex;flex-direction:column;gap:13px;min-width:0;}
-.pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface);}
+.pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
 .pitem:last-child{border-bottom:none;}
-.psub-title{font-size:11px;font-weight:700;color:var(--muted);padding:7px 14px;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.04em;display:flex;align-items:center;gap:4px;}
 .pavatar{width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
 .pinfo{flex:1;}
 .pname{font-size:13px;font-weight:500;}
@@ -86,6 +85,28 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+
+/* ════════════════════════════════
+   🪑 新增：座位圖與頁籤切換核心樣式 
+════════════════════════════════ */
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+.tab-btn { flex: 1; padding: 13px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-dim); }
+
+.theater-map { padding: 18px; display: flex; flex-direction: column; gap: 10px; max-height: 620px; overflow: auto; background: var(--surface); }
+.stage-indicator { text-align: center; background: #334155; color: #ffffff; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 16px; letter-spacing: 0.6em; text-indent: 0.6em; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+.theater-row { display: flex; align-items: center; gap: 8px; background: var(--surface2); padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); min-width: 580px; }
+.row-label { width: 68px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; flex-shrink: 0; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 4px; letter-spacing: 0.05em; }
+.theater-side { flex: 1; display: flex; gap: 5px; min-height: 38px; padding: 2px; align-items: center; }
+.side-left { border-right: 2px dashed var(--border2); justify-content: flex-end; padding-right: 14px; }
+.side-right { justify-content: flex-start; padding-left: 14px; }
+.seat-block { width: 64px; height: 38px; border-radius: 6px; border: 1px dashed var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--muted); background: rgba(0,0,0,0.01); transition: all 0.25s ease; position: relative; cursor: default; }
+.seat-block.occupied { border-style: solid; border-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transform: translateY(-1px); }
+.seat-block.occupied.vip { background: var(--amber); color: #ffffff; }
+.seat-block.occupied.normal { background: var(--green); color: #ffffff; }
+.seat-name { font-weight: 700; font-size: 11px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 60px; text-align: center; }
+.seat-num { font-size: 8px; opacity: 0.7; margin-top: 1px; font-variant-numeric: tabular-nums; }
 
 /* ════════════════════════════════
    手機直式 RWD（≤ 600px）
@@ -131,7 +152,6 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .badge { font-size: 9px; padding: 1px 5px; }
 
   /* 待到場側欄 */
-  .psub-title { padding: 6px 12px; font-size: 10px; }
   .pitem { padding: 7px 12px; gap: 8px; }
   .pavatar { width: 26px; height: 26px; font-size: 10px; }
   .pavatar-photo { width: 26px; height: 26px; }
@@ -200,9 +220,18 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
   <div class="grid">
     <div class="panel">
-      <div class="ph"><div class="dot"></div><span class="ph-title">即時到場動態</span></div>
-      <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
+      <div class="panel-tabs">
+        <button id="tab-feed" class="tab-btn active" onclick="switchView('feed')">⚡ 即時到場動態</button>
+        <button id="tab-map" class="tab-btn" onclick="switchView('map')">🪑 劇院座位藍圖</button>
+      </div>
+      
+      <div id="feed-container">
+        <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
+      </div>
+      
+      <div id="map-container" style="display: none;"></div>
     </div>
+    
     <div class="side">
       <div class="panel">
         <div class="ph"><span class="ph-title">待到場名單</span></div>
@@ -234,11 +263,12 @@ const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_A
 const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
+let currentView = 'feed'; // 記錄當前檢視模式
 
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
   if (!apiUrl) {
-    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在 <a href="00-setup.html" style="color:var(--accent)">設定頁</a> 儲存網址後用同一裝置開啟。');
+    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
     return;
   }
   loadAll();
@@ -258,6 +288,7 @@ async function loadAll() {
       v.title = String(v.title ?? '');
       v.note  = String(v.note  ?? '');
       v.photo = String(v.photo ?? '');
+      v.seat  = String(v.seat  ?? ''); // 🪑 新增座位屬性
       vips[v.id] = v;
       colorMap[v.id] = COLORS[i % COLORS.length];
     });
@@ -265,13 +296,16 @@ async function loadAll() {
     renderFeed();
     renderPending();
     updateStats();
+    if (currentView === 'map') renderTheaterMap(); // 如果切在座位圖，同步刷新
     renderNotes(data.notes);
     setConn(true);
   } catch(e) {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
-  setInterval(poll, 5000);
+  // 清除舊的計時器，防止重複註冊
+  if (window.pollInterval) clearInterval(window.pollInterval);
+  window.pollInterval = setInterval(poll, 5000);
 }
 
 async function poll() {
@@ -279,11 +313,14 @@ async function poll() {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
     const data = await res.json();
     if (data.error) return;
+    
     const incomingIds = new Set(Object.keys(data.checkins));
     const localIds    = new Set(Object.keys(vips));
     const hasNew      = [...incomingIds].some(id => !localIds.has(id));
     if (hasNew) { await loadAll(); return; }
+    
     let deleted = false;
+    let changed = false;
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
@@ -291,21 +328,26 @@ async function poll() {
         deleted = true;
       }
     });
-    let changed = deleted;
+    if (deleted) changed = true;
+    
     const newChecked = new Set();
     const priorityDowngrades = [];
+    
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
       if (!vips[id]) return;
       const oldPriority = vips[id].priority;
       const newPriority = String(info.priority || 'normal');
+      
       if (vips[id].checked  !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
           oldPriority       !== newPriority    ||
-          vips[id].photo    !== info.photo) {
+          vips[id].photo    !== info.photo     ||
+          vips[id].seat     !== String(info.seat ?? '')) {
+          
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
         vips[id].note     = info.note;
@@ -313,30 +355,184 @@ async function poll() {
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
         vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
+        vips[id].seat     = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
+        
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
         }
         changed = true;
       }
     });
+    
     const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-    if (changed) {
+    
+    if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
         renderFeed(justArrived); renderPending(); updateStats();
+        if (currentView === 'map') renderTheaterMap();
         setTimeout(() => {
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
           renderFeed([]); renderPending(); updateStats();
+          if (currentView === 'map') renderTheaterMap();
         }, 5000);
       } else {
         renderFeed(justArrived); renderPending(); updateStats();
+        if (currentView === 'map') renderTheaterMap();
       }
     }
     renderNotes(data.notes);
     setConn(true);
     setUpd();
   } catch(e) { setConn(false); }
+}
+
+// 🛠️ 新增：頁籤切換控制
+function switchView(view) {
+  currentView = view;
+  document.getElementById('tab-feed').classList.toggle('active', view === 'feed');
+  document.getElementById('tab-map').classList.toggle('active', view === 'map');
+  document.getElementById('feed-container').style.display = view === 'feed' ? 'block' : 'none';
+  document.getElementById('map-container').style.display = view === 'map' ? 'block' : 'none';
+  if (view === 'map') {
+    renderTheaterMap();
+  }
+}
+
+// 🪑 新增：核心劇院座位圖動態渲染引擎
+function renderTheaterMap() {
+  const mapEl = document.getElementById('map-container');
+  const allVips = vipOrder.map(id => vips[id]).filter(Boolean);
+  
+  if (!allVips.length) {
+    mapEl.innerHTML = '<div class="empty">等待報到區回傳...</div>';
+    return;
+  }
+
+  // 檢查資料表中是否真的有填寫座位資訊
+  const hasCustomSeats = allVips.some(v => v.seat && v.seat.trim() !== '');
+  let rowsData = {}; // 格式為 { 排數: { '左': [], '右': [] } }
+
+  if (!hasCustomSeats) {
+    // 💡 模擬模式：座位未定時，自動依「主要貴賓靠前、均分左右」原則智慧排座
+    // 先排序：主要貴賓排在前
+    const sortedVips = [...allVips].sort((a, b) => {
+      if (a.priority === 'vip' && b.priority !== 'vip') return -1;
+      if (a.priority !== 'vip' && b.priority === 'vip') return 1;
+      return 0;
+    });
+
+    const seatsPerSide = 4; // 預設模擬每排左 4 座、右 4 座
+    sortedVips.forEach((v, index) => {
+      const rowNum = Math.floor(index / (seatsPerSide * 2)) + 1;
+      const sideIdx = index % (seatsPerSide * 2);
+      const side = sideIdx < seatsPerSide ? '左' : 'right';
+      const seatNum = (sideIdx % seatsPerSide) + 1;
+      const finalSide = side === '左' ? '左' : '右';
+
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][finalSide].push({ vip: v, seatNum: seatNum });
+    });
+  } else {
+    // 💡 精準模式：完美對接試算表。支援格式如："1-左-3", "2排-右-1", "3-左"
+    allVips.forEach(v => {
+      let rowNum = 1;
+      let side = '左';
+      let seatNum = 1;
+
+      const match = String(v.seat).match(/(\d+)\s*[-|排|列]?\s*([左右])\s*[-|區|側]?\s*(\d*)/);
+      if (match) {
+        rowNum = parseInt(match[1]) || 1;
+        side = match[2];
+        seatNum = parseInt(match[3]) || 1;
+      } else {
+        rowNum = 99; // 無法辨識或留空的丟到下方未定區
+      }
+
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][side].push({ vip: v, seatNum: seatNum });
+    });
+
+    // 每一排內的座位按號碼排序
+    Object.keys(rowsData).forEach(r => {
+      rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum); // 左側號碼大->小呈現（靠走道對齊）
+      rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum); // 右側號碼小->大呈現
+    });
+  }
+
+  // 生成劇院地圖 HTML
+  let html = `<div class="theater-map">
+    <div class="stage-indicator">─── 舞 臺 ───</div>`;
+    
+  if (!hasCustomSeats) {
+    html += `<div style="font-size:11px;color:var(--amber);background:var(--amber-dim);padding:7px 12px;border-radius:6px;margin-bottom:10px;text-align:center;font-weight:500;">💡 目前為「座位未定」智慧模擬模式：主要貴賓優先自動填入前排</div>`;
+  }
+
+  const sortedRows = Object.keys(rowsData).sort((a, b) => parseInt(a) - parseInt(b));
+  
+  sortedRows.forEach(rowNum => {
+    if (rowNum == 99) return;
+
+    html += `<div class="theater-row">
+      <div class="row-label">第 ${rowNum} 排</div>
+      
+      <div class="theater-side side-left">`;
+      const leftSeats = rowsData[rowNum]['左'];
+      const maxLeft = !hasCustomSeats ? 4 : Math.max(...leftSeats.map(s=>s.seatNum), 1);
+      for (let i = maxLeft; i >= 1; i--) {
+        const item = leftSeats.find(s => s.seatNum === i);
+        html += renderSingleSeat(item, '左', i);
+      }
+    html += `</div>
+      
+      <div class="theater-side side-right">`;
+      const rightSeats = rowsData[rowNum]['右'];
+      const maxRight = !hasCustomSeats ? 4 : Math.max(...rightSeats.map(s=>s.seatNum), 1);
+      for (let i = 1; i <= maxRight; i++) {
+        const item = rightSeats.find(s => s.seatNum === i);
+        html += renderSingleSeat(item, '右', i);
+      }
+    html += `</div>
+    </div>`;
+  });
+
+  // 處理格式不符或未排座的特殊名單
+  if (rowsData[99] && (rowsData[99]['左'].length || rowsData[99]['右'].length)) {
+    html += `<div style="margin-top:14px; border-top:1px dashed var(--border); padding-top:12px;">
+      <div style="font-size:11px; font-weight:700; color:var(--muted); margin-bottom:6px;">⚠️ 試算表中含有格式無法解析的座位（放不下圖中）：</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">`;
+      const unmapped = [...rowsData[99]['左'], ...rowsData[99]['右']];
+      unmapped.forEach(item => {
+        html += renderSingleSeat(item, '?', item.vip.seat || '未定');
+      });
+    html += `</div></div>`;
+  }
+
+  html += `</div>`;
+  mapEl.innerHTML = html;
+}
+
+// 🪑 輔助函式：產生單一座位 HTML
+function renderSingleSeat(item, side, num) {
+  if (!item || !item.vip) {
+    return `<div class="seat-block"><span class="seat-num">${side}${num}</span></div>`;
+  }
+  const v = item.vip;
+  const isArrived = v.checked;
+  
+  if (isArrived) {
+    const cls = v.priority === 'vip' ? 'vip' : 'normal';
+    return `<div class="seat-block occupied ${cls}" title="${v.name} (${v.title})\n位置: ${v.seat || (side+num)}">
+      <span class="seat-name">${v.name}</span>
+      <span class="seat-num" style="color:rgba(255,255,255,0.8)">${side}${num}</span>
+    </div>`;
+  } else {
+    return `<div class="seat-block" style="border-color:var(--border2); opacity:0.55;" title="待到場: ${v.name} (${v.title})">
+      <span class="seat-name" style="color:var(--muted); font-weight:400;">${v.name}</span>
+      <span class="seat-num">${side}${num}</span>
+    </div>`;
+  }
 }
 
 function renderFeed(justArrived = []) {
@@ -368,7 +564,10 @@ function renderFeed(justArrived = []) {
 function renderPending() {
   const allPend = Object.values(vips).filter(v => !v.checked);
   const el = document.getElementById('pending');
-  if (!allPend.length) { el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; return; }
+  if (!allPend.length) { 
+    el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; 
+    return; 
+  }
   
   const vipPend = [];
   const normalPend = [];
@@ -383,18 +582,18 @@ function renderPending() {
   });
   
   let html = '';
+  const subTitleStyle = "font-size:11px;font-weight:700;color:var(--muted);padding:7px 14px;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.04em;display:flex;align-items:center;gap:4px;";
   
-  // 1. 渲染主要貴賓待到名單
   if (vipPend.length > 0) {
-    html += `<div class="psub-title" style="color:var(--amber);">⭐ 主要貴賓 (${vipPend.length})</div>`;
+    html += `<div style="${subTitleStyle} color:var(--amber);">⭐ 主要貴賓 (${vipPend.length})</div>`;
     html += vipPend.map(v => {
       v.name  = String(v.name  || '');
       v.title = String(v.title || '');
       const c = colorMap[v.id] || '#1a73e8';
       const thumbHtml = v.photo
-        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\'>${v.name.charAt(0)}</div>'">`
+        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
         : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
-      return `<div class="pitem" style="border-left: 3px solid var(--amber);">
+      return `<div class="pitem" style="border-left: 3px solid var(--amber); background:var(--surface);">
         ${thumbHtml}
         <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
         <div class="dotw"></div>
@@ -402,17 +601,16 @@ function renderPending() {
     }).join('');
   }
   
-  // 2. 渲染一般貴賓待到名單
   if (normalPend.length > 0) {
-    html += `<div class="psub-title">👥 一般貴賓 (${normalPend.length})</div>`;
+    html += `<div style="${subTitleStyle}">👥 一般貴賓 (${normalPend.length})</div>`;
     html += normalPend.map(v => {
       v.name  = String(v.name  || '');
       v.title = String(v.title || '');
       const c = colorMap[v.id] || '#1a73e8';
       const thumbHtml = v.photo
-        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\'>${v.name.charAt(0)}</div>'">`
+        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
         : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
-      return `<div class="pitem">
+      return `<div class="pitem" style="background:var(--surface);">
         ${thumbHtml}
         <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
         <div class="dotw" style="background:var(--muted); opacity:0.4;"></div>
@@ -480,7 +678,7 @@ function setUpd() {
 }
 function stored() { try { return JSON.parse(localStorage.getItem(KEY))||{}; } catch(e) { return {}; } }
 
-// Clock
+// 時鐘計時器
 setInterval(() => {
   const n=new Date();
   document.getElementById('clock-time').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
