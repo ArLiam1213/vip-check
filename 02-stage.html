@@ -2,10 +2,10 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>舞台看板</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg:#f7f8fc;--surface:#ffffff;--surface2:#f1f3f9;
@@ -16,8 +16,21 @@
   --amber:#d97706;--amber-dim:rgba(217,119,6,0.08);
   --red:#dc2626;--radius:12px;--radius-sm:7px;
 }
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+
+/* 🪐 核心調整：鎖定視窗高度，徹底停用整頁外層滾動軸 */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink: 0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .logo{font-size:14px;font-weight:700;}
 .live{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(22,163,74,.3);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.04em;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:p 1.2s ease-in-out infinite;}
@@ -26,25 +39,94 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .nav-link{padding:5px 11px;border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-decoration:none;}
 .nav-link:hover{background:var(--surface2);}
 .nav-link.active{background:var(--green-dim);color:var(--green);}
-.main{max-width:1080px;margin:0 auto;padding:22px 18px 70px;}
-.ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;}
-.ev-name{font-size:23px;font-weight:900;line-height:1.2;}
-.ev-meta{font-size:13px;color:var(--muted);margin-top:5px;}
+
+/* 🪐 核心調整：讓主區域自動填滿剩餘高度，並防止內容溢出 */
+.main{
+  flex: 1;
+  max-width: 1360px; /* 擴大看盤視野 */
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-shrink: 0;}
+.ev-name{font-size:22px;font-weight:900;line-height:1.2;}
+.ev-meta{font-size:13px;color:var(--muted);margin-top:3px;}
 .clock{text-align:right;}
-.clock-time{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--accent);}
-.clock-date{font-size:12px;color:var(--muted);margin-top:2px;}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px;}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.stat-num{font-size:30px;font-weight:900;line-height:1;}
+.clock-time{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--accent);line-height: 1;}
+.clock-date{font-size:12px;color:var(--muted);margin-top:4px;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;flex-shrink: 0;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 15px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.stat-num{font-size:28px;font-weight:900;line-height:1;}
 .stat-bar{height:3px;background:var(--border2);border-radius:99px;margin-top:7px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.06em;}
-.grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start;overflow:hidden;}
-.feed-panel{min-width:0;overflow:hidden;}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.04em;}
+
+/* 🪐 核心調整：網格高度最大化，min-height: 0 是開啟內部滾動的黑魔法關鍵 */
+.grid{
+  flex: 1;
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:14px;
+  min-height: 0; 
+}
+
+/* 手機版專用切換頁籤（電腦版預設隱藏） */
+.mobile-tabs {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.03);
+}
+.m-tab-btn {
+  flex: 1;
+  padding: 11px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.m-tab-btn.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.feed-panel {
+  height: 100%;
+}
+.ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink: 0;}
 .ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
-.feed{padding:10px;}
+
+/* 🪐 核心調整：讓名單動態單獨在內部垂直滾動 */
+.feed{
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
 .acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;transition:border-color .3s;}
 .acard.fresh{border-color:rgba(22,163,74,.4);animation:si .35s ease;}
 @keyframes si{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -65,7 +147,23 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .priority-leaving{opacity:.55;transition:opacity 5s ease;border-left-color:var(--muted)!important;}
 .priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
 .pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
-.side{display:flex;flex-direction:column;gap:13px;min-width:0;}
+
+/* 🪐 核心調整：右側欄內部比例分配 */
+.side{
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+  min-width:0;
+  height: 100%;
+}
+.side .panel:nth-child(1) { flex: 1.3; } /* 待到場分配較多空間 */
+.side .panel:nth-child(2) { flex: 1; }   /* 備註通訊分配較少空間 */
+
+#pending {
+  flex: 1;
+  overflow-y: auto; /* 待到場名單內部滾動 */
+}
+
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
 .pitem:last-child{border-bottom:none;}
 .pavatar{width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
@@ -74,103 +172,96 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .ptitle{font-size:11px;color:var(--muted);}
 .dotw{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
 .dotd{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
-.notes-body{padding:10px 13px;}
+
+/* 備註內部排版最佳化 */
+.notes-body{
+  padding:10px 13px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+#notes-list {
+  flex: 1;
+  overflow-y: auto; /* 備註訊息內部滾動 */
+  margin-bottom: 8px;
+}
 .note{background:var(--surface2);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
 .note-meta{font-size:10px;color:var(--muted);margin-top:2px;}
-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:12px;font-family:inherit;resize:none;}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:12px;font-family:inherit;resize:none;flex-shrink: 0;}
 textarea:focus{outline:none;border-color:var(--accent);}
-.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;font-family:inherit;}
+.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;font-family:inherit;flex-shrink: 0;}
 .btnsend:hover{background:rgba(26,115,232,.12);}
-.statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -1px 3px rgba(0,0,0,.05);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);}
+
+/* 🪐 核心調整：狀態列改為頁面最下方的標準流，防止浮動遮擋主體 */
+.statusbar{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  box-shadow:0 -1px 3px rgba(0,0,0,.05);
+  padding:9px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--muted);
+  flex-shrink: 0;
+}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
-.error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+.error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;flex-shrink: 0;}
 
 /* ════════════════════════════════
-   🪑 座位圖與頁籤切換核心樣式 
+   📱 手機直式極致優化（≤ 680px）
 ════════════════════════════════ */
-.panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
-.tab-btn { flex: 1; padding: 13px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
-.tab-btn:hover { background: var(--surface2); color: var(--text); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-dim); }
-
-.theater-map { padding: 18px; display: flex; flex-direction: column; gap: 10px; max-height: 620px; overflow: auto; background: var(--surface); }
-.stage-indicator { text-align: center; background: #334155; color: #ffffff; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 16px; letter-spacing: 0.6em; text-indent: 0.6em; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
-/* 🛠️ 寬度微調：因應左5右5共10座，最低安全防擠壓寬度拉大至 820px */
-.theater-row { display: flex; align-items: center; gap: 8px; background: var(--surface2); padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); min-width: 820px; }
-.row-label { width: 68px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; flex-shrink: 0; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 4px; letter-spacing: 0.05em; }
-.theater-side { flex: 1; display: flex; gap: 5px; min-height: 38px; padding: 2px; align-items: center; }
-.side-left { border-right: 2px dashed var(--border2); justify-content: flex-end; padding-right: 14px; }
-.side-right { justify-content: flex-start; padding-left: 14px; }
-.seat-block { width: 64px; height: 38px; border-radius: 6px; border: 1px dashed var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--muted); background: rgba(0,0,0,0.01); transition: all 0.25s ease; position: relative; cursor: default; }
-.seat-block.occupied { border-style: solid; border-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transform: translateY(-1px); }
-.seat-block.occupied.vip { background: var(--amber); color: #ffffff; }
-.seat-block.occupied.normal { background: var(--green); color: #ffffff; }
-.seat-name { font-weight: 700; font-size: 11px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 60px; text-align: center; }
-.seat-num { font-size: 8px; opacity: 0.7; margin-top: 1px; font-variant-numeric: tabular-nums; }
-
-/* ════════════════════════════════
-   手機直式 RWD（≤ 600px）
-════════════════════════════════ */
-@media (max-width: 600px) {
+@media (max-width: 680px) {
   .topbar { padding: 0 12px; height: 48px; }
   .logo { font-size: 13px; }
   .live { padding: 2px 8px; font-size: 10px; }
   .nav-link { padding: 4px 8px; font-size: 11px; }
 
-  .main { padding: 14px 12px 64px; }
+  .main { padding: 10px 10px 6px; }
 
-  .ev-header { flex-direction: column; gap: 6px; margin-bottom: 14px; }
-  .ev-name { font-size: 17px; }
-  .ev-meta { font-size: 11px; }
-  .clock-time { font-size: 20px; }
-  .clock-date { font-size: 10px; }
+  .ev-header { margin-bottom: 8px; }
+  .ev-name { font-size: 16px; }
+  .ev-meta { font-size: 11px; margin-top: 1px; }
+  .clock-time { font-size: 18px; }
+  .clock-date { font-size: 10px; margin-top: 2px; }
 
-  .stats { grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 14px; }
-  .stat { padding: 9px 6px; }
-  .stat-num { font-size: 22px; }
-  .stat-lbl { font-size: 9px; letter-spacing: 0; }
+  /* 統計數值微調縮小，確保在手機上呈現一整列不被擠壓 */
+  .stats { gap: 5px; margin-bottom: 10px; }
+  .stat { padding: 6px 4px; text-align: center; }
+  .stat-num { font-size: 18px; }
+  .stat-lbl { font-size: 8px; scale: 0.9; margin-top: 1px; white-space: nowrap; }
+  .stat-bar { display: none; } /* 手機版隱藏統計條以節省高度空間 */
 
+  /* 🪐 手機版切換控制：隱藏非現行頁籤，達成完美的「單畫面零整頁滾動」 */
+  .mobile-tabs { display: flex; }
   .grid {
     display: block !important;
-    grid-template-columns: unset !important;
+    height: 100%;
   }
-  .feed-panel { width: 100%; margin-bottom: 12px; }
-  .side { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .feed-panel {
+    display: flex; /* 預設顯示左側 */
+    height: 100%;
+  }
+  .side {
+    display: none; /* 預設隱藏右側 */
+    height: 100%;
+  }
+  
+  /* 當啟動 show-side class 時的顯示邏輯 */
+  .grid.show-side .feed-panel { display: none !important; }
+  .grid.show-side .side { display: flex !important; }
 
-  .acard { padding: 10px 11px; gap: 10px; }
-  .aa { width: 36px; height: 36px; font-size: 13px; }
-  .vip-photo { width: 36px; height: 36px; }
+  .acard { padding: 8px 10px; gap: 8px; margin-bottom: 5px; }
+  .aa { width: 34px; height: 34px; font-size: 13px; }
+  .vip-photo { width: 34px; height: 34px; }
   .aname { font-size: 13px; }
   .atitle { font-size: 11px; }
-  .anote { font-size: 10px; }
-  .atime { font-size: 17px; }
+  .atime { font-size: 16px; }
   .albl { font-size: 9px; }
-  .badge { font-size: 9px; padding: 1px 5px; }
 
-  .pitem { padding: 7px 12px; gap: 8px; }
-  .pavatar { width: 26px; height: 26px; font-size: 10px; }
-  .pavatar-photo { width: 26px; height: 26px; }
-  .pname { font-size: 12px; }
-  .ptitle { font-size: 10px; }
-
-  .notes-body { padding: 8px 10px; }
-  .note { font-size: 12px; padding: 6px 8px; }
-  .note-meta { font-size: 10px; }
-  textarea { font-size: 12px; }
-  .btnsend { font-size: 11px; padding: 6px; }
-
-  .ph { padding: 9px 12px; }
-  .ph-title { font-size: 10px; }
-
-  .statusbar { padding: 8px 12px; font-size: 10px; }
-  .error-banner { font-size: 12px; padding: 9px 11px; }
-}
-
-@media (max-width: 360px) {
-  .stats { grid-template-columns: repeat(2,1fr); }
-  .ev-name { font-size: 15px; }
-  .atime { font-size: 15px; }
+  .statusbar { padding: 6px 12px; font-size: 10px; }
 }
 </style>
 </head>
@@ -211,18 +302,15 @@ textarea:focus{outline:none;border-color:var(--accent);}
     <div class="stat"><div class="stat-num" id="st-pct" style="color:var(--muted)">0%</div><div class="stat-lbl">到場率</div></div>
   </div>
 
+  <div class="mobile-tabs">
+    <button id="m-tab-feed" class="m-tab-btn active" onclick="switchMobileTab('feed')">⚡ 即時到場動態</button>
+    <button id="m-tab-side" class="m-tab-btn" onclick="switchMobileTab('side')">📋 待到場與備註</button>
+  </div>
+
   <div class="grid">
-    <div class="panel">
-      <div class="panel-tabs">
-        <button id="tab-feed" class="tab-btn active" onclick="switchView('feed')">⚡ 即時到場動態</button>
-        <button id="tab-map" class="tab-btn" onclick="switchView('map')">🪑 劇院座位藍圖</button>
-      </div>
-      
-      <div id="feed-container">
-        <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
-      </div>
-      
-      <div id="map-container" style="display: none;"></div>
+    <div class="panel feed-panel">
+      <div class="ph"><div class="dot"></div><span class="ph-title">即時到場動態</span></div>
+      <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
     </div>
     
     <div class="side">
@@ -253,12 +341,28 @@ const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_A
 const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
-let currentView = 'feed';
+
+// 🪐 手機版核心頁籤切換腳本（零滾動體驗）
+function switchMobileTab(target) {
+  const grid = document.querySelector('.grid');
+  const tabFeed = document.getElementById('m-tab-feed');
+  const tabSide = document.getElementById('m-tab-side');
+  
+  if (target === 'feed') {
+    grid.classList.remove('show-side');
+    tabFeed.classList.add('active');
+    tabSide.classList.remove('active');
+  } else {
+    grid.classList.add('show-side');
+    tabFeed.classList.remove('active');
+    tabSide.classList.add('active');
+  }
+}
 
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
   if (!apiUrl) {
-    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
+    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後用同一裝置開啟。');
     return;
   }
   loadAll();
@@ -278,7 +382,6 @@ async function loadAll() {
       v.title = String(v.title ?? '');
       v.note  = String(v.note  ?? '');
       v.photo = String(v.photo ?? '');
-      v.seat  = String(v.seat  ?? '');
       vips[v.id] = v;
       colorMap[v.id] = COLORS[i % COLORS.length];
     });
@@ -286,15 +389,13 @@ async function loadAll() {
     renderFeed();
     renderPending();
     updateStats();
-    if (currentView === 'map') renderTheaterMap();
     renderNotes(data.notes);
     setConn(true);
   } catch(e) {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
-  if (window.pollInterval) clearInterval(window.pollInterval);
-  window.pollInterval = setInterval(poll, 5000);
+  setInterval(poll, 5000);
 }
 
 async function poll() {
@@ -302,14 +403,11 @@ async function poll() {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
     const data = await res.json();
     if (data.error) return;
-    
     const incomingIds = new Set(Object.keys(data.checkins));
     const localIds    = new Set(Object.keys(vips));
     const hasNew      = [...incomingIds].some(id => !localIds.has(id));
     if (hasNew) { await loadAll(); return; }
-    
     let deleted = false;
-    let changed = false;
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
@@ -317,26 +415,21 @@ async function poll() {
         deleted = true;
       }
     });
-    if (deleted) changed = true;
-    
     const newChecked = new Set();
+    let changed = false;
     const priorityDowngrades = [];
-    
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
       if (!vips[id]) return;
       const oldPriority = vips[id].priority;
       const newPriority = String(info.priority || 'normal');
-      
       if (vips[id].checked  !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
           oldPriority       !== newPriority    ||
-          vips[id].photo    !== info.photo     ||
-          vips[id].seat     !== String(info.seat ?? '')) {
-          
+          vips[id].photo    !== info.photo) {
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
         vips[id].note     = info.note;
@@ -344,182 +437,31 @@ async function poll() {
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
         vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
-        vips[id].seat     = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
-        
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
         }
         changed = true;
       }
     });
-    
+    if (deleted) changed = true;
     const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-    
-    if (changed || deleted) {
+    if (changed) {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
         renderFeed(justArrived); renderPending(); updateStats();
-        if (currentView === 'map') renderTheaterMap();
         setTimeout(() => {
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
           renderFeed([]); renderPending(); updateStats();
-          if (currentView === 'map') renderTheaterMap();
         }, 5000);
       } else {
         renderFeed(justArrived); renderPending(); updateStats();
-        if (currentView === 'map') renderTheaterMap();
       }
     }
     renderNotes(data.notes);
     setConn(true);
     setUpd();
   } catch(e) { setConn(false); }
-}
-
-function switchView(view) {
-  currentView = view;
-  document.getElementById('tab-feed').classList.toggle('active', view === 'feed');
-  document.getElementById('tab-map').classList.toggle('active', view === 'map');
-  document.getElementById('feed-container').style.display = view === 'feed' ? 'block' : 'none';
-  document.getElementById('map-container').style.display = view === 'map' ? 'block' : 'none';
-  if (view === 'map') {
-    renderTheaterMap();
-  }
-}
-
-// 🪑 核心劇院座位圖動態渲染引擎（左5右5優化版）
-function renderTheaterMap() {
-  const mapEl = document.getElementById('map-container');
-  const allVips = vipOrder.map(id => vips[id]).filter(Boolean);
-  
-  if (!allVips.length) {
-    mapEl.innerHTML = '<div class="empty">等待報到區回傳...</div>';
-    return;
-  }
-
-  const hasCustomSeats = allVips.some(v => v.seat && v.seat.trim() !== '');
-  let rowsData = {};
-
-  if (!hasCustomSeats) {
-    // 💡 模擬模式：座位未定時
-    const sortedVips = [...allVips].sort((a, b) => {
-      if (a.priority === 'vip' && b.priority !== 'vip') return -1;
-      if (a.priority !== 'vip' && b.priority === 'vip') return 1;
-      return 0;
-    });
-
-    /* 🛠️ 修改點 1：將單邊預設模擬座位數量由 4 改為 5 */
-    const seatsPerSide = 5; 
-    sortedVips.forEach((v, index) => {
-      const rowNum = Math.floor(index / (seatsPerSide * 2)) + 1;
-      const sideIdx = index % (seatsPerSide * 2);
-      const side = sideIdx < seatsPerSide ? '左' : 'right';
-      const seatNum = (sideIdx % seatsPerSide) + 1;
-      const finalSide = side === '左' ? '左' : '右';
-
-      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
-      rowsData[rowNum][finalSide].push({ vip: v, seatNum: seatNum });
-    });
-  } else {
-    // 💡 精準對接試算表模式
-    allVips.forEach(v => {
-      let rowNum = 1;
-      let side = '左';
-      let seatNum = 1;
-
-      const match = String(v.seat).match(/(\d+)\s*[-|排|列]?\s*([左右])\s*[-|區|側]?\s*(\d*)/);
-      if (match) {
-        rowNum = parseInt(match[1]) || 1;
-        side = match[2];
-        seatNum = parseInt(match[3]) || 1;
-      } else {
-        rowNum = 99; // 無法解析的丟到未定區
-      }
-
-      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
-      rowsData[rowNum][side].push({ vip: v, seatNum: seatNum });
-    });
-
-    Object.keys(rowsData).forEach(r => {
-      rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum);
-      rowsData[r]['right'] ? rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum) : null;
-    });
-  }
-
-  let html = `<div class="theater-map">
-    <div class="stage-indicator">─── 舞 臺 ───</div>`;
-    
-  if (!hasCustomSeats) {
-    html += `<div style="font-size:11px;color:var(--amber);background:var(--amber-dim);padding:7px 12px;border-radius:6px;margin-bottom:10px;text-align:center;font-weight:500;">💡 目前為「座位未定」智慧模擬模式：自動以左 5 右 5 填入主要貴賓</div>`;
-  }
-
-  const sortedRows = Object.keys(rowsData).sort((a, b) => parseInt(a) - parseInt(b));
-  
-  sortedRows.forEach(rowNum => {
-    if (rowNum == 99) return;
-
-    html += `<div class="theater-row">
-      <div class="row-label">第 ${rowNum} 排</div>
-      
-      <div class="theater-side side-left">`;
-      const leftSeats = rowsData[rowNum]['左'];
-      
-      /* 🛠️ 修改點 2：強制精準模式下的最外端座位至少畫滿 5 格，防止畫面萎縮 */
-      const maxLeft = !hasCustomSeats ? 5 : Math.max(...leftSeats.map(s=>s.seatNum), 5);
-      for (let i = maxLeft; i >= 1; i--) {
-        const item = leftSeats.find(s => s.seatNum === i);
-        html += renderSingleSeat(item, '左', i);
-      }
-    html += `</div>
-      
-      <div class="theater-side side-right">`;
-      const rightSeats = rowsData[rowNum]['右'];
-      
-      /* 🛠️ 修改點 3：強制精準模式下的最外端座位至少畫滿 5 格 */
-      const maxRight = !hasCustomSeats ? 5 : Math.max(...rightSeats.map(s=>s.seatNum), 5);
-      for (let i = 1; i <= maxRight; i++) {
-        const item = rightSeats.find(s => s.seatNum === i);
-        html += renderSingleSeat(item, '右', i);
-      }
-    html += `</div>
-    </div>`;
-  });
-
-  if (rowsData[99] && (rowsData[99]['左'].length || rowsData[99]['右'].length)) {
-    html += `<div style="margin-top:14px; border-top:1px dashed var(--border); padding-top:12px;">
-      <div style="font-size:11px; font-weight:700; color:var(--muted); margin-bottom:6px;">⚠️ 試算表中含有格式無法解析的座位（放不下圖中）：</div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">`;
-      const unmapped = [...rowsData[99]['左'], ...rowsData[99]['右']];
-      unmapped.forEach(item => {
-        html += renderSingleSeat(item, '?', item.vip.seat || '未定');
-      });
-    html += `</div></div>`;
-  }
-
-  html += `</div>`;
-  mapEl.innerHTML = html;
-}
-
-function renderSingleSeat(item, side, num) {
-  if (!item || !item.vip) {
-    return `<div class="seat-block"><span class="seat-num">${side}${num}</span></div>`;
-  }
-  const v = item.vip;
-  const isArrived = v.checked;
-  
-  if (isArrived) {
-    const cls = v.priority === 'vip' ? 'vip' : 'normal';
-    return `<div class="seat-block occupied ${cls}" title="${v.name} (${v.title})\n位置: ${v.seat || (side+num)}">
-      <span class="seat-name">${v.name}</span>
-      <span class="seat-num" style="color:rgba(255,255,255,0.8)">${side}${num}</span>
-    </div>`;
-  } else {
-    return `<div class="seat-block" style="border-color:var(--border2); opacity:0.55;" title="待到場: ${v.name} (${v.title})">
-      <span class="seat-name" style="color:var(--muted); font-weight:400;">${v.name}</span>
-      <span class="seat-num">${side}${num}</span>
-    </div>`;
-  }
 }
 
 function renderFeed(justArrived = []) {
@@ -549,63 +491,22 @@ function renderFeed(justArrived = []) {
 }
 
 function renderPending() {
-  const allPend = Object.values(vips).filter(v => !v.checked);
+  const pend = Object.values(vips).filter(v => !v.checked);
   const el = document.getElementById('pending');
-  if (!allPend.length) { 
-    el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; 
-    return; 
-  }
-  
-  const vipPend = [];
-  const normalPend = [];
-  
-  allPend.forEach(v => {
-    const effectivePriority = v._pendingNormal ? 'normal' : v.priority;
-    if (effectivePriority === 'vip') {
-      vipPend.push(v);
-    } else {
-      normalPend.push(v);
-    }
-  });
-  
-  let html = '';
-  const subTitleStyle = "font-size:11px;font-weight:700;color:var(--muted);padding:7px 14px;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.04em;display:flex;align-items:center;gap:4px;";
-  
-  if (vipPend.length > 0) {
-    html += `<div style="${subTitleStyle} color:var(--amber);">⭐ 主要貴賓 (${vipPend.length})</div>`;
-    html += vipPend.map(v => {
-      v.name  = String(v.name  || '');
-      v.title = String(v.title || '');
-      const c = colorMap[v.id] || '#1a73e8';
-      const thumbHtml = v.photo
-        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
-        : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
-      return `<div class="pitem" style="border-left: 3px solid var(--amber); background:var(--surface);">
-        ${thumbHtml}
-        <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
-        <div class="dotw"></div>
-      </div>`;
-    }).join('');
-  }
-  
-  if (normalPend.length > 0) {
-    html += `<div style="${subTitleStyle}">👥 一般貴賓 (${normalPend.length})</div>`;
-    html += normalPend.map(v => {
-      v.name  = String(v.name  || '');
-      v.title = String(v.title || '');
-      const c = colorMap[v.id] || '#1a73e8';
-      const thumbHtml = v.photo
-        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
-        : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
-      return `<div class="pitem" style="background:var(--surface);">
-        ${thumbHtml}
-        <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
-        <div class="dotw" style="background:var(--muted); opacity:0.4;"></div>
-      </div>`;
-    }).join('');
-  }
-  
-  el.innerHTML = html;
+  if (!pend.length) { el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; return; }
+  el.innerHTML = pend.map(v => {
+    v.name  = String(v.name  || '');
+    v.title = String(v.title || '');
+    const c = colorMap[v.id] || '#1a73e8';
+    const thumbHtml = v.photo
+      ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
+      : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
+    return `<div class="pitem">
+      ${thumbHtml}
+      <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
+      <div class="dotw"></div>
+    </div>`;
+  }).join('');
 }
 
 function updateStats() {
