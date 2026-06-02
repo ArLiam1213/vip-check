@@ -17,7 +17,7 @@
   --red:#dc2626;--radius:12px;--radius-sm:7px;
 }
 
-/* 🚀 核心變更：鎖死全螢幕高度，徹底消滅最外層滾軸 */
+/* 鎖死全螢幕高度，整頁不動 */
 html, body {
   height: 100%;
   overflow: hidden; 
@@ -40,7 +40,6 @@ body {
 .nav-link:hover{background:var(--surface2);}
 .nav-link.active{background:var(--green-dim);color:var(--green);}
 
-/* 🚀 讓主區域自動填滿剩餘空間並防止溢出 */
 .main{
   flex: 1;
   max-width:1400px;
@@ -66,7 +65,6 @@ body {
 .stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.06em;}
 
-/* 🚀 彈性網格佈局 */
 .grid{
   flex: 1;
   display:grid;
@@ -78,7 +76,7 @@ body {
 .ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink: 0;}
 .ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 
-/* 控制各自區塊內部獨立滾動 */
+/* 控制各區塊內部獨立滾動 */
 .feed{flex: 1; padding:10px; overflow-y: auto;}
 
 .acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;transition:border-color .3s;}
@@ -130,7 +128,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;flex-shrink: 0;}
 
 /* ════════════════════════════════
-   🪑 滿版彈性座位圖核心 CSS (零滾軸)
+   🪑 座位圖核心 CSS：局部滾動與防擠壓設計
 ════════════════════════════════ */
 .panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
 .tab-btn { flex: 1; padding: 11px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
@@ -140,7 +138,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 #feed-container, #map-container {
   flex: 1;
   min-height: 0;
-  display: flex; /* 改用 flex 以支援內部元素伸展 */
+  display: flex;
   flex-direction: column;
 }
 
@@ -150,23 +148,23 @@ textarea:focus{outline:none;border-color:var(--accent);}
   display: flex; 
   flex-direction: column; 
   gap: 8px; 
-  overflow: hidden; /* 🔥 關閉滾動軸 */
+  /* 🔥 核心修正 1：如果座位排數超出容器高度，允許座位圖單獨往下滾動 */
+  overflow-y: auto; 
   background: var(--surface); 
 }
 .stage-indicator { flex-shrink: 0; text-align: center; background: #334155; color: #ffffff; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 6px; letter-spacing: 0.6em; text-indent: 0.6em; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
 
-/* 🔥 放棄固定寬度，改用 flex: 1 均分高度與寬度 */
 .theater-row { 
-  flex: 1; /* 垂直均分高度 */
-  min-height: 0;
+  /* 🔥 核心修正 2：拔掉 flex: 1 避免被無限壓扁，給予每排最小保障高度 */
+  min-height: 48px; 
+  flex-shrink: 0; 
   display: flex; 
-  align-items: stretch; /* 讓內部元素填滿高度 */
+  align-items: stretch; 
   gap: 6px; 
   background: var(--surface2); 
   padding: 4px 6px; 
   border-radius: var(--radius-sm); 
   border: 1px solid var(--border); 
-  min-width: 0; /* 允許無限縮小 */
 }
 .row-label { width: 50px; font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); border-radius: 4px; flex-shrink: 0; }
 .theater-side { flex: 1; display: flex; gap: 4px; min-width: 0; padding: 0; align-items: stretch; }
@@ -174,9 +172,10 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .side-right { justify-content: flex-start; padding-left: 8px; }
 
 .seat-block { 
-  flex: 1; /* 水平均分寬度 */
-  min-width: 0; /* 允許無限縮小 */
-  height: auto; /* 高度隨 row 伸展 */
+  flex: 1;
+  /* 🔥 核心修正 3：給予每個座位最小寬度，避免太窄切到字 */
+  min-width: 44px; 
+  height: auto; 
   border-radius: 6px; 
   border: 1px dashed var(--muted); 
   display: flex; 
@@ -186,16 +185,26 @@ textarea:focus{outline:none;border-color:var(--accent);}
   color: var(--muted); 
   background: rgba(0,0,0,0.01); 
   transition: all 0.25s ease; 
-  padding: 2px;
-  overflow: hidden; /* 字太長直接隱藏 */
+  padding: 3px 2px;
+  overflow: hidden; 
 }
 .seat-block.occupied { border-style: solid; border-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
 .seat-block.occupied.vip { background: var(--amber); color: #ffffff; }
 .seat-block.occupied.normal { background: var(--green); color: #ffffff; }
 
-/* 響應式字體大小，螢幕變小字就變小 */
-.seat-name { font-weight: 700; font-size: clamp(9px, 1.2vw, 12px); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 100%; text-align: center; }
-.seat-num { font-size: 9px; opacity: 0.7; margin-top: 1px; font-variant-numeric: tabular-nums; }
+/* 🔥 核心修正 4：人名字體微調，允許太長的名字換兩行 */
+.seat-name { 
+  font-weight: 700; 
+  font-size: 12px; 
+  line-height: 1.1;
+  text-align: center; 
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 最多顯示兩行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.seat-num { font-size: 9px; opacity: 0.7; margin-top: 2px; font-variant-numeric: tabular-nums; }
 
 /* 手機版專屬三頁籤 */
 .mobile-tabs {
@@ -225,25 +234,20 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .clock-time { font-size: 20px; }
   .clock-date { font-size: 10px; }
 
-  /* 統計區緊湊化 */
   .stats { gap: 4px; margin-bottom: 10px; }
   .stat { padding: 8px 4px; }
   .stat-num { font-size: 18px; }
   .stat-lbl { font-size: 8px; scale: 0.9; margin-top: 2px; }
   .stat-bar { display: none; } 
 
-  /* 啟動手機三頁籤模式 */
   .mobile-tabs { display: flex; }
   .grid { display: block !important; height: 100%; }
   
-  /* 預設隱藏所有面板，靠 JS 切換 class 顯示 */
   .feed-panel-wrap, .side { display: none; height: 100%; }
   
-  /* 手機切換狀態 */
   .grid.show-feed .feed-panel-wrap { display: flex !important; flex-direction: column; }
   .grid.show-side .side { display: flex !important; }
   
-  /* 確保切換到座位區時，隱藏 panel-tabs，只留內容 */
   .grid.show-feed .panel-tabs { display: none; }
 
   .acard { padding: 8px 10px; gap: 8px; }
@@ -347,20 +351,19 @@ const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
 let currentView = 'feed';
 
-// 📱 手機版頁籤切換邏輯
 function switchMobileTab(target) {
   const grid = document.getElementById('main-grid');
   ['feed', 'map', 'side'].forEach(t => {
     document.getElementById('m-tab-' + t).classList.toggle('active', t === target);
   });
   
-  grid.className = 'grid'; // reset
+  grid.className = 'grid'; 
   
   if (target === 'feed') {
     grid.classList.add('show-feed');
     switchView('feed');
   } else if (target === 'map') {
-    grid.classList.add('show-feed'); // map 與 feed 共用左側面板容器
+    grid.classList.add('show-feed'); 
     switchView('map');
   } else if (target === 'side') {
     grid.classList.add('show-side');
@@ -494,7 +497,6 @@ function switchView(view) {
   document.getElementById('tab-feed').classList.toggle('active', view === 'feed');
   document.getElementById('tab-map').classList.toggle('active', view === 'map');
   
-  // 🚀 關鍵修改：用 display: flex 確保內部元素可以彈性縮放
   document.getElementById('feed-container').style.display = view === 'feed' ? 'flex' : 'none';
   document.getElementById('map-container').style.display = view === 'map' ? 'flex' : 'none';
   
@@ -503,7 +505,6 @@ function switchView(view) {
   }
 }
 
-// 🪑 核心劇院座位圖彈性渲染引擎
 function renderTheaterMap() {
   const mapEl = document.getElementById('map-container');
   const allVips = vipOrder.map(id => vips[id]).filter(Boolean);
