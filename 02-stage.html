@@ -17,7 +17,7 @@
   --red:#dc2626;--radius:12px;--radius-sm:7px;
 }
 
-/* 🪐 核心調整：鎖定視窗高度，徹底停用整頁外層滾動軸 */
+/* 🪐 核心鎖定：停用整頁外層滾動軸 */
 html, body {
   height: 100%;
   overflow: hidden;
@@ -40,42 +40,41 @@ body{
 .nav-link:hover{background:var(--surface2);}
 .nav-link.active{background:var(--green-dim);color:var(--green);}
 
-/* 🪐 核心調整：讓主區域自動填滿剩餘高度，並防止內容溢出 */
 .main{
   flex: 1;
-  max-width: 1360px; /* 擴大看盤視野 */
+  max-width: 1600px; /* 擴大看盤視野以容納三欄 */
   width: 100%;
   margin: 0 auto;
-  padding: 16px 18px 12px;
+  padding: 14px 16px 10px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-shrink: 0;}
+.ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;flex-shrink: 0;}
 .ev-name{font-size:22px;font-weight:900;line-height:1.2;}
 .ev-meta{font-size:13px;color:var(--muted);margin-top:3px;}
 .clock{text-align:right;}
 .clock-time{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--accent);line-height: 1;}
 .clock-date{font-size:12px;color:var(--muted);margin-top:4px;}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;flex-shrink: 0;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px;flex-shrink: 0;}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 15px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .stat-num{font-size:28px;font-weight:900;line-height:1;}
 .stat-bar{height:3px;background:var(--border2);border-radius:99px;margin-top:7px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.04em;}
 
-/* 🪐 核心調整：網格高度最大化，min-height: 0 是開啟內部滾動的黑魔法關鍵 */
+/* 🪐 電腦版佈局：完美分配成「左、中、右」三欄 */
 .grid{
   flex: 1;
-  display:grid;
-  grid-template-columns:1fr 340px;
-  gap:14px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 320px; 
+  gap: 14px;
   min-height: 0; 
 }
 
-/* 手機版專用切換頁籤（電腦版預設隱藏） */
+/* 手機版專用三頁籤（電腦版自動隱藏） */
 .mobile-tabs {
   display: none;
   background: var(--surface);
@@ -88,7 +87,7 @@ body{
 }
 .m-tab-btn {
   flex: 1;
-  padding: 11px;
+  padding: 11px 5px;
   background: none;
   border: none;
   font-size: 13px;
@@ -114,20 +113,60 @@ body{
   flex-direction: column;
   min-height: 0;
 }
-.feed-panel {
-  height: 100%;
-}
 .ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink: 0;}
 .ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 
-/* 🪐 核心調整：讓名單動態單獨在內部垂直滾動 */
-.feed{
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-}
+/* 🪐 各區獨立滾動軸設定 */
+.feed{ flex: 1; padding: 10px; overflow-y: auto; }
 
-.acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;transition:border-color .3s;}
+/* 🪑 座位區專用美化排版 */
+.seats-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 10px;
+  align-content: start;
+}
+.table-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.table-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 4px;
+  text-align: center;
+}
+.table-guests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.seat-chip {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.seat-occupied { background: var(--green-dim); color: var(--green); border: 1px solid rgba(22,163,74,0.2); font-weight: 700; }
+.seat-vacant { background: var(--surface); color: var(--muted); border: 1px solid var(--border); opacity: 0.6; }
+
+.acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;}
 .acard.fresh{border-color:rgba(22,163,74,.4);animation:si .35s ease;}
 @keyframes si{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
 .acard.vip{border-left:3px solid var(--amber);}
@@ -137,7 +176,7 @@ body{
 .atitle{font-size:12px;color:var(--muted);margin-top:1px;}
 .anote{font-size:11px;color:var(--amber);margin-top:2px;}
 .am{text-align:right;flex-shrink:0;}
-.atime{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;font-family:inherit;}
+.atime{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;}
 .albl{font-size:10px;color:var(--muted);margin-top:2px;}
 .badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
 .bvip{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
@@ -148,21 +187,10 @@ body{
 .priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
 .pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
 
-/* 🪐 核心調整：右側欄內部比例分配 */
-.side{
-  display:flex;
-  flex-direction:column;
-  gap:13px;
-  min-width:0;
-  height: 100%;
-}
-.side .panel:nth-child(1) { flex: 1.3; } /* 待到場分配較多空間 */
-.side .panel:nth-child(2) { flex: 1; }   /* 備註通訊分配較少空間 */
-
-#pending {
-  flex: 1;
-  overflow-y: auto; /* 待到場名單內部滾動 */
-}
+.side{ display:flex; flex-direction:column; gap:13px; min-width:0; height: 100%; }
+.side .panel:nth-child(1) { flex: 1.2; } 
+.side .panel:nth-child(2) { flex: 1; }   
+#pending { flex: 1; overflow-y: auto; }
 
 .pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
 .pitem:last-child{border-bottom:none;}
@@ -171,97 +199,50 @@ body{
 .pname{font-size:13px;font-weight:500;}
 .ptitle{font-size:11px;color:var(--muted);}
 .dotw{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
-.dotd{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
 
-/* 備註內部排版最佳化 */
-.notes-body{
-  padding:10px 13px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
-#notes-list {
-  flex: 1;
-  overflow-y: auto; /* 備註訊息內部滾動 */
-  margin-bottom: 8px;
-}
+.notes-body{ padding:10px 13px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#notes-list { flex: 1; overflow-y: auto; margin-bottom: 8px; }
 .note{background:var(--surface2);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
 .note-meta{font-size:10px;color:var(--muted);margin-top:2px;}
 textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:12px;font-family:inherit;resize:none;flex-shrink: 0;}
 textarea:focus{outline:none;border-color:var(--accent);}
-.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;font-family:inherit;flex-shrink: 0;}
-.btnsend:hover{background:rgba(26,115,232,.12);}
+.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;flex-shrink: 0;}
 
-/* 🪐 核心調整：狀態列改為頁面最下方的標準流，防止浮動遮擋主體 */
-.statusbar{
-  background:var(--surface);
-  border-top:1px solid var(--border);
-  box-shadow:0 -1px 3px rgba(0,0,0,.05);
-  padding:9px 22px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  font-size:11px;
-  color:var(--muted);
-  flex-shrink: 0;
-}
+.statusbar{background:var(--surface);border-top:1px solid var(--border);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);flex-shrink: 0;}
 .conn-ok{color:var(--green);}
 .conn-err{color:var(--red);}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;flex-shrink: 0;}
 
 /* ════════════════════════════════
-   📱 手機直式極致優化（≤ 680px）
+   📱 手機與平板自適應平板（≤ 960px）
 ════════════════════════════════ */
-@media (max-width: 680px) {
+@media (max-width: 960px) {
   .topbar { padding: 0 12px; height: 48px; }
   .logo { font-size: 13px; }
-  .live { padding: 2px 8px; font-size: 10px; }
-  .nav-link { padding: 4px 8px; font-size: 11px; }
-
   .main { padding: 10px 10px 6px; }
-
   .ev-header { margin-bottom: 8px; }
   .ev-name { font-size: 16px; }
-  .ev-meta { font-size: 11px; margin-top: 1px; }
   .clock-time { font-size: 18px; }
-  .clock-date { font-size: 10px; margin-top: 2px; }
-
-  /* 統計數值微調縮小，確保在手機上呈現一整列不被擠壓 */
+  
   .stats { gap: 5px; margin-bottom: 10px; }
   .stat { padding: 6px 4px; text-align: center; }
   .stat-num { font-size: 18px; }
   .stat-lbl { font-size: 8px; scale: 0.9; margin-top: 1px; white-space: nowrap; }
-  .stat-bar { display: none; } /* 手機版隱藏統計條以節省高度空間 */
+  .stat-bar { display: none; } 
 
-  /* 🪐 手機版切換控制：隱藏非現行頁籤，達成完美的「單畫面零整頁滾動」 */
+  /* 🪐 手機版切換邏輯：預設顯示動態，隱藏其他兩者，達成零滾軸 */
   .mobile-tabs { display: flex; }
-  .grid {
-    display: block !important;
-    height: 100%;
-  }
-  .feed-panel {
-    display: flex; /* 預設顯示左側 */
-    height: 100%;
-  }
-  .side {
-    display: none; /* 預設隱藏右側 */
-    height: 100%;
-  }
+  .grid { display: block !important; height: 100%; }
+  .feed-panel, .seats-panel, .side { display: none; height: 100%; }
   
-  /* 當啟動 show-side class 時的顯示邏輯 */
-  .grid.show-side .feed-panel { display: none !important; }
+  .grid.show-feed .feed-panel { display: flex !important; }
+  .grid.show-seats .seats-panel { display: flex !important; }
   .grid.show-side .side { display: flex !important; }
 
   .acard { padding: 8px 10px; gap: 8px; margin-bottom: 5px; }
-  .aa { width: 34px; height: 34px; font-size: 13px; }
-  .vip-photo { width: 34px; height: 34px; }
+  .aa, .vip-photo { width: 34px; height: 34px; font-size: 13px; }
   .aname { font-size: 13px; }
-  .atitle { font-size: 11px; }
   .atime { font-size: 16px; }
-  .albl { font-size: 9px; }
-
-  .statusbar { padding: 6px 12px; font-size: 10px; }
 }
 </style>
 </head>
@@ -302,17 +283,30 @@ textarea:focus{outline:none;border-color:var(--accent);}
     <div class="stat"><div class="stat-num" id="st-pct" style="color:var(--muted)">0%</div><div class="stat-lbl">到場率</div></div>
   </div>
 
+  <!-- 手機版切換三頁籤 -->
   <div class="mobile-tabs">
-    <button id="m-tab-feed" class="m-tab-btn active" onclick="switchMobileTab('feed')">⚡ 即時到場動態</button>
-    <button id="m-tab-side" class="m-tab-btn" onclick="switchMobileTab('side')">📋 待到場與備註</button>
+    <button id="m-tab-feed" class="m-tab-btn active" onclick="switchMobileTab('feed')">⚡ 即時動態</button>
+    <button id="m-tab-seats" class="m-tab-btn" onclick="switchMobileTab('seats')">🪑 座位區</button>
+    <button id="m-tab-side" class="m-tab-btn" onclick="switchMobileTab('side')">📋 名單/備註</button>
   </div>
 
-  <div class="grid">
+  <!-- 預設啟動 show-feed 狀態 -->
+  <div class="grid show-feed">
+    <!-- 欄位一：即時動態 -->
     <div class="panel feed-panel">
       <div class="ph"><div class="dot"></div><span class="ph-title">即時到場動態</span></div>
       <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
     </div>
     
+    <!-- 欄位二：座位區（全新回歸！） -->
+    <div class="panel seats-panel">
+      <div class="ph"><span class="ph-title">🪑 座位區配置狀態</span></div>
+      <div class="seats-body" id="seats-container">
+        <div class="empty">載入座位資料中...</div>
+      </div>
+    </div>
+    
+    <!-- 欄位三：待到場與備註 -->
     <div class="side">
       <div class="panel">
         <div class="ph"><span class="ph-title">待到場名單</span></div>
@@ -342,27 +336,27 @@ const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
 
-// 🪐 手機版核心頁籤切換腳本（零滾動體驗）
+// 🪐 手機版三頁籤一切即換
 function switchMobileTab(target) {
   const grid = document.querySelector('.grid');
-  const tabFeed = document.getElementById('m-tab-feed');
-  const tabSide = document.getElementById('m-tab-side');
+  const tabs = ['feed', 'seats', 'side'];
   
-  if (target === 'feed') {
-    grid.classList.remove('show-side');
-    tabFeed.classList.add('active');
-    tabSide.classList.remove('active');
-  } else {
-    grid.classList.add('show-side');
-    tabFeed.classList.remove('active');
-    tabSide.classList.add('active');
-  }
+  tabs.forEach(t => {
+    const btn = document.getElementById(`m-tab-${t}`);
+    if (t === target) {
+      grid.classList.add(`show-${t}`);
+      if (btn) btn.classList.add('active');
+    } else {
+      grid.classList.remove(`show-${t}`);
+      if (btn) btn.classList.remove('active');
+    }
+  });
 }
 
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
   if (!apiUrl) {
-    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後用同一裝置開啟。');
+    showErr('請將 Apps Script 網址填入 HARDCODED_API_URL 或前往設定頁儲存。');
     return;
   }
   loadAll();
@@ -382,11 +376,13 @@ async function loadAll() {
       v.title = String(v.title ?? '');
       v.note  = String(v.note  ?? '');
       v.photo = String(v.photo ?? '');
+      v.seat  = String(v.seat  ?? v.table ?? ''); // 自動相容 seat 或 table 欄位
       vips[v.id] = v;
       colorMap[v.id] = COLORS[i % COLORS.length];
     });
     prevChecked = new Set(data.vips.filter(v=>v.checked).map(v=>String(v.id)));
     renderFeed();
+    renderSeats();
     renderPending();
     updateStats();
     renderNotes(data.notes);
@@ -423,11 +419,13 @@ async function poll() {
       if (!vips[id]) return;
       const oldPriority = vips[id].priority;
       const newPriority = String(info.priority || 'normal');
+      const incomingSeat = String(info.seat || info.table || '');
       if (vips[id].checked  !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
+          vips[id].seat     !== incomingSeat   ||
           oldPriority       !== newPriority    ||
           vips[id].photo    !== info.photo) {
         vips[id].checked  = info.checked;
@@ -436,6 +434,7 @@ async function poll() {
         vips[id].name     = String(info.name  || vips[id].name  || '');
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
+        vips[id].seat     = incomingSeat;
         vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
@@ -449,13 +448,13 @@ async function poll() {
     if (changed) {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
-        renderFeed(justArrived); renderPending(); updateStats();
+        renderFeed(justArrived); renderSeats(); renderPending(); updateStats();
         setTimeout(() => {
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
-          renderFeed([]); renderPending(); updateStats();
+          renderFeed([]); renderSeats(); renderPending(); updateStats();
         }, 5000);
       } else {
-        renderFeed(justArrived); renderPending(); updateStats();
+        renderFeed(justArrived); renderSeats(); renderPending(); updateStats();
       }
     }
     renderNotes(data.notes);
@@ -469,8 +468,6 @@ function renderFeed(justArrived = []) {
   const el = document.getElementById('feed');
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   el.innerHTML = arrived.slice(0,20).map(v => {
-    v.name  = String(v.name  || '');
-    v.title = String(v.title || '');
     const c = colorMap[v.id] || '#4f8fff';
     const isNew = justArrived.includes(String(v.id));
     const isLeaving = !!v._pendingNormal;
@@ -482,10 +479,41 @@ function renderFeed(justArrived = []) {
       ${photoHtml}
       <div class="ai">
         <div class="aname">${v.name} ${v.priority==='vip'?'<span class="badge bvip">★ 主要</span>':''} ${isNew?'<span class="badge bnew">剛到</span>':''}</div>
-        <div class="atitle">${v.title}</div>
+        <div class="atitle">${v.title} ${v.seat?` | 🪑 ${v.seat}`:''}</div>
         ${v.note?`<div class="anote">📌 ${v.note}</div>`:''}
       </div>
       <div class="am"><div class="atime">${v.time}</div><div class="albl">報到時間</div></div>
+    </div>`;
+  }).join('');
+}
+
+// 🪐 渲染座位區的核心邏輯（自動依桌號/座位分組並顯示狀態）
+function renderSeats() {
+  const el = document.getElementById('seats-container');
+  const tables = {};
+  
+  Object.values(vips).forEach(v => {
+    const t = v.seat ? v.seat.trim() : '未配置座位';
+    if (!tables[t]) tables[t] = [];
+    tables[t].push(v);
+  });
+  
+  const tableKeys = Object.keys(tables).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {numeric: true}));
+  if (tableKeys.length === 0 || (tableKeys.length === 1 && tableKeys[0] === '未配置座位' && tables['未配置座位'].length === 0)) {
+    el.innerHTML = '<div class="empty">目前無座位配置資料</div>';
+    return;
+  }
+  
+  el.innerHTML = tableKeys.map(tName => {
+    const guests = tables[tName];
+    const guestChips = guests.map(g => {
+      const statusClass = g.checked ? 'seat-occupied' : 'seat-vacant';
+      return `<span class="seat-chip ${statusClass}" title="${g.name} (${g.title})">${g.name}</span>`;
+    }).join('');
+    
+    return `<div class="table-box">
+      <div class="table-title">${tName}</div>
+      <div class="table-guests">${guestChips}</div>
     </div>`;
   }).join('');
 }
@@ -495,15 +523,13 @@ function renderPending() {
   const el = document.getElementById('pending');
   if (!pend.length) { el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; return; }
   el.innerHTML = pend.map(v => {
-    v.name  = String(v.name  || '');
-    v.title = String(v.title || '');
     const c = colorMap[v.id] || '#1a73e8';
     const thumbHtml = v.photo
       ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
       : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
     return `<div class="pitem">
       ${thumbHtml}
-      <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
+      <div class="pinfo"><div class="pname">${v.name} ${v.seat?`<span style="color:var(--amber);font-size:11px;margin-left:5px;">(${v.seat})</span>`:''}</div><div class="ptitle">${v.title}</div></div>
       <div class="dotw"></div>
     </div>`;
   }).join('');
@@ -525,8 +551,7 @@ function renderNotes(notes) {
   if (!notes || !notes.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;">尚無備註</div>'; return; }
   el.innerHTML = notes.map(n => {
     const fromColor = n.from === '貴賓備註' ? '#d97706' : n.from === '舞台區' ? '#7c3aed' : '#1a73e8';
-    const timeStr = n.time ? ' · ' + n.time : '';
-    return `<div class="note"><span style="font-size:11px;font-weight:600;color:${fromColor};margin-right:6px;">[${n.from}]</span>${n.text}<div class="note-meta">${timeStr}</div></div>`;
+    return `<div class="note"><span style="font-size:11px;font-weight:600;color:${fromColor};margin-right:6px;">[${n.from}]</span>${n.text}<div class="note-meta">${n.time||''}</div></div>`;
   }).join('');
 }
 
@@ -545,11 +570,7 @@ function updateHeader(info) {
   if (!info) return;
   document.getElementById('ev-name').textContent = info['活動名稱'] || '活動';
   const rawParts = [info['日期'], info['地點'], info['時間']].filter(Boolean);
-  const parts = rawParts.map(p => {
-    const s = String(p);
-    const dateOnly = s.includes('T') ? s.split('T')[0] : s;
-    return dateOnly.replace(/-/g, '/');
-  });
+  const parts = rawParts.map(p => String(p).replace(/-/g, '/'));
   document.getElementById('ev-meta').textContent = parts.join(' · ');
 }
 
