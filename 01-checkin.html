@@ -230,10 +230,9 @@ async function loadAll() {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
-  pollTimer = setInterval(poll, 5000); // 維持 5 秒輪詢
+  pollTimer = setInterval(poll, 5000);
 }
 
-// 🚀 高效能輪詢邏輯：避免不必要的全頁重繪
 async function poll() {
   try {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
@@ -265,21 +264,23 @@ async function poll() {
       const newPriority = String(info.priority || 'normal');
       const oldChecked = vips[id].checked;
 
-      // 如果資料有異動
+      // 🔥 修正點 1：後端 poll 不會傳照片，所以如果沒傳，就保留原有的照片網址
+      const incomingPhoto = (info.photo !== undefined && info.photo !== '') ? info.photo : vips[id].photo;
+
+      // 判斷資料是否真的有異動（排除照片的誤判）
       if (oldChecked !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
-          oldPriority       !== newPriority    ||
-          vips[id].photo    !== info.photo) {
+          oldPriority       !== newPriority) {
         
         // 判斷是否「只是報到狀態改變」
         const isOnlyStatusChange = 
           (oldChecked !== info.checked) && 
           (oldPriority === newPriority) &&
           (vips[id].name === info.name) && 
-          (vips[id].photo === info.photo);
+          (vips[id].title === info.title);
 
         // 更新本機資料
         vips[id].checked  = info.checked;
@@ -288,7 +289,7 @@ async function poll() {
         vips[id].name     = String(info.name  || vips[id].name  || '');
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
-        vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
+        vips[id].photo    = incomingPhoto; // 寫入正確的照片網址
 
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
@@ -298,7 +299,7 @@ async function poll() {
           updateCardState(id);
           statsChanged = true;
         } else {
-          // 其他欄位（姓名、職稱、照片）修改，才整頁重繪
+          // 其他欄位（姓名、職稱）修改，才整頁重繪
           needsFullRender = true;
         }
       }
@@ -326,7 +327,6 @@ async function poll() {
   } catch(e) { setConn(false); }
 }
 
-// 🚀 報到按鈕防連點與局部更新
 async function doCheckin(id) {
   const btn = document.getElementById('btn-chk-' + id);
   if (btn) {
@@ -345,7 +345,6 @@ async function doCheckin(id) {
     vips[id].checked = true; 
     vips[id].time = time;
     
-    // 取代 renderCards()，直接改畫面
     updateCardState(id);
     updateStats();
     toast('✓ ' + vips[id].name + ' 報到 ' + time);
@@ -406,14 +405,16 @@ function renderCards() {
   document.getElementById('no-results').style.display = (pList.length + nList.length === 0) ? 'block' : 'none';
 }
 
-// 🚀 HTML 結構補上 ID，方便局部更新
 function card(v) {
   v.name  = String(v.name  || '');
   v.title = String(v.title || '');
   const c = colorMap[v.id] || '#1a73e8';
+  
+  // 🔥 修正點 2：加入 loading="lazy"
   const avatarHtml = v.photo
-    ? `<img src="${v.photo}" class="avatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
+    ? `<img src="${v.photo}" class="avatar-photo" loading="lazy" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
     : `<div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>`;
+    
   const pendingClass = v._pendingNormal ? ' priority-leaving' : '';
   const effectiveClass = (v._pendingNormal || v.priority === 'vip') ? 'priority' : '';
   
@@ -435,7 +436,6 @@ function card(v) {
   </div>`;
 }
 
-// 🚀 執行局部更新的函式
 function updateCardState(id) {
   const v = vips[id];
   const card = document.getElementById('vcard-' + id);
@@ -443,7 +443,7 @@ function updateCardState(id) {
   const timeText = document.getElementById('vtime-text-' + id);
   const actionDiv = document.getElementById('vaction-' + id);
 
-  if (!card) return; // 若因搜尋被過濾掉則略過
+  if (!card) return; 
 
   if (v.checked) {
     card.classList.add('checked');
