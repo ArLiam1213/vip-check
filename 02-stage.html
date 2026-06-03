@@ -233,13 +233,10 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .stat-bar { display: none; }
 
   .mobile-tabs { display: flex; }
-  .grid { display: block !important; height: auto !important; min-height: 60vh; }
-
-  .feed-panel-wrap, .side { display: none; height: auto; min-height: 50vh; }
-
-  .grid.show-feed .feed-panel-wrap { display: flex !important; flex-direction: column; }
-  .grid.show-side .side { display: flex !important; }
-  .grid.show-feed .panel-tabs { display: none; }
+  /* 手機 grid 改成單欄 block */
+  .grid { display: block !important; }
+  /* 手機版 panel-tabs（動態/座位切換）隱藏，改用上方三頁籤 */
+  .panel-tabs { display: none !important; }
 
   .acard { padding: 8px 10px; gap: 8px; }
   .aa, .vip-photo { width: 34px; height: 34px; font-size: 13px; }
@@ -407,21 +404,26 @@ let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set(
 let currentView = 'feed';
 
 function switchMobileTab(target) {
-  const grid = document.getElementById('main-grid');
+  // 更新頁籤按鈕 active 狀態
   ['feed', 'map', 'side'].forEach(t => {
     document.getElementById('m-tab-' + t).classList.toggle('active', t === target);
   });
-  
-  grid.className = 'grid'; 
-  
+
+  const feedWrap = document.querySelector('.feed-panel-wrap');
+  const sideWrap = document.querySelector('.side');
+
+  // 全部先隱藏
+  feedWrap.style.display = 'none';
+  sideWrap.style.display = 'none';
+
   if (target === 'feed') {
-    grid.classList.add('show-feed');
+    feedWrap.style.display = 'block';
     switchView('feed');
   } else if (target === 'map') {
-    grid.classList.add('show-feed'); 
+    feedWrap.style.display = 'block';
     switchView('map');
   } else if (target === 'side') {
-    grid.classList.add('show-side');
+    sideWrap.style.display = 'block';
   }
 }
 
@@ -430,6 +432,13 @@ function init() {
   if (!apiUrl) {
     showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
     return;
+  }
+  // 手機版：初始化時確保 feed 顯示、side 隱藏
+  if (window.innerWidth <= 768) {
+    const feedWrap = document.querySelector('.feed-panel-wrap');
+    const sideWrap = document.querySelector('.side');
+    if (feedWrap) feedWrap.style.display = 'block';
+    if (sideWrap) sideWrap.style.display = 'none';
   }
   loadAll();
 }
