@@ -228,7 +228,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .topbar { padding: 0 12px; height: 46px; }
   .logo { font-size: 13px; }
   .main { padding: 10px 10px 6px; }
-  
+
   .ev-header { margin-bottom: 8px; }
   .ev-name { font-size: 17px; }
   .clock-time { font-size: 20px; }
@@ -238,16 +238,15 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .stat { padding: 8px 4px; }
   .stat-num { font-size: 18px; }
   .stat-lbl { font-size: 8px; scale: 0.9; margin-top: 2px; }
-  .stat-bar { display: none; } 
+  .stat-bar { display: none; }
 
   .mobile-tabs { display: flex; }
   .grid { display: block !important; height: 100%; }
-  
+
   .feed-panel-wrap, .side { display: none; height: 100%; }
-  
+
   .grid.show-feed .feed-panel-wrap { display: flex !important; flex-direction: column; }
   .grid.show-side .side { display: flex !important; }
-  
   .grid.show-feed .panel-tabs { display: none; }
 
   .acard { padding: 8px 10px; gap: 8px; }
@@ -261,6 +260,70 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .pname { font-size: 12px; }
 
   .statusbar { padding: 8px 12px; font-size: 10px; }
+
+  /* ── 手機版座位圖：縱向排列，不需橫向滾動 ── */
+  .theater-map { padding: 10px 8px; gap: 6px; }
+  .stage-indicator { font-size: 11px; padding: 6px; letter-spacing: 0.4em; }
+
+  /* 每排改成縱向：排標題佔整行，左側一行，右側一行 */
+  .theater-row {
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 6px 4px !important;
+    min-height: unset !important;
+  }
+  .row-label {
+    width: 100% !important;
+    font-size: 11px !important;
+    font-weight: 700;
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 3px 8px !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    color: var(--navy, var(--accent));
+    border-bottom: 1px solid var(--border);
+  }
+  /* 左右兩側各佔整行 */
+  .theater-side {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    border: none !important;
+    justify-content: flex-start !important;
+  }
+  .side-left { border-right: none !important; padding-right: 0 !important; }
+  .side-right { border-left: none !important; padding-left: 0 !important; }
+
+  /* 座位塊：固定寬度，讓每排自動換行 */
+  .seat-block {
+    flex: 0 0 calc(20% - 4px) !important; /* 每行最多5個 */
+    min-width: 0 !important;
+    max-width: calc(20% - 4px) !important;
+    min-height: 52px !important;
+    padding: 4px 2px !important;
+  }
+  .seat-name { font-size: 10px !important; -webkit-line-clamp: 2; }
+  .seat-num  { font-size: 8px !important; }
+
+  /* 左右區域標籤 */
+  .theater-side.side-left::before {
+    content: '← 左側';
+    width: 100%;
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0 2px 2px;
+  }
+  .theater-side.side-right::before {
+    content: '右側 →';
+    width: 100%;
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0 2px 2px;
+  }
 }
 </style>
 </head>
