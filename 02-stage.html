@@ -17,10 +17,10 @@
   --red:#dc2626;--radius:12px;--radius-sm:7px;
 }
 
-/* 鎖死全螢幕高度，整頁不動 */
+/* 預設：允許捲動（手機、平板橫放） */
 html, body {
-  height: 100%;
-  overflow: hidden; 
+  height: auto;
+  overflow: auto;
 }
 body {
   font-family:'Noto Sans TC',sans-serif;
@@ -28,6 +28,11 @@ body {
   color:var(--text);
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+}
+/* 桌機大螢幕（>768px）才鎖死全螢幕不捲動 */
+@media (min-width: 769px) {
+  html, body { height: 100%; overflow: hidden; }
 }
 
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink: 0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
@@ -48,7 +53,11 @@ body {
   padding:16px 18px 12px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* 桌機：子區塊各自捲動 */
+}
+/* 手機 / 平板橫放：.main 改為自然高度，整頁可上下捲 */
+@media (max-width: 768px) {
+  .main { overflow: visible; flex: none; }
 }
 
 .ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-shrink: 0;}
@@ -241,13 +250,22 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .stat-bar { display: none; }
 
   .mobile-tabs { display: flex; }
-  .grid { display: block !important; height: 100%; }
+  .grid { display: block !important; height: auto !important; min-height: 60vh; }
 
-  .feed-panel-wrap, .side { display: none; height: 100%; }
+  .feed-panel-wrap, .side { display: none; height: auto; min-height: 50vh; }
 
   .grid.show-feed .feed-panel-wrap { display: flex !important; flex-direction: column; }
   .grid.show-side .side { display: flex !important; }
   .grid.show-feed .panel-tabs { display: none; }
+
+  /* 手機版：內部子區塊不鎖 overflow，讓整頁捲動 */
+  .feed { overflow: visible !important; height: auto !important; }
+  #pending { overflow: visible !important; height: auto !important; }
+  #notes-list { overflow: visible !important; height: auto !important; }
+  .panel { overflow: visible !important; }
+  .side .panel { height: auto !important; flex: none !important; }
+  .side { height: auto !important; }
+  .notes-body { flex: none !important; }
 
   .acard { padding: 8px 10px; gap: 8px; }
   .aa, .vip-photo { width: 34px; height: 34px; font-size: 13px; }
