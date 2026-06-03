@@ -220,6 +220,7 @@ async function loadAll() {
       v.title = String(v.title ?? '');
       v.note  = String(v.note  ?? '');
       v.photo = String(v.photo ?? '');
+      v.seat  = String(v.seat  ?? '');
       vips[v.id] = v;
       colorMap[v.id] = COLORS[i % COLORS.length];
     });
@@ -283,18 +284,22 @@ async function poll() {
 
       const incomingPhoto = (info.photo !== undefined && info.photo !== '') ? info.photo : vips[id].photo;
 
+      const incomingSeat = info.seat !== undefined ? String(info.seat ?? '') : vips[id].seat;
+
       if (oldChecked !== info.checked  ||
           vips[id].time     !== info.time      ||
           vips[id].note     !== info.note      ||
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
-          oldPriority       !== newPriority) {
-        
-        const isOnlyStatusChange = 
-          (oldChecked !== info.checked) && 
+          oldPriority       !== newPriority    ||
+          vips[id].seat     !== incomingSeat) {
+
+        const isOnlyStatusChange =
+          (oldChecked !== info.checked) &&
           (oldPriority === newPriority) &&
-          (vips[id].name === info.name) && 
-          (vips[id].title === info.title);
+          (vips[id].name  === info.name) &&
+          (vips[id].title === info.title) &&
+          (vips[id].seat  === incomingSeat);
 
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
@@ -303,6 +308,7 @@ async function poll() {
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
         vips[id].photo    = incomingPhoto;
+        vips[id].seat     = incomingSeat;
 
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
