@@ -500,6 +500,7 @@ async function poll() {
     
     const newChecked = new Set();
     const priorityDowngrades = [];
+    let seatChanged = false;
     
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (info.checked) newChecked.add(id);
@@ -513,7 +514,7 @@ async function poll() {
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
           oldPriority       !== newPriority    ||
-          vips[id].photo    !== info.photo     ||
+          (info.photo !== '' && vips[id].photo !== info.photo) ||
           vips[id].seat     !== String(info.seat ?? '')) {
           
         vips[id].checked  = info.checked;
@@ -522,8 +523,10 @@ async function poll() {
         vips[id].name     = String(info.name  || vips[id].name  || '');
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
-        vips[id].photo    = info.photo !== undefined ? info.photo : vips[id].photo;
-        vips[id].seat     = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
+        vips[id].photo    = (info.photo && info.photo !== '') ? info.photo : vips[id].photo;
+        const newSeat = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
+        if (vips[id].seat !== newSeat) { vips[id].seat = newSeat; seatChanged = true; }
+        else vips[id].seat = newSeat;
         
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
@@ -539,7 +542,7 @@ async function poll() {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
         renderFeed(justArrived); renderPending(); updateStats();
-        if (currentView === 'map') renderTheaterMap();
+        if (currentView === 'map' || seatChanged) renderTheaterMap();
         setTimeout(() => {
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
           renderFeed([]); renderPending(); updateStats();
@@ -547,7 +550,7 @@ async function poll() {
         }, 5000);
       } else {
         renderFeed(justArrived); renderPending(); updateStats();
-        if (currentView === 'map') renderTheaterMap();
+        if (currentView === 'map' || seatChanged) renderTheaterMap();
       }
     }
     renderNotes(data.notes);
