@@ -608,11 +608,14 @@ function renderTheaterMap() {
       let side = '左';
       let seatNum = 1;
 
-      const match = String(v.seat).match(/(\d+)\s*[-|排|列]?\s*([左右])\s*[-|區|側]?\s*(\d*)/);
+      const seatStr = String(v.seat || '').trim();
+      const match = seatStr.match(/(\d+)[-–]([左右])[-–](\d+)/);
       if (match) {
         rowNum = parseInt(match[1]) || 1;
         side = match[2];
         seatNum = parseInt(match[3]) || 1;
+      } else if (!seatStr) {
+        return;
       } else {
         rowNum = 99;
       }
