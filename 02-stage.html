@@ -619,8 +619,10 @@ function renderTheaterMap() {
     });
 
     Object.keys(rowsData).forEach(r => {
+      // 左側：seatNum 大→小（左5 左4 左3 左2 左1，從外到內靠近中央）
       rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum);
-      rowsData[r]['right'] ? rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum) : null;
+      // 右側：seatNum 小→大（右1 右2 右3 右4 右5，從內到外遠離中央）
+      rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum);
     });
   }
 
