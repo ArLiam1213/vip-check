@@ -705,21 +705,29 @@ function renderCheckinSeat(item, side, num) {
 
 async function seatCheckin(id) {
   if (!apiUrl || !vips[id]) return;
-  const now = new Date();
+  const now  = new Date();
   const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const url  = apiUrl
+    + '?action=checkin'
+    + '&id='   + encodeURIComponent(id)
+    + '&time=' + encodeURIComponent(time)
+    + '&t='    + Date.now();          // 防快取
   try {
-    const res  = await fetch(apiUrl + '?action=checkin&id=' + encodeURIComponent(id) + '&time=' + encodeURIComponent(time));
-    const data = await res.json();
+    const res  = await fetch(url);
+    const text = await res.text();    // 先取文字，避免非 JSON 直接 crash
+    let data;
+    try { data = JSON.parse(text); }
+    catch(pe) { throw new Error('回應格式錯誤：' + text.slice(0, 80)); }
     if (!data.ok) throw new Error(data.error || '報到失敗');
     vips[id].checked = true;
     vips[id].time    = time;
     renderCheckinSeatMap();
     renderCards();
     updateStats();
+    setConn(true);
     toast('✓ ' + vips[id].name + ' 報到 ' + time);
   } catch(e) {
     alert('報到失敗：' + e.message);
-    setConn(false);
   }
 }
 
@@ -727,19 +735,26 @@ async function seatUndo(id) {
   if (!apiUrl || !vips[id]) return;
   const name = vips[id].name || '';
   if (!confirm('確定撤銷 ' + name + ' 的報到？')) return;
+  const url  = apiUrl
+    + '?action=undo'
+    + '&id=' + encodeURIComponent(id)
+    + '&t='  + Date.now();            // 防快取
   try {
-    const res  = await fetch(apiUrl + '?action=undo&id=' + encodeURIComponent(id));
-    const data = await res.json();
+    const res  = await fetch(url);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch(pe) { throw new Error('回應格式錯誤：' + text.slice(0, 80)); }
     if (!data.ok) throw new Error(data.error || '撤銷失敗');
     vips[id].checked = false;
     vips[id].time    = '';
     renderCheckinSeatMap();
     renderCards();
     updateStats();
+    setConn(true);
     toast('已撤銷 ' + name + ' 的報到');
   } catch(e) {
     alert('撤銷失敗：' + e.message);
-    setConn(false);
   }
 }
 
