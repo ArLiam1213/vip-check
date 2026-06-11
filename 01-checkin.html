@@ -253,7 +253,7 @@ const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_A
 
 const KEY = 'vip_gs_config';
 const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
-let vips = {}, colorMap = {}, apiUrl = '';
+let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '';
 let pollTimer = null;
 let checkinView = 'list';  // 'list' | 'seat'
 let localLocks = {}; // 🔒 用於防回溯的本地鎖定清單
@@ -283,6 +283,7 @@ async function loadAll() {
       document.getElementById('ev-meta').textContent = formatted.join(' · ');
     }
     
+    vipOrder = data.vips.map(v => String(v.id ?? ''));
     data.vips.forEach((v, i) => {
       v.id    = String(v.id    ?? '');
       v.name  = String(v.name  ?? '');
@@ -302,6 +303,7 @@ async function loadAll() {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
+  if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(poll, 5000);
 }
 
@@ -321,6 +323,7 @@ async function poll() {
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
+        vipOrder = vipOrder.filter(x => x !== id);
         deleted = true;
       }
     });
