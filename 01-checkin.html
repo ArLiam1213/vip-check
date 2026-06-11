@@ -75,54 +75,8 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
 #no-results{display:none;text-align:center;color:var(--muted);font-size:14px;padding:36px 0;}
 
-/* ════════════════════════════════
-   手機直式 RWD（≤ 480px）
-════════════════════════════════ */
-@media (max-width: 480px) {
-  .topbar { padding: 0 12px; height: 48px; }
-  .logo { font-size: 13px; }
-  .nav-link { padding: 4px 8px; font-size: 11px; }
-
-  .wrap { padding: 14px 10px 72px; }
-
-  .ev-banner { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 13px; }
-  .ev-name { font-size: 14px; }
-  .ev-meta { font-size: 11px; }
-  #clock { font-size: 12px; align-self: flex-end; }
-
-  .stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
-  .stat { padding: 9px 6px; }
-  .stat-num { font-size: 22px; }
-  .stat-lbl { font-size: 10px; }
-
-  .search-input { font-size: 14px; padding: 10px 12px 10px 32px; }
-  .search-icon { font-size: 13px; left: 9px; }
-
-  .sec-label { font-size: 10px; margin-bottom: 6px; }
-
-  .vcard { padding: 11px 10px; gap: 9px; }
-  .avatar { width: 36px; height: 36px; font-size: 13px; }
-  .avatar-photo { width: 36px; height: 36px; }
-  .vname { font-size: 13px; }
-  .vtitle { font-size: 11px; }
-  .vnote { font-size: 10px; }
-  .vtime { font-size: 11px; }
-
-  .btn-checkin { padding: 8px 14px; font-size: 12px; }
-  .btn-undo { font-size: 10px; padding: 3px 7px; }
-
-  .notes-box { padding: 12px 12px; }
-  .notes-title { font-size: 12px; }
-  .note-item { font-size: 12px; padding: 7px 9px; }
-  .note-meta { font-size: 10px; }
-  textarea { font-size: 12px; padding: 7px 9px; }
-  .btn-sm { font-size: 11px; padding: 6px 11px; }
-
-  .statusbar { padding: 8px 12px; font-size: 10px; }
-}
-
 /* ════════════════════════════
-   報到區座位圖
+   報到區座位圖 (共通樣式)
 ════════════════════════════ */
 .view-tabs{display:flex;gap:6px;margin-bottom:14px;}
 .view-tab{flex:1;padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all .15s;text-align:center;}
@@ -167,12 +121,76 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .seat-block.occupied-vip .seat-checkin-overlay,
 .seat-block.occupied-normal .seat-checkin-overlay{background:rgba(220,38,38,.12);}
 
-/* 座位圖手機版 */
-@media(max-width:480px){
-  .seat-block{aspect-ratio:1/1.2;}
-  .seat-name{font-size:8px;}
-  .seat-num{font-size:7px;}
-  .seat-row-label{width:36px;font-size:10px;}
+/* ════════════════════════════════
+   📱 手機直式 RWD（名單與座位圖優化）
+════════════════════════════════ */
+@media (max-width: 600px) {
+  .topbar { padding: 0 12px; height: 48px; }
+  .logo { font-size: 13px; }
+  .nav-link { padding: 4px 8px; font-size: 11px; }
+  .wrap { padding: 14px 10px 72px; }
+
+  .ev-banner { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 13px; }
+  .ev-name { font-size: 14px; }
+  .ev-meta { font-size: 11px; }
+  #clock { font-size: 12px; align-self: flex-end; }
+
+  .stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .stat { padding: 9px 6px; }
+  .stat-num { font-size: 22px; }
+  .stat-lbl { font-size: 10px; }
+
+  .search-input { font-size: 14px; padding: 10px 12px 10px 32px; }
+  .search-icon { font-size: 13px; left: 9px; }
+  
+  .vcard { padding: 11px 10px; gap: 9px; }
+  .avatar { width: 36px; height: 36px; font-size: 13px; }
+  .avatar-photo { width: 36px; height: 36px; }
+  .vname { font-size: 13px; }
+  .vtitle { font-size: 11px; }
+  .btn-checkin { padding: 8px 14px; font-size: 12px; }
+
+  /* 🪑 座位圖手機版：空間加倍魔法（上下堆疊） */
+  .seat-row {
+    flex-direction: column; /* 讓一排折成上下兩截 */
+    align-items: stretch;
+    background: var(--surface2);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    gap: 6px;
+  }
+  .seat-row-label {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    color: var(--accent);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 4px;
+    text-indent: 4px;
+  }
+  .seat-divider { display: none; } /* 隱藏中間的隔線 */
+  .seat-side {
+    width: 100%;
+    justify-content: space-between; /* 讓5個位置均分寬度 */
+  }
+  .seat-block {
+    flex: 1; /* 每行分配最大的寬度 */
+    width: auto;
+    aspect-ratio: auto;
+    min-height: 56px;
+    padding: 4px 1px;
+  }
+  .seat-name {
+    font-size: 11px; /* 名字放大 */
+    line-height: 1.2;
+  }
+  .seat-num {
+    font-size: 9px;
+  }
+  /* 增加左右的視覺提示，確保工作人員不會點錯 */
+  .seat-side.left::before { content: '左側'; font-size: 9px; font-weight: 700; color: var(--muted); writing-mode: vertical-lr; display: flex; align-items: center; justify-content: center; margin-right: 2px; }
+  .seat-side.right::before { content: '右側'; font-size: 9px; font-weight: 700; color: var(--muted); writing-mode: vertical-lr; display: flex; align-items: center; justify-content: center; margin-right: 2px; }
 }
 </style>
 </head>
@@ -313,10 +331,10 @@ async function poll() {
     const incomingIds = new Set(Object.keys(data.checkins));
     const localIds    = new Set(Object.keys(vips));
     const hasNew      = [...incomingIds].some(id => !localIds.has(id));
-    
     if (hasNew) { await loadAll(); return; }
     
     let deleted = false;
+    let changed = false;
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
@@ -324,12 +342,14 @@ async function poll() {
         deleted = true;
       }
     });
+    if (deleted) changed = true;
     
-    let needsFullRender = deleted;
-    let statsChanged = false;
+    const newChecked = new Set();
     const priorityDowngrades = [];
-
+    let seatChanged = false;
+    
     Object.entries(data.checkins).forEach(([id, info]) => {
+      if (info.checked) newChecked.add(id);
       if (!vips[id]) return;
 
       if (localLocks[id]) {
@@ -357,39 +377,33 @@ async function poll() {
           vips[id].name     !== info.name      ||
           vips[id].title    !== info.title     ||
           oldPriority       !== newPriority    ||
-          vips[id].seat     !== incomingSeat) {
-
-        const isOnlyStatusChange =
-          (oldChecked !== info.checked) &&
-          (oldPriority === newPriority) &&
-          (vips[id].name  === info.name) &&
-          (vips[id].title === info.title) &&
-          (vips[id].seat  === incomingSeat);
-
+          (info.photo !== '' && vips[id].photo !== info.photo) ||
+          vips[id].seat     !== String(info.seat ?? '')) {
+          
         vips[id].checked  = info.checked;
         vips[id].time     = info.time;
         vips[id].note     = info.note;
         vips[id].name     = String(info.name  || vips[id].name  || '');
         vips[id].title    = String(info.title || vips[id].title || '');
         vips[id].priority = newPriority;
-        vips[id].photo    = incomingPhoto;
-        vips[id].seat     = incomingSeat;
-
+        vips[id].photo    = (info.photo && info.photo !== '') ? info.photo : vips[id].photo;
+        const newSeat = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
+        if (vips[id].seat !== newSeat) { vips[id].seat = newSeat; seatChanged = true; }
+        else vips[id].seat = newSeat;
+        
         if (oldPriority !== newPriority && newPriority === 'normal') {
           priorityDowngrades.push(id);
-          needsFullRender = true;
-        } else if (isOnlyStatusChange && !needsFullRender) {
-          updateCardState(id);
-          statsChanged = true;
-        } else {
-          needsFullRender = true;
         }
+        changed = true;
       }
     });
-
-    if (needsFullRender) {
+    
+    const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
+    prevChecked = newChecked;
+    
+    if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
-        priorityDowngrades.forEach(id => { vips[id]._pendingNormal = true; });
+        priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
         renderCards(); updateStats();
         if (checkinView === 'seat') renderCheckinSeatMap();
         setTimeout(() => {
@@ -402,8 +416,7 @@ async function poll() {
         updateStats();
         if (checkinView === 'seat') renderCheckinSeatMap();
       }
-    } else if (statsChanged) {
-      updateStats();
+    } else if (seatChanged) {
       if (checkinView === 'seat') renderCheckinSeatMap();
     }
     
@@ -691,15 +704,43 @@ function renderCheckinSeat(item, side, num) {
 }
 
 async function seatCheckin(id) {
-  await doCheckin(id);
-  renderCheckinSeatMap();
+  if (!apiUrl || !vips[id]) return;
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  try {
+    const res  = await fetch(apiUrl + '?action=checkin&id=' + encodeURIComponent(id) + '&time=' + encodeURIComponent(time));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '報到失敗');
+    vips[id].checked = true;
+    vips[id].time    = time;
+    renderCheckinSeatMap();
+    renderCards();
+    updateStats();
+    toast('✓ ' + vips[id].name + ' 報到 ' + time);
+  } catch(e) {
+    alert('報到失敗：' + e.message);
+    setConn(false);
+  }
 }
 
 async function seatUndo(id) {
-  const name = vips[id] && vips[id].name ? vips[id].name : '';
-  if (!confirm(`確定撤銷 ${name} 的報到？`)) return;
-  await undoCheckin(id);
-  renderCheckinSeatMap();
+  if (!apiUrl || !vips[id]) return;
+  const name = vips[id].name || '';
+  if (!confirm('確定撤銷 ' + name + ' 的報到？')) return;
+  try {
+    const res  = await fetch(apiUrl + '?action=undo&id=' + encodeURIComponent(id));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '撤銷失敗');
+    vips[id].checked = false;
+    vips[id].time    = '';
+    renderCheckinSeatMap();
+    renderCards();
+    updateStats();
+    toast('已撤銷 ' + name + ' 的報到');
+  } catch(e) {
+    alert('撤銷失敗：' + e.message);
+    setConn(false);
+  }
 }
 
 </script>
