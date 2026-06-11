@@ -120,60 +120,6 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
   .statusbar { padding: 8px 12px; font-size: 10px; }
 }
-
-/* ════════════════════════════
-   報到區座位圖
-════════════════════════════ */
-.view-tabs{display:flex;gap:6px;margin-bottom:14px;}
-.view-tab{flex:1;padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all .15s;text-align:center;}
-.view-tab.active{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
-.view-tab:hover:not(.active){background:var(--surface2);}
-
-#seat-view{display:none;}
-.seat-theater{display:flex;flex-direction:column;gap:8px;padding:4px 0 16px;}
-.seat-stage-bar{background:var(--navy,#3a4a5c);color:#fff;border-radius:var(--radius-sm);padding:8px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.2em;margin-bottom:4px;}
-.seat-row{display:flex;align-items:center;gap:4px;}
-.seat-row-label{width:44px;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;text-align:center;}
-.seat-side{display:flex;gap:3px;flex:1;justify-content:flex-end;}
-.seat-side.right{justify-content:flex-start;}
-.seat-divider{width:2px;background:var(--border2);border-radius:99px;align-self:stretch;flex-shrink:0;margin:0 4px;}
-.seat-block{
-  width:calc((100% - 20px) / 5);
-  min-width:0;
-  aspect-ratio:1/1.1;
-  border-radius:6px;
-  border:1.5px solid var(--border2);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:3px 2px;cursor:pointer;transition:all .15s;position:relative;
-  background:var(--surface);
-  overflow:hidden;
-}
-.seat-block:hover{border-color:var(--accent);background:var(--accent-dim);}
-.seat-block.occupied-vip{background:var(--green-dim);border-color:rgba(22,163,74,.4);}
-.seat-block.occupied-normal{background:rgba(26,115,232,.08);border-color:rgba(26,115,232,.3);}
-.seat-block.empty-slot{opacity:.4;cursor:default;pointer-events:none;}
-.seat-block.pending{opacity:.65;}
-.seat-name{font-size:9px;font-weight:600;color:var(--text);text-align:center;line-height:1.2;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;width:100%;}
-.seat-num{font-size:8px;color:var(--muted);margin-top:2px;}
-.seat-block.occupied-vip .seat-name{color:var(--green);}
-.seat-block.occupied-vip .seat-num{color:rgba(22,163,74,.7);}
-.seat-block.occupied-normal .seat-name{color:var(--accent);}
-.seat-checkin-overlay{
-  position:absolute;inset:0;background:rgba(22,163,74,.15);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .15s;font-size:18px;
-}
-.seat-block:hover .seat-checkin-overlay{opacity:1;}
-.seat-block.occupied-vip .seat-checkin-overlay,
-.seat-block.occupied-normal .seat-checkin-overlay{background:rgba(220,38,38,.12);}
-
-/* 座位圖手機版 */
-@media(max-width:480px){
-  .seat-block{aspect-ratio:1/1.2;}
-  .seat-name{font-size:8px;}
-  .seat-num{font-size:7px;}
-  .seat-row-label{width:36px;font-size:10px;}
-}
 </style>
 </head>
 <body>
@@ -209,25 +155,11 @@ textarea:focus{outline:none;border-color:var(--accent);}
     <input type="text" class="search-input" id="search" placeholder="搜尋姓名或職稱…" oninput="renderCards()">
   </div>
 
-  <div class="view-tabs">
-    <button class="view-tab active" id="tab-list" onclick="switchCheckinView('list')">📋 名單模式</button>
-    <button class="view-tab" id="tab-seat" onclick="switchCheckinView('seat')">🪑 座位圖模式</button>
-  </div>
-
-  <!-- 名單檢視 -->
-  <div id="list-view">
   <div class="sec-label">主要貴賓</div>
   <div id="list-vip"></div>
   <div class="sec-label" style="margin-top:14px;">一般貴賓</div>
   <div id="list-normal"></div>
   <div id="no-results">查無結果</div>
-
-  </div><!-- /list-view -->
-
-  <!-- 座位圖檢視 -->
-  <div id="seat-view">
-    <div class="seat-theater" id="checkin-seat-theater"></div>
-  </div>
 
   <div class="notes-box">
     <div class="notes-title">📨 舞台端備註</div>
@@ -253,9 +185,8 @@ const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_A
 
 const KEY = 'vip_gs_config';
 const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
-let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '';
+let vips = {}, colorMap = {}, apiUrl = '';
 let pollTimer = null;
-let checkinView = 'list';  // 'list' | 'seat'
 let localLocks = {}; // 🔒 用於防回溯的本地鎖定清單
 
 function init() {
@@ -283,7 +214,6 @@ async function loadAll() {
       document.getElementById('ev-meta').textContent = formatted.join(' · ');
     }
     
-    vipOrder = data.vips.map(v => String(v.id ?? ''));
     data.vips.forEach((v, i) => {
       v.id    = String(v.id    ?? '');
       v.name  = String(v.name  ?? '');
@@ -296,14 +226,12 @@ async function loadAll() {
     });
     renderCards();
     updateStats();
-    if (checkinView === 'seat') renderCheckinSeatMap();
     renderNotes(data.notes);
     setConn(true);
   } catch(e) {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
-  if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(poll, 5000);
 }
 
@@ -323,7 +251,6 @@ async function poll() {
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
-        vipOrder = vipOrder.filter(x => x !== id);
         deleted = true;
       }
     });
@@ -601,112 +528,6 @@ setInterval(() => {
 }, 1000);
 
 init();
-
-// ════════════════════════════
-//  報到區座位圖
-// ════════════════════════════
-function switchCheckinView(view) {
-  checkinView = view;
-  document.getElementById('tab-list').classList.toggle('active', view === 'list');
-  document.getElementById('tab-seat').classList.toggle('active', view === 'seat');
-  document.getElementById('list-view').style.display = view === 'list' ? 'block' : 'none';
-  document.getElementById('seat-view').style.display = view === 'seat' ? 'block' : 'none';
-  if (view === 'seat') renderCheckinSeatMap();
-}
-
-function renderCheckinSeatMap() {
-  const el = document.getElementById('checkin-seat-theater');
-  if (!el) return;
-  const allVips = Object.values(vips).filter(v => v.name);
-  if (!allVips.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center;">尚未載入貴賓資料</div>';
-    return;
-  }
-
-  const hasCustomSeats = allVips.some(v => v.seat && v.seat.trim());
-  const rowsData = {};
-
-  if (!hasCustomSeats) {
-    const ordered = (vipOrder || Object.keys(vips)).map(id => vips[id]).filter(Boolean);
-    const seatsPerSide = 5;
-    ordered.forEach((v, index) => {
-      const rowNum  = Math.floor(index / (seatsPerSide * 2)) + 1;
-      const sideIdx = index % (seatsPerSide * 2);
-      const side    = sideIdx < seatsPerSide ? '\u5de6' : '\u53f3';
-      const seatNum = (sideIdx % seatsPerSide) + 1;
-      if (!rowsData[rowNum]) rowsData[rowNum] = { '\u5de6': [], '\u53f3': [] };
-      rowsData[rowNum][side].push({ vip: v, seatNum });
-    });
-  } else {
-    allVips.forEach(v => {
-      const seatStr = String(v.seat || '').trim();
-      const m = seatStr.match(/(\d+)[-\u2013]([\u5de6\u53f3])[-\u2013](\d+)/);
-      if (!m) return;
-      const rowNum  = parseInt(m[1]) || 1;
-      const side    = m[2];
-      const seatNum = parseInt(m[3]) || 1;
-      if (!rowsData[rowNum]) rowsData[rowNum] = { '\u5de6': [], '\u53f3': [] };
-      rowsData[rowNum][side].push({ vip: v, seatNum });
-    });
-    Object.keys(rowsData).forEach(r => {
-      rowsData[r]['\u5de6'].sort((a,b) => b.seatNum - a.seatNum);
-      rowsData[r]['\u53f3'].sort((a,b) => a.seatNum - b.seatNum);
-    });
-  }
-
-  let html = '<div class="seat-stage-bar">\u2015 \u2015 \u2015 \u00a0 \u821e \u53f0 \u00a0 \u2015 \u2015 \u2015</div>';
-  const rows = Object.keys(rowsData).map(Number).sort((a,b)=>a-b);
-
-  rows.forEach(rowNum => {
-    const leftSeats  = rowsData[rowNum]['\u5de6'];
-    const rightSeats = rowsData[rowNum]['\u53f3'];
-    const maxLeft  = Math.max(...leftSeats.map(s=>s.seatNum),  hasCustomSeats ? 0 : 5);
-    const maxRight = Math.max(...rightSeats.map(s=>s.seatNum), hasCustomSeats ? 0 : 5);
-
-    html += '<div class="seat-row"><div class="seat-row-label">\u7b2c' + rowNum + '\u6392</div>';
-    html += '<div class="seat-side left">';
-    for (let i = maxLeft; i >= 1; i--) {
-      const item = leftSeats.find(s => s.seatNum === i);
-      html += renderCheckinSeat(item, '\u5de6', i);
-    }
-    html += '</div><div class="seat-divider"></div><div class="seat-side right">';
-    for (let i = 1; i <= maxRight; i++) {
-      const item = rightSeats.find(s => s.seatNum === i);
-      html += renderCheckinSeat(item, '\u53f3', i);
-    }
-    html += '</div></div>';
-  });
-
-  el.innerHTML = html;
-}
-
-function renderCheckinSeat(item, side, num) {
-  if (!item || !item.vip) {
-    return '<div class="seat-block empty-slot"><span class="seat-num">' + side + num + '</span></div>';
-  }
-  const v = item.vip;
-  const cls = v.checked ? (v.priority === 'vip' ? 'occupied-vip' : 'occupied-normal') : 'pending';
-  const overlay = v.checked ? '\u64a4\u92b7' : '\u2713';
-  const fn = v.checked ? 'seatUndo' : 'seatCheckin';
-  const timeInfo = v.checked ? ' \u2713' + v.time : '\u672a\u5831\u5230';
-  return '<div class="seat-block ' + cls + '" onclick="' + fn + '('' + v.id + '')" title="' + v.name + ' ' + timeInfo + '">' +
-    '<span class="seat-name">' + v.name + '</span>' +
-    '<span class="seat-num">' + side + num + '</span>' +
-    '<div class="seat-checkin-overlay">' + overlay + '</div>' +
-    '</div>';
-}
-
-async function seatCheckin(id) {
-  await doCheckin(id);
-  renderCheckinSeatMap();
-}
-
-async function seatUndo(id) {
-  if (!confirm('\u78ba\u5b9a\u64a4\u92b7 ' + ((vips[id] && vips[id].name) || '') + ' \u7684\u5831\u5230\uff1f')) return;
-  await undoCheckin(id);
-  renderCheckinSeatMap();
-}
-
 </script>
 </body>
 </html>
