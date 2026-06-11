@@ -120,6 +120,60 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
   .statusbar { padding: 8px 12px; font-size: 10px; }
 }
+
+/* ════════════════════════════
+   報到區座位圖
+════════════════════════════ */
+.view-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.view-tab{flex:1;padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all .15s;text-align:center;}
+.view-tab.active{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
+.view-tab:hover:not(.active){background:var(--surface2);}
+
+#seat-view{display:none;}
+.seat-theater{display:flex;flex-direction:column;gap:8px;padding:4px 0 16px;}
+.seat-stage-bar{background:var(--navy,#3a4a5c);color:#fff;border-radius:var(--radius-sm);padding:8px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.2em;margin-bottom:4px;}
+.seat-row{display:flex;align-items:center;gap:4px;}
+.seat-row-label{width:44px;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;text-align:center;}
+.seat-side{display:flex;gap:3px;flex:1;justify-content:flex-end;}
+.seat-side.right{justify-content:flex-start;}
+.seat-divider{width:2px;background:var(--border2);border-radius:99px;align-self:stretch;flex-shrink:0;margin:0 4px;}
+.seat-block{
+  width:calc((100% - 20px) / 5);
+  min-width:0;
+  aspect-ratio:1/1.1;
+  border-radius:6px;
+  border:1.5px solid var(--border2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:3px 2px;cursor:pointer;transition:all .15s;position:relative;
+  background:var(--surface);
+  overflow:hidden;
+}
+.seat-block:hover{border-color:var(--accent);background:var(--accent-dim);}
+.seat-block.occupied-vip{background:var(--green-dim);border-color:rgba(22,163,74,.4);}
+.seat-block.occupied-normal{background:rgba(26,115,232,.08);border-color:rgba(26,115,232,.3);}
+.seat-block.empty-slot{opacity:.4;cursor:default;pointer-events:none;}
+.seat-block.pending{opacity:.65;}
+.seat-name{font-size:9px;font-weight:600;color:var(--text);text-align:center;line-height:1.2;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;width:100%;}
+.seat-num{font-size:8px;color:var(--muted);margin-top:2px;}
+.seat-block.occupied-vip .seat-name{color:var(--green);}
+.seat-block.occupied-vip .seat-num{color:rgba(22,163,74,.7);}
+.seat-block.occupied-normal .seat-name{color:var(--accent);}
+.seat-checkin-overlay{
+  position:absolute;inset:0;background:rgba(22,163,74,.15);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .15s;font-size:18px;
+}
+.seat-block:hover .seat-checkin-overlay{opacity:1;}
+.seat-block.occupied-vip .seat-checkin-overlay,
+.seat-block.occupied-normal .seat-checkin-overlay{background:rgba(220,38,38,.12);}
+
+/* 座位圖手機版 */
+@media(max-width:480px){
+  .seat-block{aspect-ratio:1/1.2;}
+  .seat-name{font-size:8px;}
+  .seat-num{font-size:7px;}
+  .seat-row-label{width:36px;font-size:10px;}
+}
 </style>
 </head>
 <body>
@@ -155,11 +209,22 @@ textarea:focus{outline:none;border-color:var(--accent);}
     <input type="text" class="search-input" id="search" placeholder="搜尋姓名或職稱…" oninput="renderCards()">
   </div>
 
-  <div class="sec-label">主要貴賓</div>
-  <div id="list-vip"></div>
-  <div class="sec-label" style="margin-top:14px;">一般貴賓</div>
-  <div id="list-normal"></div>
-  <div id="no-results">查無結果</div>
+  <div class="view-tabs">
+    <button class="view-tab active" id="tab-list" onclick="switchCheckinView('list')">📋 名單模式</button>
+    <button class="view-tab" id="tab-seat" onclick="switchCheckinView('seat')">🪑 座位圖模式</button>
+  </div>
+
+  <div id="list-view">
+    <div class="sec-label">主要貴賓</div>
+    <div id="list-vip"></div>
+    <div class="sec-label" style="margin-top:14px;">一般貴賓</div>
+    <div id="list-normal"></div>
+    <div id="no-results">查無結果</div>
+  </div>
+
+  <div id="seat-view">
+    <div class="seat-theater" id="checkin-seat-theater"></div>
+  </div>
 
   <div class="notes-box">
     <div class="notes-title">📨 舞台端備註</div>
@@ -185,13 +250,14 @@ const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_A
 
 const KEY = 'vip_gs_config';
 const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
-let vips = {}, colorMap = {}, apiUrl = '';
+let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '';
 let pollTimer = null;
+let checkinView = 'list';  // 'list' | 'seat'
 let localLocks = {}; // 🔒 用於防回溯的本地鎖定清單
 
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
-  if (!apiUrl) { showErr('請將 Apps Script 網址填入 01-checkin.html 第一行 HARDCODED_API_URL，或在 <a href="00-setup.html">設定頁</a> 儲存網址後用同一裝置開啟。'); return; }
+  if (!apiUrl) { showErr('請將 Apps Script 網址填入 01-checkin.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後用同一裝置開啟。'); return; }
   loadAll();
 }
 
@@ -214,6 +280,7 @@ async function loadAll() {
       document.getElementById('ev-meta').textContent = formatted.join(' · ');
     }
     
+    vipOrder = data.vips.map(v => String(v.id ?? ''));
     data.vips.forEach((v, i) => {
       v.id    = String(v.id    ?? '');
       v.name  = String(v.name  ?? '');
@@ -226,12 +293,14 @@ async function loadAll() {
     });
     renderCards();
     updateStats();
+    if (checkinView === 'seat') renderCheckinSeatMap();
     renderNotes(data.notes);
     setConn(true);
   } catch(e) {
     showErr('載入失敗：' + e.message);
     setConn(false);
   }
+  if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(poll, 5000);
 }
 
@@ -251,6 +320,7 @@ async function poll() {
     [...localIds].forEach(id => {
       if (!incomingIds.has(id)) {
         delete vips[id];
+        vipOrder = vipOrder.filter(x => x !== id);
         deleted = true;
       }
     });
@@ -262,18 +332,14 @@ async function poll() {
     Object.entries(data.checkins).forEach(([id, info]) => {
       if (!vips[id]) return;
 
-      // 🔒 核心修正：檢查此 ID 目前是否有本地鎖定
       if (localLocks[id]) {
         if (Date.now() < localLocks[id]) {
-          // 如果後端傳來的報到狀態已經跟本地一致了，代表後端試算表已更新，提早解鎖
           if (info.checked === vips[id].checked) {
             delete localLocks[id];
           } else {
-            // 後端還是舊狀態，跳過此人的更新，防止畫面被回溯閃爍
             return;
           }
         } else {
-          // 鎖定超時（10秒過期），自動清除
           delete localLocks[id];
         }
       }
@@ -283,7 +349,6 @@ async function poll() {
       const oldChecked = vips[id].checked;
 
       const incomingPhoto = (info.photo !== undefined && info.photo !== '') ? info.photo : vips[id].photo;
-
       const incomingSeat = info.seat !== undefined ? String(info.seat ?? '') : vips[id].seat;
 
       if (oldChecked !== info.checked  ||
@@ -326,16 +391,20 @@ async function poll() {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { vips[id]._pendingNormal = true; });
         renderCards(); updateStats();
+        if (checkinView === 'seat') renderCheckinSeatMap();
         setTimeout(() => {
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
           renderCards(); updateStats();
+          if (checkinView === 'seat') renderCheckinSeatMap();
         }, 5000);
       } else {
         renderCards();
         updateStats();
+        if (checkinView === 'seat') renderCheckinSeatMap();
       }
     } else if (statsChanged) {
       updateStats();
+      if (checkinView === 'seat') renderCheckinSeatMap();
     }
     
     renderNotes(data.notes);
@@ -359,17 +428,14 @@ async function doCheckin(id) {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     
-    // 1. 先更新前端本地資料
     vips[id].checked = true; 
     vips[id].time = time;
-    
-    // 🔒 2. 加鎖 10 秒，防止接下來 10 秒內的輪詢舊資料覆蓋本地狀態
     localLocks[id] = Date.now() + 10000; 
     
-    // 3. 更新畫面
     updateCardState(id);
     updateStats();
-    toast('✓ ' + vips[id].name + ' 報到 ' + time);
+    if (checkinView === 'seat') renderCheckinSeatMap();
+    toast(`✓ ${vips[id].name} 報到 ${time}`);
   } catch(e) { 
     alert('報到失敗：' + e.message); 
     if(btn) {
@@ -381,7 +447,7 @@ async function doCheckin(id) {
 }
 
 async function undoCheckin(id) {
-  if (!confirm('確定撤銷 ' + vips[id].name + ' 的報到？')) return;
+  if (!confirm(`確定撤銷 ${vips[id].name} 的報到？`)) return;
   const btn = document.getElementById('btn-undo-' + id);
   if (btn) btn.disabled = true;
   
@@ -390,16 +456,13 @@ async function undoCheckin(id) {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     
-    // 1. 先更新前端本地資料
     vips[id].checked = false; 
     vips[id].time = '';
-    
-    // 🔒 2. 加鎖 10 秒，防止撤銷後的輪詢舊資料把狀態拉回「已報到」
     localLocks[id] = Date.now() + 10000;
     
-    // 3. 更新畫面
     updateCardState(id);
     updateStats();
+    if (checkinView === 'seat') renderCheckinSeatMap();
     toast('已撤銷報到');
   } catch(e) { 
     alert('撤銷失敗：' + e.message); 
@@ -438,13 +501,14 @@ function card(v) {
   const c = colorMap[v.id] || '#1a73e8';
   
   const avatarHtml = v.photo
-    ? `<img src="${v.photo}" class="avatar-photo" loading="lazy" alt="${v.name}" onerror="this.outerHTML='<div class=\'avatar\' style=\'background:${c}18;color:${c}\'>${v.name.charAt(0)}</div>'">`
+    ? `<img src="${v.photo}" class="avatar-photo" loading="lazy" alt="${v.name}" onerror="this.outerHTML='<div class=\\'avatar\\' style=\\'background:${c}18;color:${c}\\'>${v.name.charAt(0)}</div>'">`
     : `<div class="avatar" style="background:${c}18;color:${c}">${v.name.charAt(0)}</div>`;
     
   const pendingClass = v._pendingNormal ? ' priority-leaving' : '';
   const effectiveClass = (v._pendingNormal || v.priority === 'vip') ? 'priority' : '';
   
-  return `<div id="vcard-${v.id}" class="vcard ${v.checked?'checked':''} ${effectiveClass}${pendingClass}">
+  return `
+  <div id="vcard-${v.id}" class="vcard ${v.checked?'checked':''} ${effectiveClass}${pendingClass}">
     ${avatarHtml}
     <div class="vi">
       <div class="vname">${v.name} ${v.priority==='vip'?'<span class="badge badge-vip">★ 主要</span>':''}</div>
@@ -528,6 +592,116 @@ setInterval(() => {
 }, 1000);
 
 init();
+
+// ════════════════════════════
+//  報到區座位圖
+// ════════════════════════════
+function switchCheckinView(view) {
+  checkinView = view;
+  document.getElementById('tab-list').classList.toggle('active', view === 'list');
+  document.getElementById('tab-seat').classList.toggle('active', view === 'seat');
+  document.getElementById('list-view').style.display = view === 'list' ? 'block' : 'none';
+  document.getElementById('seat-view').style.display = view === 'seat' ? 'block' : 'none';
+  if (view === 'seat') renderCheckinSeatMap();
+}
+
+function renderCheckinSeatMap() {
+  const el = document.getElementById('checkin-seat-theater');
+  if (!el) return;
+  const allVips = Object.values(vips).filter(v => v.name);
+  if (!allVips.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center;">尚未載入貴賓資料</div>';
+    return;
+  }
+
+  const hasCustomSeats = allVips.some(v => v.seat && v.seat.trim());
+  const rowsData = {};
+
+  if (!hasCustomSeats) {
+    const ordered = (vipOrder || Object.keys(vips)).map(id => vips[id]).filter(Boolean);
+    const seatsPerSide = 5;
+    ordered.forEach((v, index) => {
+      const rowNum  = Math.floor(index / (seatsPerSide * 2)) + 1;
+      const sideIdx = index % (seatsPerSide * 2);
+      const side    = sideIdx < seatsPerSide ? '左' : '右';
+      const seatNum = (sideIdx % seatsPerSide) + 1;
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][side].push({ vip: v, seatNum });
+    });
+  } else {
+    allVips.forEach(v => {
+      const seatStr = String(v.seat || '').trim();
+      const m = seatStr.match(/(\d+)[-–]([左右])[-–](\d+)/);
+      if (!m) return;
+      const rowNum  = parseInt(m[1]) || 1;
+      const side    = m[2];
+      const seatNum = parseInt(m[3]) || 1;
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][side].push({ vip: v, seatNum });
+    });
+    Object.keys(rowsData).forEach(r => {
+      rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum);
+      rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum);
+    });
+  }
+
+  let html = '<div class="seat-stage-bar">― ― ― &nbsp; 舞 台 &nbsp; ― ― ―</div>';
+  const rows = Object.keys(rowsData).map(Number).sort((a,b)=>a-b);
+
+  rows.forEach(rowNum => {
+    const leftSeats  = rowsData[rowNum]['左'];
+    const rightSeats = rowsData[rowNum]['右'];
+    const maxLeft  = Math.max(...leftSeats.map(s=>s.seatNum),  hasCustomSeats ? 0 : 5);
+    const maxRight = Math.max(...rightSeats.map(s=>s.seatNum), hasCustomSeats ? 0 : 5);
+
+    html += `<div class="seat-row"><div class="seat-row-label">第${rowNum}排</div>`;
+    html += `<div class="seat-side left">`;
+    for (let i = maxLeft; i >= 1; i--) {
+      const item = leftSeats.find(s => s.seatNum === i);
+      html += renderCheckinSeat(item, '左', i);
+    }
+    html += `</div><div class="seat-divider"></div><div class="seat-side right">`;
+    for (let i = 1; i <= maxRight; i++) {
+      const item = rightSeats.find(s => s.seatNum === i);
+      html += renderCheckinSeat(item, '右', i);
+    }
+    html += `</div></div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function renderCheckinSeat(item, side, num) {
+  if (!item || !item.vip) {
+    return `<div class="seat-block empty-slot"><span class="seat-num">${side}${num}</span></div>`;
+  }
+  const v = item.vip;
+  const cls = v.checked ? (v.priority === 'vip' ? 'occupied-vip' : 'occupied-normal') : 'pending';
+  const overlay = v.checked ? '撤銷' : '✓';
+  const fn = v.checked ? 'seatUndo' : 'seatCheckin';
+  const timeInfo = v.checked ? ` ✓ ${v.time}` : '未報到';
+
+  return `
+    <div class="seat-block ${cls}" onclick="${fn}('${v.id}')" title="${v.name} ${timeInfo}">
+      <span class="seat-name">${v.name}</span>
+      <span class="seat-num">${side}${num}</span>
+      <div class="seat-checkin-overlay">${overlay}</div>
+    </div>
+  `;
+}
+
+async function seatCheckin(id) {
+  await doCheckin(id);
+  renderCheckinSeatMap();
+}
+
+async function seatUndo(id) {
+  const name = vips[id] && vips[id].name ? vips[id].name : '';
+  if (!confirm(`確定撤銷 ${name} 的報到？`)) return;
+  await undoCheckin(id);
+  renderCheckinSeatMap();
+}
+
 </script>
 </body>
 </html>
