@@ -271,7 +271,8 @@ const COLORS = ['#1a73e8','#16a34a','#7c3aed','#ea580c','#db2777','#0891b2'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '';
 let pollTimer = null;
 let checkinView = 'list';  // 'list' | 'seat'
-let localLocks = {}; // 🔒 用於防回溯的本地鎖定清單
+let localLocks = {};
+let prevChecked = new Set();
 
 function init() {
   apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
