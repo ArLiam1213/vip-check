@@ -423,7 +423,7 @@ async function poll() {
     renderNotes(data.notes);
     setConn(true);
     setUpd();
-  } catch(e) { setConn(false); }
+  } catch(e) { setConn(false); console.error('poll error:', e.message, e); }
 }
 
 async function doCheckin(id) {
@@ -711,21 +711,24 @@ async function seatCheckin(id) {
     + '?action=checkin'
     + '&id='   + encodeURIComponent(id)
     + '&time=' + encodeURIComponent(time)
-    + '&t='    + Date.now();          // 防快取
+    + '&t='    + Date.now();
   try {
     const res  = await fetch(url);
-    const text = await res.text();    // 先取文字，避免非 JSON 直接 crash
+    const text = await res.text();
     let data;
     try { data = JSON.parse(text); }
     catch(pe) { throw new Error('回應格式錯誤：' + text.slice(0, 80)); }
     if (!data.ok) throw new Error(data.error || '報到失敗');
+    // 只更新前端狀態，不呼叫可能出錯的 renderCards
     vips[id].checked = true;
     vips[id].time    = time;
-    renderCheckinSeatMap();
-    renderCards();
     updateStats();
+    // 更新名單中的個別卡片狀態（不重建整個列表）
+    try { updateCardState(id); } catch(e2) {}
+    // 更新座位圖
+    try { if (checkinView === 'seat') renderCheckinSeatMap(); } catch(e2) {}
     setConn(true);
-    toast('✓ ' + vips[id].name + ' 報到 ' + time);
+    toast('✓ ' + (vips[id].name || '') + ' 報到 ' + time);
   } catch(e) {
     alert('報到失敗：' + e.message);
   }
@@ -738,7 +741,7 @@ async function seatUndo(id) {
   const url  = apiUrl
     + '?action=undo'
     + '&id=' + encodeURIComponent(id)
-    + '&t='  + Date.now();            // 防快取
+    + '&t='  + Date.now();
   try {
     const res  = await fetch(url);
     const text = await res.text();
@@ -748,9 +751,9 @@ async function seatUndo(id) {
     if (!data.ok) throw new Error(data.error || '撤銷失敗');
     vips[id].checked = false;
     vips[id].time    = '';
-    renderCheckinSeatMap();
-    renderCards();
     updateStats();
+    try { updateCardState(id); } catch(e2) {}
+    try { if (checkinView === 'seat') renderCheckinSeatMap(); } catch(e2) {}
     setConn(true);
     toast('已撤銷 ' + name + ' 的報到');
   } catch(e) {
