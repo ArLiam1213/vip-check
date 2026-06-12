@@ -163,42 +163,6 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .side-left { border-right: 2px dashed var(--border2); justify-content: flex-end; padding-right: 8px; }
 .side-right { justify-content: flex-start; padding-left: 8px; }
 
-.seat-block.seat-pending {
-  border-style: dashed;
-  border-color: var(--border2);
-  opacity: 0.6;
-}
-.seat-block.empty-slot {
-  opacity: 0.2;
-  cursor: default;
-}
-.seat-time {
-  font-size: 9px;
-  font-weight: 700;
-  color: #1a1d2e;
-  background: rgba(255,255,255,0.85);
-  border-radius: 99px;
-  padding: 1px 5px;
-  letter-spacing: .02em;
-  margin-top: 2px;
-  line-height: 1.4;
-}
-.seat-note {
-  font-size: 8px;
-  margin-left: 2px;
-}
-/* 剛到場：脈衝邊框動畫 */
-@keyframes seatPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(46,204,138,0.6); }
-  50%      { box-shadow: 0 0 0 6px rgba(46,204,138,0); }
-}
-.seat-just-arrived {
-  animation: seatPulse 1.2s ease-in-out 4;
-  border: 2px solid var(--green) !important;
-}
-.seat-just-arrived .seat-name { color: #fff !important; }
-.seat { 
-  flex: 1;
 .seat-block { 
   flex: 1;
   /* 🔥 核心修正 3：給予每個座位最小寬度，避免太窄切到字 */
@@ -577,20 +541,16 @@ async function poll() {
     if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
         priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
-        window._justArrivedSeats = new Set(justArrived);
         renderFeed(justArrived); renderPending(); updateStats();
         if (currentView === 'map' || seatChanged) renderTheaterMap();
         setTimeout(() => {
-          window._justArrivedSeats = new Set();
           priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
           renderFeed([]); renderPending(); updateStats();
           if (currentView === 'map') renderTheaterMap();
-        }, 8000);
+        }, 5000);
       } else {
-        window._justArrivedSeats = new Set(justArrived);
         renderFeed(justArrived); renderPending(); updateStats();
         if (currentView === 'map' || seatChanged) renderTheaterMap();
-        setTimeout(() => { window._justArrivedSeats = new Set(); }, 8000);
       }
     }
     renderNotes(data.notes);
@@ -724,27 +684,21 @@ function renderTheaterMap() {
 
 function renderSingleSeat(item, side, num) {
   if (!item || !item.vip) {
-    return `<div class="seat-block empty-slot"><span class="seat-num">${side}${num}</span></div>`;
+    return `<div class="seat-block"><span class="seat-num">${side}${num}</span></div>`;
   }
   const v = item.vip;
-  const isNew = window._justArrivedSeats && window._justArrivedSeats.has(String(v.id));
-
-  if (v.checked) {
-    const cls  = v.priority === 'vip' ? 'vip' : 'normal';
-    const newCls = isNew ? ' seat-just-arrived' : '';
-    const noteHtml = v.note ? `<span class="seat-note">📌</span>` : '';
-    const tip  = `${v.name}\n${v.title}\n✓ 報到：${v.time}${v.note ? '\n備註：'+v.note : ''}`;
-    return `<div class="seat-block occupied ${cls}${newCls}" title="${tip}">
+  const isArrived = v.checked;
+  
+  if (isArrived) {
+    const cls = v.priority === 'vip' ? 'vip' : 'normal';
+    return `<div class="seat-block occupied ${cls}" title="${v.name} (${v.title})\n位置: ${v.seat || (side+num)}">
       <span class="seat-name">${v.name}</span>
-      <span class="seat-time">${v.time}</span>
-      <span class="seat-num">${side}${num}${noteHtml}</span>
+      <span class="seat-num" style="color:rgba(255,255,255,0.8)">${side}${num}</span>
     </div>`;
   } else {
-    const tip = `待到場：${v.name}\n${v.title}${v.note ? '\n備註：'+v.note : ''}`;
-    const noteHtml = v.note ? ` <span style="color:var(--amber);font-size:9px;">📌</span>` : '';
-    return `<div class="seat-block seat-pending" title="${tip}">
-      <span class="seat-name">${v.name}</span>
-      <span class="seat-num">${side}${num}${noteHtml}</span>
+    return `<div class="seat-block" style="border-color:var(--border2); opacity:0.55;" title="待到場: ${v.name} (${v.title})">
+      <span class="seat-name" style="color:var(--muted); font-weight:400;">${v.name}</span>
+      <span class="seat-num">${side}${num}</span>
     </div>`;
   }
 }
