@@ -7,7 +7,8 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{\n  --bg:#f7f8fc;--surface:#ffffff;--surface2:#f1f3f9;
+:root{
+  --bg:#f7f8fc;--surface:#ffffff;--surface2:#f1f3f9;
   --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
   --text:#1a1d2e;--muted:#6b7280;
   --accent:#1a73e8;--accent-dim:rgba(26,115,232,0.08);
@@ -18,288 +19,695 @@
 
 html { scroll-behavior: smooth; }
 body {
-  font-family:'Noto Sans TC', sans-serif; background:var(--bg); color:var(--text);
-  overflow:hidden; height:100vh; display:flex; flex-direction:column;
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-header {
-  background:var(--surface); border-bottom:1px solid var(--border);
-  padding:14px 24px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
-}
-.brand { display:flex; align-items:center; gap:12px; }
-.logo-icon {
-  width:36px; height:36px; background:linear-gradient(135deg, var(--accent), #4f8fff);
-  border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:18px;
-}
-.brand-text h1 { font-size:18px; font-weight:700; color:var(--text); line-height:1.2; }
-.brand-text p { font-size:12px; color:var(--muted); }
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink: 0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.logo{font-size:14px;font-weight:700;}
+.live{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(22,163,74,.3);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.04em;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:p 1.2s ease-in-out infinite;}
+@keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.nav-links{display:flex;gap:3px;}
+.nav-link{padding:5px 11px;border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-decoration:none;}
+.nav-link:hover{background:var(--surface2);}
+.nav-link.active{background:var(--green-dim);color:var(--green);}
 
-.center-meta { text-align:center; flex:1; max-width:50%; }
-#ev-name { font-size:20px; font-weight:900; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-#ev-meta { font-size:13px; color:var(--muted); margin-top:2px; }
-
-.right-status { display:flex; align-items:center; gap:20px; text-align:right; }
-.clock { font-size:24px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--text); letter-spacing:0.5px; }
-.indicator-group { display:flex; flex-direction:column; gap:2px; font-size:11px; }
-#conn { font-weight:700; }
-.conn-ok { color:var(--green); }
-.conn-err { color:var(--red); animation:blink 1s infinite alternate; }
-#last-upd { color:var(--muted); }
-
-#err-banner {
-  background:var(--red); color:#fff; padding:8px 24px; font-size:14px; font-weight:500;
-  text-align:center; display:none; flex-shrink:0;
+.main{
+  flex: 1;
+  max-width:1400px;
+  width: 100%;
+  margin:0 auto;
+  padding:16px 18px 70px;
+  display: flex;
+  flex-direction: column;
 }
 
-.main-container { display:flex; flex:1; overflow:hidden; }
+.ev-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-shrink: 0;}
+.ev-name{font-size:23px;font-weight:900;line-height:1.2;}
+.ev-meta{font-size:13px;color:var(--muted);margin-top:5px;}
+.clock{text-align:right;}
+.clock-time{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--accent);line-height: 1;}
+.clock-date{font-size:12px;color:var(--muted);margin-top:4px;}
 
-/* 左側：大字跳出輪播 */
-.left-panel {
-  flex:1.3; background:linear-gradient(135deg, #1e293b, #0f172a);
-  position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
-}
-.welcome-box {
-  width:90%; max-width:720px; text-align:center; color:#fff;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:450px;
-}
-.w-photo-wrap {
-  width:160px; height:160px; border-radius:50%; border:6px solid rgba(255,255,255,0.15);
-  margin-bottom:24px; overflow:hidden; background:rgba(255,255,255,0.05);
-  display:none; align-items:center; justify-content:center;
-}
-.w-photo { width:100%; height:100%; object-fit:cover; }
-.w-avatar {
-  width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.1);
-  font-size:72px; font-weight:700; color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:24px;
-}
-.w-lbl {
-  font-size:20px; font-weight:700; text-transform:uppercase; letter-spacing:4px;
-  color:#38bdf8; margin-bottom:12px; background:rgba(56,189,248,0.1); padding:4px 16px; border-radius:30px;
-}
-.w-name { font-size:64px; font-weight:900; line-height:1.1; margin-bottom:12px; letter-spacing:1px; word-break:break-all; }
-.w-title { font-size:26px; color:#cbd5e1; font-weight:500; max-width:90%; line-height:1.4; }
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px;flex-shrink: 0;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.stat-num{font-size:30px;font-weight:900;line-height:1;}
+.stat-bar{height:3px;background:var(--border2);border-radius:99px;margin-top:7px;overflow:hidden;}
+.stat-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.06em;}
 
-/* 右側：動態清單 */
-.right-panel {
-  flex:1; background:var(--bg); border-left:1px solid var(--border);
-  display:flex; flex-direction:column; overflow:hidden;
+.grid{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:14px;
 }
-.panel-hdr {
-  background:var(--surface); padding:16px 20px; border-bottom:1px solid var(--border);
-  display:flex; justify-content:between; align-items:center; flex-shrink:0;
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 1px 4px rgba(0,0,0,.04); display: flex; flex-direction: column;}
+.ph{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink: 0;}
+.ph-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+
+/* 控制各區塊內部獨立滾動 */
+.feed{ padding:10px; min-height: 200px; }
+
+.acard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:13px;transition:border-color .3s;}
+.acard.fresh{border-color:rgba(22,163,74,.4);animation:si .35s ease;}
+@keyframes si{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.acard.vip{border-left:3px solid var(--amber);}
+.aa{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;}
+.ai{flex:1;min-width:0;}
+.aname{font-size:14px;font-weight:700;}
+.atitle{font-size:12px;color:var(--muted);margin-top:1px;}
+.anote{font-size:11px;color:var(--amber);margin-top:2px;}
+.am{text-align:right;flex-shrink:0;}
+.atime{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;font-family:inherit;}
+.albl{font-size:10px;color:var(--muted);margin-top:2px;}
+.badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.bvip{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
+.bnew{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,.2);}
+.empty{text-align:center;padding:44px 18px;color:var(--muted);font-size:14px;}
+.vip-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2);}
+.priority-leaving{opacity:.55;transition:opacity 5s ease;border-left-color:var(--muted)!important;}
+.priority-leaving .aname::after{content:' → 移至一般貴賓';font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
+.pavatar-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border2);}
+
+.side{display:flex;flex-direction:column;gap:13px;min-width:0;}
+.side .panel:nth-child(1) { }
+.side .panel:nth-child(2) { }
+#pending { }
+
+.pitem{display:flex;align-items:center;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border);}
+.pitem:last-child{border-bottom:none;}
+.pavatar{width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.pinfo{flex:1;}
+.pname{font-size:13px;font-weight:500;}
+.ptitle{font-size:11px;color:var(--muted);}
+.dotw{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
+
+.notes-body{padding:10px 13px; display: flex; flex-direction: column;}
+#notes-list { margin-bottom: 8px; }
+.note{background:var(--surface2);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--accent);}
+.note-meta{font-size:10px;color:var(--muted);margin-top:2px;}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:12px;font-family:inherit;resize:none; flex-shrink: 0;}
+textarea:focus{outline:none;border-color:var(--accent);}
+.btnsend{width:100%;margin-top:7px;padding:7px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid rgba(26,115,232,.25);color:var(--accent);cursor:pointer;font-family:inherit; flex-shrink: 0;}
+.btnsend:hover{background:rgba(26,115,232,.12);}
+
+.statusbar{background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -1px 3px rgba(0,0,0,.05);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);flex-shrink: 0;}
+.conn-ok{color:var(--green);}
+.conn-err{color:var(--red);}
+.error-banner{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;flex-shrink: 0;}
+
+/* ════════════════════════════════
+   🪑 座位圖核心 CSS：局部滾動與防擠壓設計
+════════════════════════════════ */
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+.tab-btn { flex: 1; padding: 11px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-dim); }
+
+#feed-container, #map-container {
+  display: flex;
+  flex-direction: column;
 }
-.panel-title { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.panel-title::before {
-  content:''; width:4px; height:16px; background:var(--accent); border-radius:2px;
+
+.theater-map { 
+  flex: 1; 
+  padding: 14px 18px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  /* 🔥 核心修正 1：如果座位排數超出容器高度，允許座位圖單獨往下滾動 */
+  overflow-y: auto; 
+  background: var(--surface); 
 }
-.counter-pill {
-  margin-left:auto; background:var(--accent-dim); color:var(--accent);
-  padding:4px 12px; border-radius:20px; font-size:13px; font-weight:700;
+.stage-indicator { flex-shrink: 0; text-align: center; background: #334155; color: #ffffff; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 6px; letter-spacing: 0.6em; text-indent: 0.6em; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+
+.theater-row { 
+  /* 🔥 核心修正 2：拔掉 flex: 1 避免被無限壓扁，給予每排最小保障高度 */
+  min-height: 48px; 
+  flex-shrink: 0; 
+  display: flex; 
+  align-items: stretch; 
+  gap: 6px; 
+  background: var(--surface2); 
+  padding: 4px 6px; 
+  border-radius: var(--radius-sm); 
+  border: 1px solid var(--border); 
 }
+.row-label { width: 50px; font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); border-radius: 4px; flex-shrink: 0; }
+.theater-side { flex: 1; display: flex; gap: 4px; min-width: 0; padding: 0; align-items: stretch; }
+.side-left { border-right: 2px dashed var(--border2); justify-content: flex-end; padding-right: 8px; }
+.side-right { justify-content: flex-start; padding-left: 8px; }
 
-.feed-container { flex:1; overflow-y:auto; padding:16px; }
-#feed { display:flex; flex-direction:column; gap:12px; }
-
-.empty { text-align:center; color:var(--muted); padding:40px 0; font-size:14px; }
-
-/* 卡片設計 */
-.acard {
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:14px 16px; display:flex; align-items:center; gap:14px;
-  position:relative; transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+.seat-block { 
+  flex: 1;
+  /* 🔥 核心修正 3：給予每個座位最小寬度，避免太窄切到字 */
+  min-width: 44px; 
+  height: auto; 
+  border-radius: 6px; 
+  border: 1px dashed var(--muted); 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  color: var(--muted); 
+  background: rgba(0,0,0,0.01); 
+  transition: all 0.25s ease; 
+  padding: 3px 2px;
+  overflow: hidden; 
 }
-.vip-photo {
-  width:46px; height:46px; border-radius:50%; object-fit:cover; border:1px solid var(--border2); flex-shrink:0;
+.seat-block.occupied { border-style: solid; border-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.seat-block.occupied.vip { background: var(--amber); color: #ffffff; }
+.seat-block.occupied.normal { background: var(--green); color: #ffffff; }
+
+/* 🔥 核心修正 4：人名字體微調，允許太長的名字換兩行 */
+.seat-name { 
+  font-weight: 700; 
+  font-size: 12px; 
+  line-height: 1.1;
+  text-align: center; 
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 最多顯示兩行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.aa {
-  width:46px; height:46px; border-radius:50%; font-size:18px; font-weight:700;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+.seat-num { font-size: 9px; opacity: 0.7; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+/* 手機版專屬三頁籤 */
+.mobile-tabs {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
-.ai { flex:1; min-width:0; }
-.aname { font-size:16px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; }
-.atitle { font-size:13px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.anote { font-size:12px; color:var(--amber); font-weight:500; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m-tab-btn {
+  flex: 1; padding: 9px 4px; background: none; border: none; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; text-align: center; transition: all 0.2s;
+}
+.m-tab-btn.active { background: var(--accent-dim); color: var(--accent); }
 
-.am { text-align:right; flex-shrink:0; }
-.atime { font-size:15px; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
-.albl { font-size:11px; color:var(--muted); margin-top:1px; }
+/* ════════════════════════════════
+   📱 手機直式零滾軸配置（≤ 768px）
+════════════════════════════════ */
+@media (max-width: 768px) {
+  .topbar { padding: 0 12px; height: 46px; }
+  .logo { font-size: 13px; }
+  .main { padding: 10px 10px 6px; }
 
-/* 特殊卡片樣式 */
-.acard.vip { border-left:5px solid var(--amber); background:linear-gradient(to right, rgba(217,119,6,0.02), #fff); }
-.acard.priority-leaving { border-left:5px solid var(--red) !important; background:linear-gradient(to right, rgba(220,38,38,0.02), #fff) !important; }
+  .ev-header { margin-bottom: 8px; }
+  .ev-name { font-size: 17px; }
+  .clock-time { font-size: 20px; }
+  .clock-date { font-size: 10px; }
 
-.badge { font-size:10px; padding:1px 6px; border-radius:4px; font-weight:700; }
-.bvip { background:var(--amber-dim); color:var(--amber); }
-.bnew { background:var(--green); color:#fff; animation:flash 1s infinite alternate; }
+  .stats { gap: 4px; margin-bottom: 10px; }
+  .stat { padding: 8px 4px; }
+  .stat-num { font-size: 18px; }
+  .stat-lbl { font-size: 8px; scale: 0.9; margin-top: 2px; }
+  .stat-bar { display: none; }
 
-/* 動畫效果 */
-.acard.fresh { animation:slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; background:lightyellow; }
-@keyframes slideIn { from{ opacity:0; transform:translateY(20px); } to{ opacity:1; transform:translateY(0); } }
-@keyframes flash { from{opacity:0.6;} to{opacity:1;} }
-@keyframes blink { from{opacity:0.4;} to{opacity:1;} }
+  .mobile-tabs { display: flex; }
+  /* 手機 grid 改成單欄 block */
+  .grid { display: block !important; }
+  /* 手機版 panel-tabs（動態/座位切換）隱藏，改用上方三頁籤 */
+  .panel-tabs { display: none !important; }
 
-.fade-in-out { animation: fadeInOut 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-@keyframes fadeInOut {
-  0% { opacity:0; transform:scale(0.95) translateY(10px); }
-  8% { opacity:1; transform:scale(1) translateY(0); }
-  92% { opacity:1; transform:scale(1) translateY(0); }
-  100% { opacity:0; transform:scale(0.98) translateY(-10px); }
+  .acard { padding: 8px 10px; gap: 8px; }
+  .aa, .vip-photo { width: 34px; height: 34px; font-size: 13px; }
+  .aname { font-size: 13px; }
+  .atime { font-size: 16px; }
+  .albl { font-size: 9px; }
+
+  .pitem { padding: 7px 12px; gap: 8px; }
+  .pavatar, .pavatar-photo { width: 26px; height: 26px; font-size: 10px; }
+  .pname { font-size: 12px; }
+
+  .statusbar { padding: 8px 12px; font-size: 10px; }
+
+  /* ── 手機版座位圖：縱向排列，不需橫向滾動 ── */
+  .theater-map { padding: 10px 8px; gap: 6px; }
+  .stage-indicator { font-size: 11px; padding: 6px; letter-spacing: 0.4em; }
+
+  /* 每排改成縱向：排標題佔整行，左側一行，右側一行 */
+  .theater-row {
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 6px 4px !important;
+    min-height: unset !important;
+  }
+  .row-label {
+    width: 100% !important;
+    font-size: 11px !important;
+    font-weight: 700;
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 3px 8px !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    color: var(--navy, var(--accent));
+    border-bottom: 1px solid var(--border);
+  }
+  /* 左右兩側各佔整行 */
+  .theater-side {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    border: none !important;
+    justify-content: flex-start !important;
+  }
+  .side-left { border-right: none !important; padding-right: 0 !important; }
+  .side-right { border-left: none !important; padding-left: 0 !important; }
+
+  /* 座位塊：固定寬度，讓每排自動換行 */
+  .seat-block {
+    flex: 0 0 calc(20% - 4px) !important; /* 每行最多5個 */
+    min-width: 0 !important;
+    max-width: calc(20% - 4px) !important;
+    min-height: 52px !important;
+    padding: 4px 2px !important;
+  }
+  .seat-name { font-size: 10px !important; -webkit-line-clamp: 2; }
+  .seat-num  { font-size: 8px !important; }
+
+  /* 左右區域標籤 */
+  .theater-side.side-left::before {
+    content: '← 左側';
+    width: 100%;
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0 2px 2px;
+  }
+  .theater-side.side-right::before {
+    content: '右側 →';
+    width: 100%;
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0 2px 2px;
+  }
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div class="logo-icon">V</div>
-    <div class="brand-text">
-      <h1>貴賓到場動態</h1>
-      <p>舞台端即時看板</p>
-    </div>
+<div class="topbar">
+  <div class="logo">🎤 舞台看板</div>
+  <div class="live"><div class="dot"></div>LIVE</div>
+  <div class="nav-links">
+    <a href="00-setup.html" class="nav-link">⚙ 設定</a>
+    <a href="01-checkin.html" class="nav-link">📋 報到區</a>
+    <a href="02-stage.html" class="nav-link active">🎤 舞台看板</a>
   </div>
-  <div class="center-meta">
-    <div id="ev-name">載入中...</div>
-    <div id="ev-meta">請稍候</div>
-  </div>
-  <div class="right-status">
-    <div class="clock" id="clock-time">00:00:00</div>
-    <div class="indicator-group">
-      <span id="conn" class="conn-err">● 連線中斷</span>
-      <span id="last-upd">尚未同步</span>
-    </div>
-  </div>
-</header>
+</div>
 
-<div id="err-banner"></div>
+<div class="main">
+  <div id="err-banner" class="error-banner"></div>
 
-<div class="main-container">
-  <div class="left-panel">
-    <div class="welcome-box" id="welcome-box" style="display:none;">
-      <div class="w-photo-wrap" id="w-photo-wrap"><img src="" class="w-photo" id="w-photo"></div>
-      <div class="w-avatar" id="w-avatar"></div>
-      <div class="w-lbl" id="w-lbl">WELCOME</div>
-      <div class="w-name" id="w-name"></div>
-      <div class="w-title" id="w-title"></div>
+  <div class="ev-header">
+    <div>
+      <div class="ev-name" id="ev-name">載入中...</div>
+      <div class="ev-meta" id="ev-meta"></div>
+    </div>
+    <div class="clock">
+      <div class="clock-time" id="clock-time">--:--:--</div>
+      <div class="clock-date" id="clock-date"></div>
     </div>
   </div>
-  
-  <div class="right-panel">
-    <div class="panel-hdr">
-      <div class="panel-title">即時到場動態</div>
-      <div class="counter-pill" id="counter">已到場 0 人</div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="st-total" style="color:var(--accent)">—</div><div class="stat-lbl">受邀貴賓</div></div>
+    <div class="stat">
+      <div class="stat-num" id="st-done" style="color:var(--green)">0</div>
+      <div class="stat-bar"><div class="stat-fill" id="bar" style="width:0%"></div></div>
+      <div class="stat-lbl">已到場</div>
     </div>
-    <div class="feed-container">
-      <div id="feed">
-        <div class="empty">等待報到區回傳...</div>
+    <div class="stat"><div class="stat-num" id="st-pend" style="color:var(--amber)">—</div><div class="stat-lbl">待到場</div></div>
+    <div class="stat"><div class="stat-num" id="st-pct" style="color:var(--muted)">0%</div><div class="stat-lbl">到場率</div></div>
+  </div>
+
+  <div class="mobile-tabs">
+    <button id="m-tab-feed" class="m-tab-btn active" onclick="switchMobileTab('feed')">⚡ 動態</button>
+    <button id="m-tab-map" class="m-tab-btn" onclick="switchMobileTab('map')">🪑 座位</button>
+    <button id="m-tab-side" class="m-tab-btn" onclick="switchMobileTab('side')">📋 名單</button>
+  </div>
+
+  <div class="grid show-feed" id="main-grid">
+    <div class="panel feed-panel-wrap">
+      <div class="panel-tabs">
+        <button id="tab-feed" class="tab-btn active" onclick="switchView('feed')">⚡ 即時到場動態</button>
+        <button id="tab-map" class="tab-btn" onclick="switchView('map')">🪑 會場報到狀況</button>
+      </div>
+      
+      <div id="feed-container">
+        <div class="feed" id="feed"><div class="empty">等待報到區回傳...</div></div>
+      </div>
+      
+      <div id="map-container" style="display: none;"></div>
+    </div>
+    
+    <div class="side">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">待到場名單</span></div>
+        <div id="pending"></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">備註 / 通訊</span></div>
+        <div class="notes-body">
+          <div id="notes-list"><div style="color:var(--muted);font-size:12px;">尚無備註</div></div>
+          <textarea id="stage-note" rows="2" placeholder="傳送備註給報到區..."></textarea>
+          <button class="btnsend" onclick="sendNote()">📤 傳送</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<div class="statusbar">
+  <span id="conn" class="conn-ok">● 輪詢同步中（每 5 秒）</span>
+  <span id="last-upd"></span>
+</div>
+
 <script>
-// 請替換成您的 Google Apps Script 網頁應用程式 URL
-const apiUrl = 'https://script.google.com/macros/s/AKfycby9O2Mh_b0H0_3jAEvk41Hj-b0jWk5x4O0U_Z7XwZfO9QnJ9XpXFvVvW8N_1zX_1zX_/exec';
-const KEY = 'stage_dashboard_data';
+const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_ARNjMqKWUGfWERaXoo5W-H1X6W3Q-TYVcO7fLQ7p48z9rvLA5j1dshVnA/exec';
 
-let vips = {};
-let vipOrder = [];
-let colorMap = {};
-let queue = [];
-let isLooping = false;
+const KEY = 'vip_gs_config';
+const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
+let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
+let currentView = 'feed';
 
-function init() {
-  const local = stored();
-  if (local.vips) {
-    vips = local.vips;
-    vipOrder = local.vipOrder || Object.keys(vips);
-    buildColors();
-    renderFeed();
-    updateCounter();
+function switchMobileTab(target) {
+  // 更新頁籤按鈕 active 狀態
+  ['feed', 'map', 'side'].forEach(t => {
+    document.getElementById('m-tab-' + t).classList.toggle('active', t === target);
+  });
+
+  const feedWrap = document.querySelector('.feed-panel-wrap');
+  const sideWrap = document.querySelector('.side');
+
+  // 全部先隱藏
+  feedWrap.style.display = 'none';
+  sideWrap.style.display = 'none';
+
+  if (target === 'feed') {
+    feedWrap.style.display = 'block';
+    switchView('feed');
+  } else if (target === 'map') {
+    feedWrap.style.display = 'block';
+    switchView('map');
+  } else if (target === 'side') {
+    sideWrap.style.display = 'block';
   }
-  if (local.info) renderInfo(local.info);
-  poll();
-  setInterval(poll, 5000);
 }
 
-function buildColors() {
-  const palette = ['#1a73e8','#16a34a','#d97706','#7c3aed','#db2777','#059669','#ea580c'];
-  vipOrder.forEach((id, idx) => {
-    if (!colorMap[id]) colorMap[id] = palette[idx % palette.length];
-  });
+function init() {
+  apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
+  if (!apiUrl) {
+    showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
+    return;
+  }
+  // 手機版：初始化時確保 feed 顯示、side 隱藏
+  if (window.innerWidth <= 768) {
+    const feedWrap = document.querySelector('.feed-panel-wrap');
+    const sideWrap = document.querySelector('.side');
+    if (feedWrap) feedWrap.style.display = 'block';
+    if (sideWrap) sideWrap.style.display = 'none';
+  }
+  loadAll();
+}
+
+async function loadAll() {
+  vips = {};
+  try {
+    const res = await fetch(apiUrl + '?action=all&t=' + Date.now());
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    updateHeader(data.eventInfo);
+    vipOrder = data.vips.map(v => String(v.id));
+    data.vips.forEach((v, i) => {
+      v.id    = String(v.id    ?? '');
+      v.name  = String(v.name  ?? '');
+      v.title = String(v.title ?? '');
+      v.note  = String(v.note  ?? '');
+      v.photo = String(v.photo ?? '');
+      v.seat  = String(v.seat  ?? '');
+      vips[v.id] = v;
+      colorMap[v.id] = COLORS[i % COLORS.length];
+    });
+    prevChecked = new Set(data.vips.filter(v=>v.checked).map(v=>String(v.id)));
+    renderFeed();
+    renderPending();
+    updateStats();
+    if (currentView === 'map') renderTheaterMap();
+    renderNotes(data.notes);
+    setConn(true);
+  } catch(e) {
+    showErr('載入失敗：' + e.message);
+    setConn(false);
+  }
+  if (window.pollInterval) clearInterval(window.pollInterval);
+  window.pollInterval = setInterval(poll, 5000);
 }
 
 async function poll() {
   try {
     const res = await fetch(apiUrl + '?action=poll&t=' + Date.now());
-    if (!res.ok) throw new Error('HTTP 錯誤 ' + res.status);
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) return;
     
-    setConn(true);
-    document.getElementById('err-banner').style.display = 'none';
+    const incomingIds = new Set(Object.keys(data.checkins));
+    const localIds    = new Set(Object.keys(vips));
+    const hasNew      = [...incomingIds].some(id => !localIds.has(id));
+    if (hasNew) { await loadAll(); return; }
     
-    if (data.eventInfo) renderInfo(data.eventInfo);
-    
-    let hasChanges = false;
-    let freshArrived = [];
-    
-    if (data.vips) {
-      const old = vips;
-      vips = data.vips;
-      vipOrder = data.vipOrder || Object.keys(vips);
-      buildColors();
-      
-      // 比對是否有新報到的人
-      for (const id in vips) {
-        if (vips[id].checked && (!old[id] || !old[id].checked)) {
-          freshArrived.push(id);
-          queue.push(id); // 放進大字輪播佇列
-          hasChanges = true;
-        } else if (old[id] && old[id].checked && !vips[id].checked) {
-          // 被撤銷報到
-          hasChanges = true;
-        } else if (old[id] && JSON.stringify(old[id]) !== JSON.stringify(vips[id])) {
-          // 資料有修改
-          hasChanges = true;
-        }
+    let deleted = false;
+    let changed = false;
+    [...localIds].forEach(id => {
+      if (!incomingIds.has(id)) {
+        delete vips[id];
+        vipOrder = vipOrder.filter(x => x !== id);
+        deleted = true;
       }
+    });
+    if (deleted) changed = true;
+    
+    const newChecked = new Set();
+    const priorityDowngrades = [];
+    let seatChanged = false;
+    
+    Object.entries(data.checkins).forEach(([id, info]) => {
+      if (info.checked) newChecked.add(id);
+      if (!vips[id]) return;
+      const oldPriority = vips[id].priority;
+      const newPriority = String(info.priority || 'normal');
       
-      localStorage.setItem(KEY, JSON.stringify({ vips, vipOrder, info: data.eventInfo }));
-    }
+      if (vips[id].checked  !== info.checked  ||
+          vips[id].time     !== info.time      ||
+          vips[id].note     !== info.note      ||
+          vips[id].name     !== info.name      ||
+          vips[id].title    !== info.title     ||
+          oldPriority       !== newPriority    ||
+          (info.photo !== '' && vips[id].photo !== info.photo) ||
+          vips[id].seat     !== String(info.seat ?? '')) {
+          
+        vips[id].checked  = info.checked;
+        vips[id].time     = info.time;
+        vips[id].note     = info.note;
+        vips[id].name     = String(info.name  || vips[id].name  || '');
+        vips[id].title    = String(info.title || vips[id].title || '');
+        vips[id].priority = newPriority;
+        vips[id].photo    = (info.photo && info.photo !== '') ? info.photo : vips[id].photo;
+        const newSeat = info.seat !== undefined ? String(info.seat) : (vips[id].seat || '');
+        if (vips[id].seat !== newSeat) { vips[id].seat = newSeat; seatChanged = true; }
+        else vips[id].seat = newSeat;
+        
+        if (oldPriority !== newPriority && newPriority === 'normal') {
+          priorityDowngrades.push(id);
+        }
+        changed = true;
+      }
+    });
     
-    if (hasChanges || document.querySelectorAll('.acard').length === 0) {
-      renderFeed(freshArrived);
-      updateCounter();
-    }
+    const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
+    prevChecked = newChecked;
     
-    if (queue.length > 0 && !isLooping) {
-      triggerNextWelcome();
+    if (changed || deleted) {
+      if (priorityDowngrades.length > 0) {
+        priorityDowngrades.forEach(id => { if (vips[id]) vips[id]._pendingNormal = true; });
+        renderFeed(justArrived); renderPending(); updateStats();
+        if (currentView === 'map' || seatChanged) renderTheaterMap();
+        setTimeout(() => {
+          priorityDowngrades.forEach(id => { if (vips[id]) delete vips[id]._pendingNormal; });
+          renderFeed([]); renderPending(); updateStats();
+          if (currentView === 'map') renderTheaterMap();
+        }, 5000);
+      } else {
+        renderFeed(justArrived); renderPending(); updateStats();
+        if (currentView === 'map' || seatChanged) renderTheaterMap();
+      }
     }
-    
+    renderNotes(data.notes);
+    setConn(true);
     setUpd();
-  } catch(e) {
-    console.error(e);
-    setConn(false);
-    showErr(e.message);
+  } catch(e) { setConn(false); }
+}
+
+function switchView(view) {
+  currentView = view;
+  document.getElementById('tab-feed').classList.toggle('active', view === 'feed');
+  document.getElementById('tab-map').classList.toggle('active', view === 'map');
+  
+  document.getElementById('feed-container').style.display = view === 'feed' ? 'flex' : 'none';
+  document.getElementById('map-container').style.display = view === 'map' ? 'flex' : 'none';
+  
+  if (view === 'map') {
+    renderTheaterMap();
   }
 }
 
-// ── 關鍵修改：依據報到時序排列，越晚來的在越上方 ────────────────
+function renderTheaterMap() {
+  const mapEl = document.getElementById('map-container');
+  const allVips = vipOrder.map(id => vips[id]).filter(Boolean);
+  
+  if (!allVips.length) {
+    mapEl.innerHTML = '<div class="empty">等待報到區回傳...</div>';
+    return;
+  }
+
+  const hasCustomSeats = allVips.some(v => v.seat && v.seat.trim() !== '');
+  let rowsData = {};
+
+  if (!hasCustomSeats) {
+    const sortedVips = [...allVips].sort((a, b) => {
+      if (a.priority === 'vip' && b.priority !== 'vip') return -1;
+      if (a.priority !== 'vip' && b.priority === 'vip') return 1;
+      return 0;
+    });
+
+    const seatsPerSide = 5; 
+    sortedVips.forEach((v, index) => {
+      const rowNum = Math.floor(index / (seatsPerSide * 2)) + 1;
+      const sideIdx = index % (seatsPerSide * 2);
+      const side = sideIdx < seatsPerSide ? '左' : 'right';
+      const seatNum = (sideIdx % seatsPerSide) + 1;
+      const finalSide = side === '左' ? '左' : '右';
+
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][finalSide].push({ vip: v, seatNum: seatNum });
+    });
+  } else {
+    allVips.forEach(v => {
+      let rowNum = 1;
+      let side = '左';
+      let seatNum = 1;
+
+      const seatStr = String(v.seat || '').trim();
+      const match = seatStr.match(/(\d+)[-–]([左右])[-–](\d+)/);
+      if (match) {
+        rowNum = parseInt(match[1]) || 1;
+        side = match[2];
+        seatNum = parseInt(match[3]) || 1;
+      } else if (!seatStr) {
+        return;
+      } else {
+        rowNum = 99;
+      }
+
+      if (!rowsData[rowNum]) rowsData[rowNum] = { '左': [], '右': [] };
+      rowsData[rowNum][side].push({ vip: v, seatNum: seatNum });
+    });
+
+    Object.keys(rowsData).forEach(r => {
+      // 左側：seatNum 大→小（左5 左4 左3 左2 左1，從外到內靠近中央）
+      rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum);
+      // 右側：seatNum 小→大（右1 右2 右3 右4 右5，從內到外遠離中央）
+      rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum);
+    });
+  }
+
+  let html = `<div class="theater-map">
+    <div class="stage-indicator">─── 舞 臺 ───</div>`;
+    
+  if (!hasCustomSeats) {
+    html += `<div style="flex-shrink:0; font-size:11px;color:var(--amber);background:var(--amber-dim);padding:4px 8px;border-radius:6px;margin-bottom:4px;text-align:center;font-weight:500;">💡 座位未定智慧模式：自動以左 5 右 5 填入</div>`;
+  }
+
+  const sortedRows = Object.keys(rowsData).sort((a, b) => parseInt(a) - parseInt(b));
+  
+  sortedRows.forEach(rowNum => {
+    if (rowNum == 99) return;
+
+    html += `<div class="theater-row">
+      <div class="row-label">第 ${rowNum} 排</div>
+      
+      <div class="theater-side side-left">`;
+      const leftSeats = rowsData[rowNum]['左'];
+      const maxLeft = !hasCustomSeats ? 5 : Math.max(...leftSeats.map(s=>s.seatNum), 5);
+      for (let i = maxLeft; i >= 1; i--) {
+        const item = leftSeats.find(s => s.seatNum === i);
+        html += renderSingleSeat(item, '左', i);
+      }
+    html += `</div>
+      
+      <div class="theater-side side-right">`;
+      const rightSeats = rowsData[rowNum]['右'];
+      const maxRight = !hasCustomSeats ? 5 : Math.max(...rightSeats.map(s=>s.seatNum), 5);
+      for (let i = 1; i <= maxRight; i++) {
+        const item = rightSeats.find(s => s.seatNum === i);
+        html += renderSingleSeat(item, '右', i);
+      }
+    html += `</div>
+    </div>`;
+  });
+
+  if (rowsData[99] && (rowsData[99]['左'].length || rowsData[99]['右'].length)) {
+    html += `<div style="flex-shrink:0; margin-top:6px; border-top:1px dashed var(--border); padding-top:6px;">
+      <div style="font-size:11px; font-weight:700; color:var(--muted); margin-bottom:4px;">⚠️ 未解析座位：</div>
+      <div style="display:flex; gap:4px; flex-wrap:wrap;">`;
+      const unmapped = [...rowsData[99]['左'], ...rowsData[99]['右']];
+      unmapped.forEach(item => {
+        html += renderSingleSeat(item, '?', item.vip.seat || '未定');
+      });
+    html += `</div></div>`;
+  }
+
+  html += `</div>`;
+  mapEl.innerHTML = html;
+}
+
+function renderSingleSeat(item, side, num) {
+  if (!item || !item.vip) {
+    return `<div class="seat-block"><span class="seat-num">${side}${num}</span></div>`;
+  }
+  const v = item.vip;
+  const isArrived = v.checked;
+  
+  if (isArrived) {
+    const cls = v.priority === 'vip' ? 'vip' : 'normal';
+    return `<div class="seat-block occupied ${cls}" title="${v.name} (${v.title})\n位置: ${v.seat || (side+num)}">
+      <span class="seat-name">${v.name}</span>
+      <span class="seat-num" style="color:rgba(255,255,255,0.8)">${side}${num}</span>
+    </div>`;
+  } else {
+    return `<div class="seat-block" style="border-color:var(--border2); opacity:0.55;" title="待到場: ${v.name} (${v.title})">
+      <span class="seat-name" style="color:var(--muted); font-weight:400;">${v.name}</span>
+      <span class="seat-num">${side}${num}</span>
+    </div>`;
+  }
+}
+
 function renderFeed(justArrived = []) {
-  // 1. 取得所有已報到的貴賓資料
   const arrived = vipOrder.map(id => vips[id]).filter(v => v && v.checked);
   const el = document.getElementById('feed');
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
-  
-  // 2. 排序邏輯：依據報到時間 (v.time) 進行降序排列 (時間大、晚來的排前面)
-  arrived.sort((a, b) => {
-    const timeA = String(a.time || '');
-    const timeB = String(b.time || '');
-    return timeB.localeCompare(timeA);
-  });
-
-  // 3. 渲染排序後的結果（最多顯示 20 筆）
-  el.innerHTML = arrived.slice(0, 20).map(v => {
+  el.innerHTML = arrived.slice(0,20).map(v => {
     v.name  = String(v.name  || '');
     v.title = String(v.title || '');
     const c = colorMap[v.id] || '#4f8fff';
@@ -321,77 +729,100 @@ function renderFeed(justArrived = []) {
   }).join('');
 }
 
-function updateCounter() {
-  const done = Object.values(vips).filter(v => v.checked).length;
-  document.getElementById('counter').textContent = `已到場 ${done} 人`;
-}
-
-function triggerNextWelcome() {
-  if (queue.length === 0) { isLooping = false; return; }
-  isLooping = true;
-  const id = queue.shift();
-  const v = vips[id];
-  if (!v) { triggerNextWelcome(); return; }
-  
-  const box = document.getElementById('welcome-box');
-  const imgWrap = document.getElementById('w-photo-wrap');
-  const img = document.getElementById('w-photo');
-  const avatar = document.getElementById('w-avatar');
-  const lbl = document.getElementById('w-lbl');
-  const nameEl = document.getElementById('w-name');
-  const titleEl = document.getElementById('w-title');
-  
-  // 複製節點重置動畫
-  const newBox = box.cloneNode(true);
-  box.parentNode.replaceChild(newBox, box);
-  
-  const targetImgWrap = newBox.querySelector('#w-photo-wrap');
-  const targetImg = newBox.querySelector('#w-photo');
-  const targetAvatar = newBox.querySelector('#w-avatar');
-  const targetLbl = newBox.querySelector('#w-lbl');
-  const targetName = newBox.querySelector('#w-name');
-  const targetTitle = newBox.querySelector('#w-title');
-  
-  targetName.textContent = v.name || '';
-  targetTitle.textContent = v.title || '';
-  
-  if (v.priority === 'vip') {
-    targetLbl.textContent = '主要貴賓蒞臨';
-    targetLbl.style.background = 'rgba(217,119,6,0.2)';
-    targetLbl.style.color = '#fbbf24';
-  } else {
-    targetLbl.textContent = '貴賓蒞臨';
-    targetLbl.style.background = 'rgba(56,189,248,0.1)';
-    targetLbl.style.color = '#38bdf8';
+function renderPending() {
+  const allPend = Object.values(vips).filter(v => !v.checked);
+  const el = document.getElementById('pending');
+  if (!allPend.length) { 
+    el.innerHTML = '<div style="padding:12px 14px;color:var(--green);font-size:13px;text-align:center;">✓ 全員到齊</div>'; 
+    return; 
   }
   
-  if (v.photo) {
-    targetImg.src = v.photo;
-    targetImgWrap.style.display = 'flex';
-    targetAvatar.style.display = 'none';
-    targetImg.onerror = () => {
-      targetImgWrap.style.display = 'none';
-      targetAvatar.style.display = 'flex';
-    };
-  } else {
-    targetImgWrap.style.display = 'none';
-    targetAvatar.style.display = 'flex';
+  const vipPend = [];
+  const normalPend = [];
+  
+  allPend.forEach(v => {
+    const effectivePriority = v._pendingNormal ? 'normal' : v.priority;
+    if (effectivePriority === 'vip') {
+      vipPend.push(v);
+    } else {
+      normalPend.push(v);
+    }
+  });
+  
+  let html = '';
+  const subTitleStyle = "font-size:11px;font-weight:700;color:var(--muted);padding:7px 14px;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.04em;display:flex;align-items:center;gap:4px;";
+  
+  if (vipPend.length > 0) {
+    html += `<div style="${subTitleStyle} color:var(--amber);">⭐ 主要貴賓 (${vipPend.length})</div>`;
+    html += vipPend.map(v => {
+      v.name  = String(v.name  || '');
+      v.title = String(v.title || '');
+      const c = colorMap[v.id] || '#1a73e8';
+      const thumbHtml = v.photo
+        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
+        : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
+      return `<div class="pitem" style="border-left: 3px solid var(--amber); background:var(--surface);">
+        ${thumbHtml}
+        <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
+        <div class="dotw"></div>
+      </div>`;
+    }).join('');
   }
   
-  const c = colorMap[id] || '#4f8fff';
-  targetAvatar.style.background = c;
-  targetAvatar.textContent = (v.name || '').charAt(0);
+  if (normalPend.length > 0) {
+    html += `<div style="${subTitleStyle}">👥 一般貴賓 (${normalPend.length})</div>`;
+    html += normalPend.map(v => {
+      v.name  = String(v.name  || '');
+      v.title = String(v.title || '');
+      const c = colorMap[v.id] || '#1a73e8';
+      const thumbHtml = v.photo
+        ? `<img src="${v.photo}" class="pavatar-photo" alt="${v.name}" onerror="this.outerHTML='<div class=\'pavatar\' style=\'background:${c}22;color:${c}\\'>${v.name.charAt(0)}</div>'">`
+        : `<div class="pavatar" style="background:${c}22;color:${c}">${v.name.charAt(0)}</div>`;
+      return `<div class="pitem" style="background:var(--surface);">
+        ${thumbHtml}
+        <div class="pinfo"><div class="pname">${v.name}</div><div class="ptitle">${v.title}</div></div>
+        <div class="dotw" style="background:var(--muted); opacity:0.4;"></div>
+      </div>`;
+    }).join('');
+  }
   
-  newBox.style.display = 'flex';
-  newBox.className = 'welcome-box fade-in-out';
-  
-  setTimeout(() => {
-    newBox.style.display = 'none';
-    triggerNextWelcome();
-  }, 4000);
+  el.innerHTML = html;
 }
 
-function renderInfo(info) {
+function updateStats() {
+  const all = Object.values(vips);
+  const done = all.filter(v=>v.checked).length;
+  const pct = all.length ? Math.round(done/all.length*100) : 0;
+  document.getElementById('st-total').textContent = all.length;
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-pend').textContent = all.length - done;
+  document.getElementById('st-pct').textContent = pct + '%';
+  document.getElementById('bar').style.width = pct + '%';
+}
+
+function renderNotes(notes) {
+  const el = document.getElementById('notes-list');
+  if (!notes || !notes.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;">尚無備註</div>'; return; }
+  el.innerHTML = notes.map(n => {
+    const fromColor = n.from === '貴賓備註' ? '#d97706' : n.from === '舞台區' ? '#7c3aed' : '#1a73e8';
+    const timeStr = n.time ? ' · ' + n.time : '';
+    return `<div class="note"><span style="font-size:11px;font-weight:600;color:${fromColor};margin-right:6px;">[${n.from}]</span>${n.text}<div class="note-meta">${timeStr}</div></div>`;
+  }).join('');
+}
+
+async function sendNote() {
+  const text = document.getElementById('stage-note').value.trim();
+  if (!text || !apiUrl) return;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  try {
+    await fetch(apiUrl + '?action=note&text=' + encodeURIComponent(text) + '&from=' + encodeURIComponent('舞台區') + '&time=' + encodeURIComponent(time));
+    document.getElementById('stage-note').value = '';
+  } catch(e) {}
+}
+
+function updateHeader(info) {
+  if (!info) return;
   document.getElementById('ev-name').textContent = info['活動名稱'] || '活動';
   const rawParts = [info['日期'], info['地點'], info['時間']].filter(Boolean);
   const parts = rawParts.map(p => {
@@ -418,9 +849,11 @@ function stored() { try { return JSON.parse(localStorage.getItem(KEY))||{}; } ca
 setInterval(() => {
   const n=new Date();
   document.getElementById('clock-time').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-}, 1000);
+  const days=['日','一','二','三','四','五','六'];
+  document.getElementById('clock-date').textContent=`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')} (${days[n.getDay()]})`;
+},1000);
 
-window.onload = init;
+init();
 </script>
 </body>
 </html>
