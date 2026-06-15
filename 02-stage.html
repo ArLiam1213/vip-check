@@ -140,12 +140,14 @@ textarea:focus{outline:none;border-color:var(--accent);}
   display: flex; 
   flex-direction: column; 
   gap: 8px; 
+  /* 🔥 核心修正 1：如果座位排數超出容器高度，允許座位圖單獨往下滾動 */
   overflow-y: auto; 
   background: var(--surface); 
 }
 .stage-indicator { flex-shrink: 0; text-align: center; background: #334155; color: #ffffff; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 6px; letter-spacing: 0.6em; text-indent: 0.6em; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
 
 .theater-row { 
+  /* 🔥 核心修正 2：拔掉 flex: 1 避免被無限壓扁，給予每排最小保障高度 */
   min-height: 48px; 
   flex-shrink: 0; 
   display: flex; 
@@ -163,6 +165,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
 .seat-block { 
   flex: 1;
+  /* 🔥 核心修正 3：給予每個座位最小寬度，避免太窄切到字 */
   min-width: 44px; 
   height: auto; 
   border-radius: 6px; 
@@ -181,6 +184,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 .seat-block.occupied.vip { background: var(--amber); color: #ffffff; }
 .seat-block.occupied.normal { background: var(--green); color: #ffffff; }
 
+/* 🔥 核心修正 4：人名字體微調，允許太長的名字換兩行 */
 .seat-name { 
   font-weight: 700; 
   font-size: 12px; 
@@ -188,7 +192,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
   text-align: center; 
   word-break: break-all;
   display: -webkit-box;
-  -webkit-line-clamp: 2; 
+  -webkit-line-clamp: 2; /* 最多顯示兩行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -229,7 +233,9 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .stat-bar { display: none; }
 
   .mobile-tabs { display: flex; }
+  /* 手機 grid 改成單欄 block */
   .grid { display: block !important; }
+  /* 手機版 panel-tabs（動態/座位切換）隱藏，改用上方三頁籤 */
   .panel-tabs { display: none !important; }
 
   .acard { padding: 8px 10px; gap: 8px; }
@@ -244,9 +250,11 @@ textarea:focus{outline:none;border-color:var(--accent);}
 
   .statusbar { padding: 8px 12px; font-size: 10px; }
 
+  /* ── 手機版座位圖：縱向排列，不需橫向滾動 ── */
   .theater-map { padding: 10px 8px; gap: 6px; }
   .stage-indicator { font-size: 11px; padding: 6px; letter-spacing: 0.4em; }
 
+  /* 每排改成縱向：排標題佔整行，左側一行，右側一行 */
   .theater-row {
     flex-direction: column !important;
     gap: 4px !important;
@@ -265,6 +273,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
     color: var(--navy, var(--accent));
     border-bottom: 1px solid var(--border);
   }
+  /* 左右兩側各佔整行 */
   .theater-side {
     width: 100% !important;
     flex-wrap: wrap !important;
@@ -276,8 +285,9 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .side-left { border-right: none !important; padding-right: 0 !important; }
   .side-right { border-left: none !important; padding-left: 0 !important; }
 
+  /* 座位塊：固定寬度，讓每排自動換行 */
   .seat-block {
-    flex: 0 0 calc(20% - 4px) !important;
+    flex: 0 0 calc(20% - 4px) !important; /* 每行最多5個 */
     min-width: 0 !important;
     max-width: calc(20% - 4px) !important;
     min-height: 52px !important;
@@ -286,6 +296,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
   .seat-name { font-size: 10px !important; -webkit-line-clamp: 2; }
   .seat-num  { font-size: 8px !important; }
 
+  /* 左右區域標籤 */
   .theater-side.side-left::before {
     content: '← 左側';
     width: 100%;
@@ -387,44 +398,13 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <script>
 const HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw0_bNl1sJB_ARNjMqKWUGfWERaXoo5W-H1X6W3Q-TYVcO7fLQ7p48z9rvLA5j1dshVnA/exec';
 
-// ==========================================
-// 🔔 桌面推播通知與音效功能
-// ==========================================
-const checkinSound = new Audio('https://actions.google.com/sounds/v1/ui/positive_notification.ogg');
-
-function playCheckinSound() {
-  checkinSound.currentTime = 0;
-  checkinSound.play().catch(e => console.log('瀏覽器阻擋自動播放音效', e));
-}
-
-function requestNotificationPermission() {
-  if (!("Notification" in window)) {
-    console.log("此瀏覽器不支援桌面通知");
-  } else if (Notification.permission !== "denied" && Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-}
-
-function sendCheckinNotification(vip) {
-  if (Notification.permission === "granted") {
-    const title = "🌟 貴賓報到通知";
-    const body = `${vip.name} (${vip.title}) 剛剛完成報到！\n安排座位：${vip.seat || '未分配'}`;
-    
-    const options = {
-      body: body,
-      icon: vip.photo || '' 
-    };
-    new Notification(title, options);
-  }
-}
-// ==========================================
-
 const KEY = 'vip_gs_config';
 const COLORS = ['#4f8fff','#2ecc8a','#a78bfa','#f97316','#ec4899','#14b8a6'];
 let vips = {}, vipOrder = [], colorMap = {}, apiUrl = '', prevChecked = new Set();
 let currentView = 'feed';
 
 function switchMobileTab(target) {
+  // 更新頁籤按鈕 active 狀態
   ['feed', 'map', 'side'].forEach(t => {
     document.getElementById('m-tab-' + t).classList.toggle('active', t === target);
   });
@@ -432,6 +412,7 @@ function switchMobileTab(target) {
   const feedWrap = document.querySelector('.feed-panel-wrap');
   const sideWrap = document.querySelector('.side');
 
+  // 全部先隱藏
   feedWrap.style.display = 'none';
   sideWrap.style.display = 'none';
 
@@ -452,10 +433,7 @@ function init() {
     showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
     return;
   }
-  
-  // 網頁初始化時請求推播權限
-  requestNotificationPermission();
-
+  // 手機版：初始化時確保 feed 顯示、side 隱藏
   if (window.innerWidth <= 768) {
     const feedWrap = document.querySelector('.feed-panel-wrap');
     const sideWrap = document.querySelector('.side');
@@ -557,19 +535,8 @@ async function poll() {
       }
     });
     
-    const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
+const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-    
-    // 觸發推播通知與音效
-    if (justArrived.length > 0) {
-      playCheckinSound(); 
-      justArrived.forEach(id => {
-        const vip = vips[id];
-        if (vip) {
-          sendCheckinNotification(vip);
-        }
-      });
-    }
     
     if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
@@ -658,7 +625,9 @@ function renderTheaterMap() {
     });
 
     Object.keys(rowsData).forEach(r => {
+      // 左側：seatNum 大→小（左5 左4 左3 左2 左1，從外到內靠近中央）
       rowsData[r]['左'].sort((a,b) => b.seatNum - a.seatNum);
+      // 右側：seatNum 小→大（右1 右2 右3 右4 右5，從內到外遠離中央）
       rowsData[r]['右'].sort((a,b) => a.seatNum - b.seatNum);
     });
   }
@@ -735,7 +704,7 @@ function renderSingleSeat(item, side, num) {
 }
 
 function renderFeed(justArrived = []) {
-  // 將資料過濾後，依照報到時間進行降冪排序 (晚到的在最上面)
+  // 加入 .sort() 依照時間降冪排列（時間越晚，排越前面）
   const arrived = vipOrder.map(id => vips[id])
     .filter(v => v && v.checked)
     .sort((a, b) => {
@@ -745,6 +714,7 @@ function renderFeed(justArrived = []) {
     });
 
   const el = document.getElementById('feed');
+  if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   el.innerHTML = arrived.slice(0,20).map(v => {
     v.name  = String(v.name  || '');
