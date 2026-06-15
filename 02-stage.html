@@ -537,24 +537,6 @@ async function poll() {
     
 const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-
-    // 🔔【新增】如果有人剛到場，且瀏覽器允許通知，就發出推播
-    if (justArrived.length > 0 && "Notification" in window && Notification.permission === "granted") {
-      justArrived.forEach(id => {
-        const v = vips[id];
-        if (v) {
-          // 設定推播標題與內容
-          const title = `🎤 貴賓已到場：${v.name}`;
-          const options = {
-            body: `${v.title || '貴賓'}\n報到時間：${v.time || ''}${v.seat ? `\n座位：${v.seat}` : ''}`,
-            icon: v.photo || undefined, // 如果貴賓有頭像網址，就直接當作推播小圖
-            silent: false               // true 為靜音，false 會發出系統預設提示音
-          };
-          // 執行發送
-          new Notification(title, options);
-        }
-      });
-    }
     
     if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
