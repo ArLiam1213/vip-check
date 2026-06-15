@@ -314,18 +314,6 @@ textarea:focus{outline:none;border-color:var(--accent);}
     padding: 0 2px 2px;
   }
 }
-
-/* ── 瀏覽器推播通知 ── */
-.notif-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;
-  cursor:pointer;border:1px solid var(--border2);
-  background:transparent;color:var(--muted);font-family:inherit;
-  transition:all .15s;flex-shrink:0;
-}
-.notif-btn.granted{color:var(--green);border-color:rgba(22,163,74,.3);background:var(--green-dim);}
-.notif-btn.denied{color:var(--red);border-color:rgba(220,38,38,.25);}
-.notif-btn:hover:not(.granted):not(.denied){background:var(--surface2);color:var(--text);}
 </style>
 </head>
 <body>
@@ -333,7 +321,6 @@ textarea:focus{outline:none;border-color:var(--accent);}
 <div class="topbar">
   <div class="logo">🎤 舞台看板</div>
   <div class="live"><div class="dot"></div>LIVE</div>
-  <button class="notif-btn" id="notif-btn" onclick="requestNotifPermission()" title="開啟瀏覽器推播通知">🔔 開啟通知</button>
   <div class="nav-links">
     <a href="00-setup.html" class="nav-link">⚙ 設定</a>
     <a href="01-checkin.html" class="nav-link">📋 報到區</a>
@@ -441,7 +428,7 @@ function switchMobileTab(target) {
 }
 
 function init() {
-  initNotification();  apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
+  apiUrl = HARDCODED_API_URL || (stored().apiUrl || '');
   if (!apiUrl) {
     showErr('請將 Apps Script 網址填入 02-stage.html 第一行 HARDCODED_API_URL，或在設定頁儲存網址後重新開啟。');
     return;
@@ -550,7 +537,6 @@ async function poll() {
     
     const justArrived = [...newChecked].filter(id => !prevChecked.has(id));
     prevChecked = newChecked;
-    if (justArrived.length) notifyArrivals(justArrived);
     
     if (changed || deleted) {
       if (priorityDowngrades.length > 0) {
@@ -868,86 +854,6 @@ setInterval(() => {
 },1000);
 
 init();
-
-// ════════════════════════════════════════
-//  瀏覽器推播通知
-// ════════════════════════════════════════
-let notifEnabled = false;
-
-function initNotification() {
-  const btn = document.getElementById('notif-btn');
-  if (!('Notification' in window)) {
-    btn.textContent = '🔕 不支援通知';
-    btn.classList.add('denied');
-    return;
-  }
-  updateNotifBtn(Notification.permission);
-}
-
-function updateNotifBtn(perm) {
-  const btn = document.getElementById('notif-btn');
-  if (perm === 'granted') {
-    notifEnabled = true;
-    btn.textContent = '🔔 通知已開啟';
-    btn.classList.add('granted');
-    btn.classList.remove('denied');
-  } else if (perm === 'denied') {
-    notifEnabled = false;
-    btn.textContent = '🔕 通知已封鎖';
-    btn.classList.add('denied');
-    btn.classList.remove('granted');
-  } else {
-    notifEnabled = false;
-    btn.textContent = '🔔 開啟通知';
-    btn.classList.remove('granted','denied');
-  }
-}
-
-function requestNotifPermission() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') {
-    // 已開啟 → 測試推播
-    sendBrowserNotif('✅ 通知測試', '瀏覽器通知運作正常！');
-    return;
-  }
-  Notification.requestPermission().then(perm => {
-    updateNotifBtn(perm);
-    if (perm === 'granted') {
-      sendBrowserNotif('✅ 通知已開啟', '之後每次貴賓報到，這裡會即時通知你。');
-    }
-  });
-}
-
-function sendBrowserNotif(title, body, icon) {
-  if (!notifEnabled || Notification.permission !== 'granted') return;
-  try {
-    const n = new Notification(title, {
-      body:    body || '',
-      icon:    icon || 'https://arliam1213.github.io/vip-check/WDA.png',
-      badge:   'https://arliam1213.github.io/vip-check/WDA.png',
-      tag:     'vip-checkin',   // 同 tag 的通知會取代前一則，不堆疊
-      requireInteraction: false,
-      silent:  false,
-    });
-    // 4秒後自動關閉
-    setTimeout(() => n.close(), 4000);
-  } catch(e) {}
-}
-
-// 報到時觸發推播（從 poll justArrived 呼叫）
-function notifyArrivals(ids) {
-  if (!ids || !ids.length) return;
-  ids.forEach(id => {
-    const v = vips[id];
-    if (!v) return;
-    const seat = v.seat ? '　座位 ' + v.seat : '';
-    sendBrowserNotif(
-      '✅ ' + v.name + ' 報到',
-      v.title + seat + '　' + v.time
-    );
-  });
-}
-
 </script>
 </body>
 </html>
