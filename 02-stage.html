@@ -704,8 +704,17 @@ function renderSingleSeat(item, side, num) {
 }
 
 function renderFeed(justArrived = []) {
-  const arrived = vipOrder.map(id => vips[id]).filter(v => v && v.checked);
+  // 加入 .sort() 依照時間降冪排列（時間越晚，排越前面）
+  const arrived = vipOrder.map(id => vips[id])
+    .filter(v => v && v.checked)
+    .sort((a, b) => {
+      const timeA = a.time || "";
+      const timeB = b.time || "";
+      return timeB.localeCompare(timeA); 
+    });
+
   const el = document.getElementById('feed');
+  if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   if (!arrived.length) { el.innerHTML = '<div class="empty">等待報到區回傳...</div>'; return; }
   el.innerHTML = arrived.slice(0,20).map(v => {
     v.name  = String(v.name  || '');
